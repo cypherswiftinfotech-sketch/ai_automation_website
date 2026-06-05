@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a B2B Consultation | Cypher Swift InfoTech</title>
+    <meta name="description" content="Request a Case Study, book a strategy session, or apply for our 5-day AI Growth Diagnostic with Cypher Swift InfoTech.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom-components.css">
+    <link rel="stylesheet" href="interactions.css">
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header-nav">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"></div>
+                CypherSwift <span>InfoTech</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li><a href="industries.html" class="nav-link">Industries</a></li>
+                <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
+                <li><a href="pricing.html" class="nav-link">Pricing</a></li>
+                <li><a href="about.html" class="nav-link">Company</a></li>
+                <li><a href="contact.html" class="nav-link active">Contact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="contact.html?type=diagnostic" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Get Diagnostic</a>
+            </div>
+            <button class="hamburger">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contact Hero Section -->
+    <section class="case-study-hero">
+        <div class="container text-center">
+            <span class="section-tag">Let's Connect</span>
+            <h1>Initialize Your System Audit</h1>
+            <p style="max-width: 700px; margin: 1.5rem auto 0 auto;">Select your engagement path below. Our team reviews submissions within 2 hours on business days.</p>
+        </div>
+    </section>
+
+    <!-- Contact Grid Section -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="contact-grid">
+                
+                <!-- Contact Info Column -->
+                <div class="contact-info-card">
+                    <div>
+                        <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff; margin-bottom: 1.5rem;">Corporate Headquarters</h2>
+                        <p style="margin-bottom: 2rem;">If you have general inquiries regarding corporate partnerships, vendor contracts, or media, contact us directly via email or phone.</p>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.85rem; color: var(--color-text-muted);">Direct Email</span>
+                            <h4 style="color: #fff; margin-top: 0.25rem;"><a href="mailto:info@cypherswift.com" style="color: inherit; text-decoration: none;">info@cypherswift.com</a></h4>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <!-- WhatsApp icon or generic phone -->
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.85rem; color: var(--color-text-muted);">WhatsApp & Voice Support</span>
+                            <h4 style="color: #fff; margin-top: 0.25rem;"><a href="tel:+917204468429" style="color: inherit; text-decoration: none;">+91 7204468429</a></h4>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                        </div>
+                        <div>
+                            <span style="font-size: 0.85rem; color: var(--color-text-muted);">Strategic Web Portal</span>
+                            <h4 style="color: #fff; margin-top: 0.25rem;"><a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">www.cypherswift.com</a></h4>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="margin-top: 2rem; border-color: rgba(16, 185, 129, 0.15);">
+                        <h4 style="color: var(--color-accent-emerald); margin-bottom: 0.5rem;">Diagnostic Pricing Estimate</h4>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: #fff;" id="calc-estimate">$900 / ₹75,000</div>
+                        <p style="font-size: 0.8rem; margin-top: 0.5rem;">Based on select Startup parameters. Change company size in the form to see estimates.</p>
+                    </div>
+                </div>
+
+                <!-- Form Column -->
+                <div class="glass-card" style="padding: 3rem;">
+                    <h3 style="color: #fff; margin-bottom: 2rem;">Consultation Inquiry Form</h3>
+                    
+                    <form id="diagnostic-form">
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="full-name">Full Name</label>
+                            <input type="text" id="full-name" class="form-control" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="email">Business Email</label>
+                            <input type="email" id="email" class="form-control" placeholder="name@company.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="website">Company Website</label>
+                            <input type="url" id="website" class="form-control" placeholder="https://company.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="company-size">Company Size</label>
+                            <select id="company-size" class="form-control" required>
+                                <option value="startup">Startup (&lt; 20 Reps)</option>
+                                <option value="midmarket">Mid-Market (20 - 100 Reps)</option>
+                                <option value="enterprise">Enterprise (100+ Reps)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="request-type">Request Type</label>
+                            <select id="request-type" class="form-control" required>
+                                <option value="diagnostic">5-Day AI Growth Diagnostic</option>
+                                <option value="strategy">Strategy Blueprint Session</option>
+                                <option value="case-study">Full Case Study Request</option>
+                                <option value="partnership">Retainer Partnership Discussion</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="message">Strategic Context (Optional)</label>
+                            <textarea id="message" class="form-control" rows="4" placeholder="Briefly describe your existing CRM stack or growth constraints..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                            <span>Submit Request</span>
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                        </button>
+
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon"></div>
+                        CypherSwift
+                    </a>
+                    <p>Building predictable revenue growth systems through strategic advisory, sales alignment, and AI automation.</p>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Systems</h4>
+                    <ul class="footer-links">
+                        <li><a href="services.html#advisory">Strategic Advisory</a></li>
+                        <li><a href="services.html#marketing">Marketing Systems</a></li>
+                        <li><a href="services.html#sales">Sales Systems</a></li>
+                        <li><a href="services.html#revops">Revenue Operations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Cypher Swift</a></li>
+                        <li><a href="case-studies.html">Case Studies</a></li>
+                        <li><a href="pricing.html">Pricing Structure</a></li>
+                        <li><a href="contact.html">Book Diagnostic</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Contact Information</h4>
+                    <ul class="footer-contact-info">
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            <a href="mailto:info@cypherswift.com" style="color: inherit; text-decoration: none;">info@cypherswift.com</a>
+                        </li>
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                            <a href="tel:+917204468429" style="color: inherit; text-decoration: none;">+91 7204468429</a>
+                        </li>
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                            <a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">www.cypherswift.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© 2026 <a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast);" onmouseover="this.style.borderColor='var(--color-text-muted)'" onmouseout="this.style.borderColor='transparent'">Cypher Swift InfoTech</a>. All rights reserved.</div>
+                <div class="footer-legal-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="interactions.js"></script>
+    <script src="script.js"></script>
+    <script>
+        // Pre-select request-type or company-size based on query parameters if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const requestTypeParam = urlParams.get('type');
+        if (requestTypeParam) {
+            const selectEl = document.getElementById('request-type');
+            if (selectEl) {
+                selectEl.value = requestTypeParam;
+            }
+        }
+    </script>
+</body>
+</html>

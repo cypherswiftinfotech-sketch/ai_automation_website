@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100%" height="100%">
+  <defs>
+    <!-- Premium Magenta to Violet-Indigo Gradient matching the user's logo -->
+    <linearGradient id="cypher-grad" x1="30%" y1="10%" x2="70%" y2="90%">
+      <stop offset="0%" stop-color="#db2777" />
+      <stop offset="40%" stop-color="#b5179e" />
+      <stop offset="70%" stop-color="#7209b7" />
+      <stop offset="100%" stop-color="#4895ef" />
+    </linearGradient>
+  </defs>
+
+  <!-- Left Speed/Circuit Lines -->
+  <!-- Line 1 -->
+  <path d="M 28 28 L 14 28" stroke="url(#cypher-grad)" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="14" cy="28" r="2" fill="url(#cypher-grad)" />
+
+  <!-- Line 2 -->
+  <path d="M 24 35 L 8 35" stroke="url(#cypher-grad)" stroke-width="3" stroke-linecap="round" />
+  
+  <!-- Line 3 -->
+  <path d="M 20 42 L 5 42" stroke="url(#cypher-grad)" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="5" cy="42" r="2" fill="url(#cypher-grad)" />
+
+  <!-- Line 4 (Long middle top) -->
+  <path d="M 18 49 L 2 49" stroke="url(#cypher-grad)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Line 5 (Long middle bottom) -->
+  <path d="M 18 56 L 2 56" stroke="url(#cypher-grad)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Line 6 -->
+  <path d="M 20 63 L 5 63" stroke="url(#cypher-grad)" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="5" cy="63" r="2" fill="url(#cypher-grad)" />
+
+  <!-- Line 7 -->
+  <path d="M 24 70 L 8 70" stroke="url(#cypher-grad)" stroke-width="3" stroke-linecap="round" />
+
+  <!-- Line 8 -->
+  <path d="M 28 77 L 14 77" stroke="url(#cypher-grad)" stroke-width="3.5" stroke-linecap="round" />
+  <circle cx="14" cy="77" r="2" fill="url(#cypher-grad)" />
+
+  <!-- Main C Hexagon Outline -->
+  <path d="M 85 24 
+           L 44 24 
+           L 22 50 
+           L 44 76 
+           L 85 76 
+           L 85 62 
+           L 52 62 
+           L 38 50 
+           L 52 38 
+           L 85 38 
+           Z" 
+        fill="url(#cypher-grad)" 
+        fill-rule="evenodd" />
+
+  <!-- Circuit Trace Nodes inside the Hexagon Body -->
+  <!-- Top Node -->
+  <circle cx="48" cy="31" r="3.5" fill="#ffffff" />
+  <circle cx="48" cy="31" r="2" fill="url(#cypher-grad)" />
+
+  <!-- Bottom Node -->
+  <circle cx="48" cy="69" r="3.5" fill="#ffffff" />
+  <circle cx="48" cy="69" r="2" fill="url(#cypher-grad)" />
+</svg>

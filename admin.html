@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cypher Swift Admin | Revenue Management Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom-components.css">
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: #08090d;
+        }
+        .admin-sidebar {
+            width: 260px;
+            background: #0f111a;
+            border-right: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem 0;
+            flex-shrink: 0;
+        }
+        .admin-sidebar-header {
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 2rem;
+        }
+        .admin-nav-item {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            border-left: 3px solid transparent;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        .admin-nav-item:hover, .admin-nav-item.active {
+            color: var(--color-text-primary);
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .admin-nav-item.active {
+            border-left-color: var(--color-accent-indigo);
+            background: rgba(92, 103, 242, 0.05);
+        }
+        .admin-content {
+            flex-grow: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+        .admin-panel {
+            display: none;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1.5rem;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .admin-table th {
+            text-align: left;
+            padding: 1rem;
+            background: rgba(255,255,255,0.02);
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .admin-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            vertical-align: middle;
+        }
+        .admin-table tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+        .modal-wrap {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        .modal-wrap.open {
+            display: flex;
+        }
+        .modal-inner {
+            background: #0f111a;
+            border: 1px solid var(--glass-border);
+            width: 100%;
+            max-width: 680px;
+            padding: 3rem;
+            border-radius: var(--radius-lg);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+    </style>
+    <script>
+        // Auth Guard
+        const token = localStorage.getItem('cs_admin_token');
+        if (!token) {
+            window.location.href = 'admin-login.html';
+        } else {
+            // Display immediately; invalid tokens will fail on data load and redirect then.
+            document.write('<style>body { display: flex !important; }</style>');
+        }
+    </script>
+</head>
+<body style="display: none;">
+
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <a href="index.html" class="logo" style="font-size: 1.2rem;">
+                <div class="logo-icon" style="width: 28px; height: 28px;"></div>
+                CS Admin
+            </a>
+            <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block; margin-top: 0.5rem;" id="user-display">Loading User...</span>
+        </div>
+
+        <nav style="flex-grow: 1;">
+            <div class="admin-nav-item active" onclick="switchPanel('leads')" id="nav-leads">
+                <span>📥</span> Leads Inbox
+            </div>
+            <div class="admin-nav-item" onclick="switchPanel('studies')" id="nav-studies">
+                <span>📁</span> Case Studies
+            </div>
+            <div class="admin-nav-item" onclick="switchPanel('settings')" id="nav-settings">
+                <span>⚙️</span> Global Settings
+            </div>
+        </nav>
+
+        <div style="padding: 0 2rem;">
+            <button onclick="handleLogout()" class="btn btn-secondary" style="width: 100%; font-size: 0.85rem; padding: 0.6rem;">Log Out</button>
+        </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-content">
+
+        <!-- LEADS PANEL -->
+        <div class="admin-panel active" id="panel-leads">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 2rem;">📥 Leads Inbox</h1>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">View all incoming consultation requests & strategic diagnostic inquiries.</p>
+                </div>
+            </div>
+
+            <div class="glass-card" style="padding: 0; overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Company Details</th>
+                            <th>Inquiry Type</th>
+                            <th>Context</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-table-body">
+                        <tr>
+                            <td colspan="6" class="text-center" style="padding: 3rem;">Loading leads...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- CASE STUDIES PANEL -->
+        <div class="admin-panel" id="panel-studies">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 2rem;">📁 Case Studies</h1>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">Manage case study projects visible across the website.</p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-secondary" onclick="seedSampleStudies()">Seed Samples</button>
+                    <button class="btn btn-primary" onclick="openStudyModal()">+ Add Case Study</button>
+                </div>
+            </div>
+
+            <div class="glass-card" style="padding: 0; overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Tag / Category</th>
+                            <th>Project Title</th>
+                            <th>Summary / Challenge</th>
+                            <th>Key Metrics</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studies-table-body">
+                        <tr>
+                            <td colspan="5" class="text-center" style="padding: 3rem;">Loading case studies...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SETTINGS PANEL -->
+        <div class="admin-panel" id="panel-settings">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 2rem;">⚙️ Global Settings</h1>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">Manage company statistics, diagnostic parameters, and notification endpoints.</p>
+                </div>
+            </div>
+
+            <div class="glass-card" style="max-width: 600px;">
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label class="form-label" for="settings-revenue">Revenue Generated Stat (e.g. ₹3Cr+)</label>
+                        <input type="text" id="settings-revenue" class="form-control" placeholder="₹3Cr+" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="settings-growth">Lead Growth Stat (e.g. 2.5x)</label>
+                        <input type="text" id="settings-growth" class="form-control" placeholder="2.5x" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="settings-automation">Automation Rate Stat (e.g. 70%)</label>
+                        <input type="text" id="settings-automation" class="form-control" placeholder="70%" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="settings-email">Email Notification Target</label>
+                        <input type="email" id="settings-email" class="form-control" placeholder="craftersofa974263@gmail.com" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Save Global Config</button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- CASE STUDY MODAL -->
+    <div class="modal-wrap" id="study-modal">
+        <div class="modal-inner">
+            <h2 style="color: #fff; margin-bottom: 2rem;" id="modal-title">Create Case Study</h2>
+            <form id="study-form">
+                <input type="hidden" id="study-db-id">
+                <div class="form-group">
+                    <label class="form-label" for="study-category">Industry Tag (e.g. SaaS, Manufacturing)</label>
+                    <input type="text" id="study-category" class="form-control" placeholder="e.g. SaaS" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="study-title">Case Title</label>
+                    <input type="text" id="study-title" class="form-control" placeholder="e.g. 2.5x Qualified Leads in 60 Days" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="study-summary">Brief Summary</label>
+                    <textarea id="study-summary" class="form-control" rows="3" placeholder="Brief outline of project goals..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="study-challenge">The Challenge</label>
+                    <textarea id="study-challenge" class="form-control" rows="3" placeholder="Inconsistent leads, poor CRM visibility..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="study-solution">The Solution</label>
+                    <textarea id="study-solution" class="form-control" rows="3" placeholder="AI lead qualifying pipelines, custom dashboard builds..." required></textarea>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric1">Key Metric 1 Value (e.g. 2.5x)</label>
+                        <input type="text" id="study-metric1" class="form-control" placeholder="2.5x" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric1-lbl">Key Metric 1 Label</label>
+                        <input type="text" id="study-metric1-lbl" class="form-control" placeholder="Leads Multiplier" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric2">Key Metric 2 Value (e.g. 60 Days)</label>
+                        <input type="text" id="study-metric2" class="form-control" placeholder="60 Days" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric2-lbl">Key Metric 2 Label</label>
+                        <input type="text" id="study-metric2-lbl" class="form-control" placeholder="Timeframe" required>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric3">Key Metric 3 Value (e.g. ₹48L)</label>
+                        <input type="text" id="study-metric3" class="form-control" placeholder="₹48L" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="study-metric3-lbl">Key Metric 3 Label</label>
+                        <input type="text" id="study-metric3-lbl" class="form-control" placeholder="Pipeline Generated" required>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 2rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeStudyModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Case Study</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration: Fallback to localhost:8000 if page is opened via file:// or dev server
+        const API_BASE = window.location.port === '8000' ? '' : 'http://localhost:8000';
+
+        // Retrieve token
+        const adminToken = localStorage.getItem('cs_admin_token');
+        const adminEmail = localStorage.getItem('cs_admin_email');
+        if (adminEmail) {
+            document.getElementById('user-display').textContent = `👋 ${adminEmail}`;
+        }
+
+        // Helper for secure API requests
+        async function secureFetch(url, options = {}) {
+            options.headers = {
+                ...(options.headers || {}),
+                'Authorization': `Bearer ${adminToken}`
+            };
+            try {
+                const res = await fetch(`${API_BASE}${url}`, options);
+                if (res.status === 401) {
+                    // Invalid/expired token
+                    alert('Session expired. Please log in again.');
+                    localStorage.removeItem('cs_admin_token');
+                    localStorage.removeItem('cs_admin_email');
+                    window.location.href = 'admin-login.html';
+                    throw new Error('Unauthorized');
+                }
+                return await res.json();
+            } catch (err) {
+                console.error('API request error:', err);
+                throw err;
+            }
+        }
+
+        // Tab Navigation
+        function switchPanel(panelId) {
+            document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.admin-nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(`panel-${panelId}`).classList.add('active');
+            document.getElementById(`nav-${panelId}`).classList.add('active');
+
+            if (panelId === 'leads') {
+                loadLeads();
+            } else if (panelId === 'studies') {
+                loadCaseStudies();
+            } else if (panelId === 'settings') {
+                loadSettings();
+            }
+        }
+
+        // --- LEADS MANAGEMENT ---
+        async function loadLeads() {
+            const tbody = document.getElementById('leads-table-body');
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">Fetching incoming leads...</td></tr>';
+
+            try {
+                const result = await secureFetch('/api/admin/leads');
+                if (!result.success) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color: var(--color-accent-rose);">Error: ${result.message}</td></tr>`;
+                    return;
+                }
+
+                const data = result.data;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center">No leads received yet. Submit the contact form to see leads here.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(item => {
+                    let payload = {};
+                    try { payload = JSON.parse(item.image_url); } catch(e) {}
+                    
+                    return `
+                        <tr>
+                            <td><strong>${payload.name || 'Anonymous'}</strong></td>
+                            <td>
+                                <div>Email: ${payload.email || '—'}</div>
+                                <div>URL: <a href="${payload.website || '#'}" target="_blank" style="color: var(--color-accent-cyan);">${payload.website || '—'}</a></div>
+                            </td>
+                            <td>Size: ${payload.size || '—'}</td>
+                            <td><span class="section-tag" style="font-size: 0.75rem;">${payload.type || 'Inquiry'}</span></td>
+                            <td><p style="max-width: 250px; font-size: 0.85rem;">${payload.context || '—'}</p></td>
+                            <td>
+                                <button class="btn btn-secondary btn-danger" style="padding: 0.4rem 0.85rem; font-size: 0.75rem; background: var(--color-accent-rose); border: none;" onclick="deleteLead('${item.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center" style="color: var(--color-accent-rose);">Error loading leads.</td></tr>`;
+            }
+        }
+
+        async function deleteLead(id) {
+            if (!confirm('Are you sure you want to remove this lead?')) return;
+            try {
+                const result = await secureFetch(`/api/admin/leads/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    loadLeads();
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert('Failed to delete lead.');
+            }
+        }
+
+        // --- CASE STUDIES ---
+        let loadedStudies = [];
+        async function loadCaseStudies() {
+            const tbody = document.getElementById('studies-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Loading case database...</td></tr>';
+
+            try {
+                const result = await secureFetch('/api/admin/case-studies');
+                if (!result.success) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--color-accent-rose);">Error: ${result.message}</td></tr>`;
+                    return;
+                }
+
+                loadedStudies = result.data || [];
+
+                if (loadedStudies.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No case studies configured. Click \"Seed Samples\" to populate standard B2B cases.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = loadedStudies.map(item => {
+                    let payload = {};
+                    try { payload = JSON.parse(item.image_url); } catch(e) {}
+                    
+                    return `
+                        <tr>
+                            <td><span class="section-tag" style="font-size: 0.75rem;">${payload.category || 'Case'}</span></td>
+                            <td><strong>${payload.title || 'Untitled'}</strong></td>
+                            <td>
+                                <div style="font-size: 0.8rem; margin-bottom: 0.25rem;"><strong>Summary:</strong> ${payload.summary || '—'}</div>
+                                <div style="font-size: 0.8rem; color: var(--color-accent-rose);"><strong>Challenge:</strong> ${payload.challenge || '—'}</div>
+                                <div style="font-size: 0.8rem; color: var(--color-accent-emerald);"><strong>Solution:</strong> ${payload.solution || '—'}</div>
+                            </td>
+                            <td>
+                                <div>${payload.metric1_lbl}: <strong>${payload.metric1_val}</strong></div>
+                                <div>${payload.metric2_lbl}: <strong>${payload.metric2_val}</strong></div>
+                                <div>${payload.metric3_lbl}: <strong>${payload.metric3_val}</strong></div>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="openStudyModal('${item.id}')">Edit</button>
+                                    <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; background: var(--color-accent-rose); border: none; color: #fff;" onclick="deleteStudy('${item.id}')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--color-accent-rose);">Error loading case database.</td></tr>`;
+            }
+        }
+
+        function openStudyModal(id = null) {
+            document.getElementById('study-form').reset();
+            document.getElementById('study-db-id').value = id || '';
+            document.getElementById('modal-title').textContent = id ? 'Modify Case Study' : 'Create Case Study';
+
+            if (id) {
+                const item = loadedStudies.find(x => String(x.id) === String(id));
+                if (item) {
+                    let payload = {};
+                    try { payload = JSON.parse(item.image_url); } catch(e) {}
+                    
+                    document.getElementById('study-category').value = payload.category || '';
+                    document.getElementById('study-title').value = payload.title || '';
+                    document.getElementById('study-summary').value = payload.summary || '';
+                    document.getElementById('study-challenge').value = payload.challenge || '';
+                    document.getElementById('study-solution').value = payload.solution || '';
+                    document.getElementById('study-metric1').value = payload.metric1_val || '';
+                    document.getElementById('study-metric1-lbl').value = payload.metric1_lbl || '';
+                    document.getElementById('study-metric2').value = payload.metric2_val || '';
+                    document.getElementById('study-metric2-lbl').value = payload.metric2_lbl || '';
+                    document.getElementById('study-metric3').value = payload.metric3_val || '';
+                    document.getElementById('study-metric3-lbl').value = payload.metric3_lbl || '';
+                }
+            }
+
+            document.getElementById('study-modal').classList.add('open');
+        }
+
+        function closeStudyModal() {
+            document.getElementById('study-modal').classList.remove('open');
+        }
+
+        document.getElementById('study-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('study-db-id').value;
+
+            const payload = {
+                category: document.getElementById('study-category').value,
+                title: document.getElementById('study-title').value,
+                summary: document.getElementById('study-summary').value,
+                challenge: document.getElementById('study-challenge').value,
+                solution: document.getElementById('study-solution').value,
+                metric1_val: document.getElementById('study-metric1').value,
+                metric1_lbl: document.getElementById('study-metric1-lbl').value,
+                metric2_val: document.getElementById('study-metric2').value,
+                metric2_lbl: document.getElementById('study-metric2-lbl').value,
+                metric3_val: document.getElementById('study-metric3').value,
+                metric3_lbl: document.getElementById('study-metric3-lbl').value
+            };
+
+            try {
+                const result = await secureFetch('/api/admin/case-studies', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id || null, payload })
+                });
+
+                if (result.success) {
+                    closeStudyModal();
+                    loadCaseStudies();
+                } else {
+                    alert(`Error saving case study: ${result.message}`);
+                }
+            } catch (err) {
+                alert('Server error saving case study.');
+            }
+        });
+
+        async function deleteStudy(id) {
+            if (!confirm('Delete this case study?')) return;
+            try {
+                const result = await secureFetch(`/api/admin/case-studies/${id}`, { method: 'DELETE' });
+                if (result.success) {
+                    loadCaseStudies();
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert('Failed to delete study.');
+            }
+        }
+
+        // --- GLOBAL SETTINGS ---
+        let settingsDbId = null;
+        async function loadSettings() {
+            try {
+                const result = await secureFetch('/api/admin/settings');
+                if (result.success && result.data) {
+                    const row = result.data;
+                    settingsDbId = row.id;
+                    let payload = {};
+                    try { payload = JSON.parse(row.image_url); } catch(e) {}
+                    
+                    document.getElementById('settings-revenue').value = payload.revenue || '₹3Cr+';
+                    document.getElementById('settings-growth').value = payload.growth || '2.5x';
+                    document.getElementById('settings-automation').value = payload.automation || '70%';
+                    document.getElementById('settings-email').value = payload.notification_email || 'craftersofa974263@gmail.com';
+                } else {
+                    // Set default display values if no row exists in DB
+                    document.getElementById('settings-revenue').value = '₹3Cr+';
+                    document.getElementById('settings-growth').value = '2.5x';
+                    document.getElementById('settings-automation').value = '70%';
+                    document.getElementById('settings-email').value = 'craftersofa974263@gmail.com';
+                }
+            } catch (err) {
+                console.warn('Failed to load settings.');
+            }
+        }
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const payload = {
+                revenue: document.getElementById('settings-revenue').value,
+                growth: document.getElementById('settings-growth').value,
+                automation: document.getElementById('settings-automation').value,
+                notification_email: document.getElementById('settings-email').value
+            };
+
+            try {
+                const result = await secureFetch('/api/admin/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: settingsDbId || null, payload })
+                });
+
+                if (result.success) {
+                    alert('Settings saved successfully!');
+                    loadSettings();
+                } else {
+                    alert('Error updating settings: ' + result.message);
+                }
+            } catch (err) {
+                alert('Server error saving settings.');
+            }
+        });
+
+        // --- SEED SAMPLE DATA ---
+        async function seedSampleStudies() {
+            if (!confirm('This will seed 4 standard B2B case studies into your database. Continue?')) return;
+            try {
+                const result = await secureFetch('/api/admin/case-studies/seed', { method: 'POST' });
+                if (result.success) {
+                    alert('Sample Case Studies Seeded Successfully!');
+                    loadCaseStudies();
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert('Failed to seed case studies.');
+            }
+        }
+
+        async function handleLogout() {
+            if (!confirm('Logout?')) return;
+            // Clear credentials
+            localStorage.removeItem('cs_admin_token');
+            localStorage.removeItem('cs_admin_email');
+            window.location.href = 'admin-login.html';
+        }
+
+        // Initial Load
+        loadLeads();
+    </script>
+</body>
+</html>

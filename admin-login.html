@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cypher Swift Admin | Secure Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom-components.css">
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            background: radial-gradient(circle at center, #0f111a 0%, #08090d 100%);
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem;
+            position: relative;
+        }
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(135deg, var(--color-accent-indigo), var(--color-accent-purple));
+            border-radius: var(--radius-lg);
+            z-index: -1;
+            opacity: 0.2;
+        }
+        .error-message {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            color: var(--color-accent-rose);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <div class="login-wrapper">
+        <div class="glass-card login-card">
+            <div class="text-center" style="margin-bottom: 2rem;">
+                <div class="logo-icon" style="margin: 0 auto 1rem auto; width: 48px; height: 48px;"></div>
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem; -webkit-text-fill-color: initial; color: #fff;">Secure Administrator Login</h2>
+                <p style="font-size: 0.85rem;">Access Cypher Swift System dashboards</p>
+            </div>
+
+            <div id="error-alert" class="error-message"></div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="login-email">Email Address</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="admin@cypherswift.com" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 2rem;">
+                    <label class="form-label" for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <span>Authenticate</span>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                </button>
+            </form>
+
+            <div class="text-center" style="margin-top: 1.5rem;">
+                <a href="index.html" style="font-size: 0.85rem; color: var(--color-text-muted); hover: color: var(--color-accent-indigo);">← Back to Website</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration: Fallback to localhost:8000 if page is opened via file:// or dev server
+        const API_BASE = window.location.port === '8000' ? '' : 'http://localhost:8000';
+
+        // Check if session exists securely
+        const token = localStorage.getItem('cs_admin_token');
+        if (token) {
+            window.location.href = 'admin.html';
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorAlert = document.getElementById('error-alert');
+
+            errorAlert.style.display = 'none';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const result = await res.json();
+
+                if (!result.success) {
+                    errorAlert.textContent = result.message || 'Authentication failed';
+                    errorAlert.style.display = 'block';
+                } else {
+                    // Save JWT securely in localStorage
+                    localStorage.setItem('cs_admin_token', result.session.access_token);
+                    localStorage.setItem('cs_admin_email', result.session.user.email);
+                    window.location.href = 'admin.html';
+                }
+            } catch (err) {
+                errorAlert.textContent = 'Server connection error';
+                errorAlert.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

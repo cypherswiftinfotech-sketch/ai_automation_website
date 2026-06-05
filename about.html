@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | Cypher Swift InfoTech</title>
+    <meta name="description" content="Positioned as a premier AI-Powered Business Transformation & Revenue Systems Company, we focus on engineering stable B2B workflows and strategic advisory.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom-components.css">
+    <link rel="stylesheet" href="interactions.css">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header-nav">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"></div>
+                CypherSwift <span>InfoTech</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li><a href="industries.html" class="nav-link">Industries</a></li>
+                <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
+                <li><a href="pricing.html" class="nav-link">Pricing</a></li>
+                <li><a href="about.html" class="nav-link active">Company</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="contact.html?type=diagnostic" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Get Diagnostic</a>
+            </div>
+            <button class="hamburger">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Company Hero (Matches company page layout) -->
+    <section class="case-study-hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="section-tag">Company</span>
+                <h1 style="color: #fff; line-height: 1.1; margin-bottom: 1.5rem;">Your AI Automation Partner</h1>
+                <p style="margin-bottom: 2rem;">Fueling Growth. Driven by Real Execution. We get to know the AI-first team helping businesses automate and scale their marketing & sales.</p>
+                <a href="contact.html?type=diagnostic" class="btn btn-primary">Get 5-Day Diagnostic</a>
+            </div>
+            <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 3.5rem; display: flex; flex-direction: column; justify-content: center;">
+                <h4 style="color: #fff; margin-bottom: 1rem;">Core Philosophy</h4>
+                <blockquote style="font-size: 1.2rem; font-style: italic; color: var(--color-accent-cyan); line-height: 1.4; border-left: 3px solid var(--color-accent-cyan); padding-left: 1.5rem;">
+                    "Cypher Swift technology nahi, business outcome ke liye systems design karta hai."
+                </blockquote>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Mission (From mockup image) -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container text-center">
+            <span class="section-tag">Our Vision</span>
+            <h2>Our Mission</h2>
+            <p style="max-width: 700px; margin: 1.5rem auto 0 auto; font-size: 1.25rem; color: #fff;">To empower businesses with cutting-edge AI automation that drives real growth and measurable revenue.</p>
+        </div>
+    </section>
+
+    <!-- From Startup to AI Leader (Timeline from mockup image) -->
+    <section class="section-padding">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 4rem;">From Startup to AI Leader</h2>
+            
+            <div class="services-grid">
+                
+                <div class="glass-card text-center" style="padding: 2.5rem;">
+                    <div style="font-size: 1.1rem; color: var(--color-accent-indigo); font-weight: 700; margin-bottom: 0.5rem;">2023</div>
+                    <h3 style="color: #fff; margin-bottom: 1rem;">Founded</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Started with a vision of AI-first automation, mapping out structural processes for B2B enterprises.</p>
+                    <span style="font-size: 0.85rem; color: var(--color-accent-emerald); font-weight: 600;">✓ 100% Focused on AI Systems</span>
+                </div>
+
+                <div class="glass-card text-center" style="padding: 2.5rem; border-color: var(--glass-border-glow);">
+                    <div style="font-size: 1.1rem; color: var(--color-accent-indigo); font-weight: 700; margin-bottom: 0.5rem;">2024</div>
+                    <h3 style="color: #fff; margin-bottom: 1rem;">100+ Clients</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Successfully scaled over a hundred revenue pipelines, integrating secure CRM automation.</p>
+                    <span style="font-size: 0.85rem; color: var(--color-accent-emerald); font-weight: 600;">✓ ₹25Cr+ Revenue Generated</span>
+                </div>
+
+                <div class="glass-card text-center" style="padding: 2.5rem;">
+                    <div style="font-size: 1.1rem; color: var(--color-accent-indigo); font-weight: 700; margin-bottom: 0.5rem;">NOW</div>
+                    <h3 style="color: #fff; margin-bottom: 1rem;">Top Partner</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Recognized globally as an industry partner for strategic RevOps and B2B system automation.</p>
+                    <span style="font-size: 0.85rem; color: var(--color-accent-emerald); font-weight: 600;">✓ Global Team of AI Experts</span>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial (From mockup image) -->
+    <section class="section-padding" style="background: var(--bg-secondary); border-top: 1px solid var(--glass-border);">
+        <div class="container text-center" style="max-width: 900px;">
+            <div style="font-size: 3rem; color: var(--color-accent-indigo); margin-bottom: 1.5rem;">“</div>
+            <p style="font-size: 1.35rem; font-style: italic; color: #fff; line-height: 1.5; margin-bottom: 2rem;">
+                "Cypher Swift transformed our sales process with cutting-edge AI solutions that delivered a 5x ROI within 2 months."
+            </p>
+            <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--color-accent-purple); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem; color: #fff;">VS</div>
+            <div>
+                <strong style="color: #fff; display: block;">Vikram Singh</strong>
+                <span style="font-size: 0.85rem; color: var(--color-text-muted);">CEO, SaaS Company</span>
+            </div>
+            
+            <div style="display: flex; justify-content: center; gap: 0.25rem; margin-top: 1rem; color: var(--color-accent-cyan);">
+                <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="glass-card text-center" style="padding: 4rem; background: linear-gradient(135deg, rgba(92,103,242,0.1) 0%, rgba(15,17,26,0.9) 100%);">
+                <h3 style="color: #fff; font-size: 2rem; margin-bottom: 1rem;">Let's Build Your AI Growth Strategy</h3>
+                <p style="max-width: 600px; margin: 0 auto 2.5rem auto; color: var(--color-text-secondary);">We design, test, and activate your automation systems inside of 2 weeks. Apply today to secure your scoping window.</p>
+                <div class="btn-group" style="justify-content: center;">
+                    <a href="contact.html?type=diagnostic" class="btn btn-primary">Get Free Diagnostic</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon"></div>
+                        CypherSwift
+                    </a>
+                    <p>Building predictable revenue growth systems through strategic advisory, sales alignment, and AI automation.</p>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Systems</h4>
+                    <ul class="footer-links">
+                        <li><a href="services.html#advisory">Strategic Advisory</a></li>
+                        <li><a href="services.html#marketing">Marketing Systems</a></li>
+                        <li><a href="services.html#sales">Sales Systems</a></li>
+                        <li><a href="services.html#revops">Revenue Operations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="about.html">About Cypher Swift</a></li>
+                        <li><a href="case-studies.html">Case Studies</a></li>
+                        <li><a href="pricing.html">Pricing Structure</a></li>
+                        <li><a href="contact.html">Book Diagnostic</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Contact Information</h4>
+                    <ul class="footer-contact-info">
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            <a href="mailto:info@cypherswift.com" style="color: inherit; text-decoration: none;">info@cypherswift.com</a>
+                        </li>
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                            <a href="tel:+917204468429" style="color: inherit; text-decoration: none;">+91 7204468429</a>
+                        </li>
+                        <li>
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                            <a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">www.cypherswift.com</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div>© 2026 <a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast);" onmouseover="this.style.borderColor='var(--color-text-muted)'" onmouseout="this.style.borderColor='transparent'">Cypher Swift InfoTech</a>. All rights reserved.</div>
+                <div class="footer-legal-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="interactions.js"></script>
+</body>
+</html>
