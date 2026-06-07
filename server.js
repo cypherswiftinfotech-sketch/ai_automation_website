@@ -79,10 +79,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // Serve index.html for root route explicitly
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+// Serve all HTML pages
+const htmlPages = ['services', 'industries', 'case-studies', 'pricing', 'contact', 'about', 'admin', 'admin-login'];
+htmlPages.forEach(page => {
+    app.get(`/${page}.html`, (req, res) => {
+        res.sendFile(path.join(__dirname, `${page}.html`));
+    });
 });
-
 // Gmail SMTP Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
