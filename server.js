@@ -78,6 +78,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+// Serve index.html for root route explicitly
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Gmail SMTP Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -103,7 +108,7 @@ async function authenticateAdmin(req, res, next) {
         return res.status(401).json({ success: false, message: 'Missing authorization header' });
     }
     const token = authHeader.split(' ')[1];
-    
+
     // Check fallback static token first
     const fallbackEmail = process.env.ADMIN_EMAIL || 'admin@cypherswift.com';
     const staticToken = Buffer.from(fallbackEmail).toString('base64') + "_static_session";
@@ -111,7 +116,7 @@ async function authenticateAdmin(req, res, next) {
         req.user = { email: fallbackEmail };
         return next();
     }
-    
+
     try {
         const { data: { user }, error } = await supabase.auth.getUser(token);
         if (error || !user) {
@@ -143,7 +148,7 @@ app.get('/api/case-studies', async (req, res) => {
     try {
         const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_case_study').order('created_at', { ascending: true });
         if (error) throw error;
-        
+
         const formatted = (data || []).map(item => ({
             id: item.id,
             ...JSON.parse(item.image_url)
@@ -164,7 +169,7 @@ app.post('/api/leads', async (req, res) => {
     }
 
     const payload = { name, email, website, size: companySize, type: requestType, context: strategicContext };
-    
+
     // Save to memory storage anyway
     const leadId = "lead_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
     memoryLeads.unshift({
@@ -256,21 +261,19 @@ app.post('/api/leads', async (req, res) => {
         res.json({ success: true, message: 'Lead submitted and email sent successfully!' });
     } catch (err) {
         console.error('Lead submission email delivery error:', err.message);
-        // Still return success since lead is logged in memory
         res.json({ success: true, message: 'Lead logged successfully! (Email notification error)' });
     }
 });
 
 // ── Admin Routes ──────────────────────────────────────────────
 
-// 1. Admin Login Proxy (Supports secure DB Auth or Local fallback credentials)
+// 1. Admin Login Proxy
 app.post('/api/admin/login', async (req, res) => {
     const { email, password } = req.body;
-    
+
     const fallbackEmail = process.env.ADMIN_EMAIL || 'admin@cypherswift.com';
     const fallbackPassword = process.env.ADMIN_PASSWORD || 'adminpass123';
-    
-    // Fallback credential matching
+
     if (email === fallbackEmail && password === fallbackPassword) {
         const staticToken = Buffer.from(fallbackEmail).toString('base64') + "_static_session";
         return res.json({
@@ -281,7 +284,7 @@ app.post('/api/admin/login', async (req, res) => {
             }
         });
     }
-    
+
     try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
@@ -371,7 +374,7 @@ app.get('/api/admin/case-studies', authenticateAdmin, async (req, res) => {
 // 7. Save Case Study (Protected)
 app.post('/api/admin/case-studies', authenticateAdmin, async (req, res) => {
     const { id, payload } = req.body;
-    
+
     if (id) {
         const idx = memoryCaseStudies.findIndex(s => String(s.id) === String(id));
         if (idx !== -1) {
@@ -383,7 +386,7 @@ app.post('/api/admin/case-studies', authenticateAdmin, async (req, res) => {
         const newId = "study_" + Date.now();
         memoryCaseStudies.push({ id: newId, ...payload });
     }
-    
+
     try {
         if (id && !String(id).startsWith('study_') && !String(id).startsWith('cs-sample-')) {
             const { error } = await supabase.from('images').update({
@@ -479,8 +482,12 @@ app.post('/api/admin/case-studies/seed', authenticateAdmin, async (req, res) => 
     }
 });
 
-// Start Server
-app.listen(PORT, () => {
-    console.log(`\n🌐 CypherSwift InfoTech Secure Server running at http://localhost:${PORT}`);
-    console.log(`📧 Email notifications → ${process.env.EMAIL_USER}\n`);
-});
+// ── Start Server (local only) / Export for Vercel ─────────────
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`\n🌐 CypherSwift InfoTech Secure Server running at http://localhost:${PORT}`);
+        console.log(`📧 Email notifications → ${process.env.EMAIL_USER}\n`);
+    });
+}
+
+module.exports = app;
