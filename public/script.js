@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollObserver.observe(el);
     });
 
-    // API Configuration: Fallback to localhost:8000 if page is opened via file:// or dev server
-    const API_BASE = window.location.port === '8000' ? '' : 'http://localhost:8000';
+    // API Configuration: Use relative paths (works on both Vercel and local dev)
+    const API_BASE = '';
 
     // Load Global Settings
     async function loadGlobalStats() {

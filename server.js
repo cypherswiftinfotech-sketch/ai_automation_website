@@ -76,14 +76,14 @@ let memoryCaseStudies = [
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve index.html for root route explicitly
 // Serve all HTML pages
 const htmlPages = ['services', 'industries', 'case-studies', 'pricing', 'contact', 'about', 'admin', 'admin-login'];
 htmlPages.forEach(page => {
     app.get(`/${page}.html`, (req, res) => {
-        res.sendFile(path.join(__dirname, `${page}.html`));
+        res.sendFile(path.join(__dirname, 'public', `${page}.html`));
     });
 });
 // Gmail SMTP Transporter
