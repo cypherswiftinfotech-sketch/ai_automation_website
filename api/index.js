@@ -24,6 +24,20 @@ let memorySettings = {
     automation: "70%",
     notification_email: "craftersofa974263@gmail.com"
 };
+const BASE_URL = 'https://ai-automation-website-mnhk.vercel.app';
+
+const defaultSeoPages = [
+    { slug: 'index', page_name: 'Home', path: '/', meta_title: 'Cypher Swift InfoTech | AI-Powered Revenue Systems & Sales Automation', meta_keywords: 'AI revenue systems, B2B sales automation, RevOps consulting, AI marketing', meta_description: 'Build predictable growth systems for SaaS, IT, FinTech & enterprise brands. Align Strategy, Marketing, Sales, and AI into a unified B2B revenue engine.', canonical_url: `${BASE_URL}/`, schema_json: '' },
+    { slug: 'services', page_name: 'Services', path: '/services', meta_title: 'Enterprise Automation & Advisory Services | Cypher Swift InfoTech', meta_keywords: 'AI advisory services, marketing automation, sales workflows, RevOps services', meta_description: 'Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).', canonical_url: `${BASE_URL}/services`, schema_json: '' },
+    { slug: 'industries', page_name: 'Industries', path: '/industries', meta_title: 'B2B Verticals Supported | Cypher Swift InfoTech', meta_keywords: 'B2B SaaS, FinTech automation, manufacturing sales, IT services revenue', meta_description: 'We deploy custom AI-powered revenue architectures across B2B SaaS, FinTech, Manufacturing, IT Services, Renewable Energy, and Enterprise Software.', canonical_url: `${BASE_URL}/industries`, schema_json: '' },
+    { slug: 'case-studies', page_name: 'Case Studies', path: '/case-studies', meta_title: 'B2B Success Stories & Metrics | Cypher Swift InfoTech', meta_keywords: 'B2B case studies, revenue growth results, sales automation success', meta_description: 'Read real results from B2B SaaS, manufacturing, real estate, and education firms. See how we improved qualified pipeline metrics, efficiency, and revenue visibility.', canonical_url: `${BASE_URL}/case-studies`, schema_json: '' },
+    { slug: 'pricing', page_name: 'Pricing', path: '/pricing', meta_title: 'B2B Revenue System Engagement Models | Cypher Swift InfoTech', meta_keywords: 'B2B pricing models, AI growth diagnostic, revenue system engagement', meta_description: 'Explore our flexible partnership models: From our 5-day AI Growth Diagnostic to end-to-end custom Revenue System builds with a 100% money-back guarantee framework.', canonical_url: `${BASE_URL}/pricing`, schema_json: '' },
+    { slug: 'contact', page_name: 'Contact', path: '/contact', meta_title: 'Book a B2B Consultation | Cypher Swift InfoTech', meta_keywords: 'B2B consultation, strategy session, AI growth diagnostic booking', meta_description: 'Request a Case Study, book a strategy session, or apply for our 5-day AI Growth Diagnostic with Cypher Swift InfoTech.', canonical_url: `${BASE_URL}/contact`, schema_json: '' },
+    { slug: 'about', page_name: 'About Us', path: '/about', meta_title: 'About Us | Cypher Swift InfoTech', meta_keywords: 'about Cypher Swift, AI business transformation, revenue systems company', meta_description: 'Positioned as a premier AI-Powered Business Transformation & Revenue Systems Company, we focus on engineering stable B2B workflows and strategic advisory.', canonical_url: `${BASE_URL}/about`, schema_json: '' }
+];
+
+let memorySeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
+
 let memoryCaseStudies = [
     {
         id: "cs-sample-1",
@@ -475,6 +489,104 @@ module.exports = async function handler(req, res) {
                     console.warn('Delete case study DB error (completed in memory):', err.message);
                     return res.status(200).json({ success: true, message: 'Case study deleted successfully (memory fallback)' });
                 }
+            }
+        }
+
+        // GET /api/admin/seo
+        if (path === '/admin/seo' && req.method === 'GET') {
+            const auth = await authenticateAdmin(req);
+            if (!auth.authenticated) {
+                return res.status(auth.status).json({ success: false, message: auth.message });
+            }
+            try {
+                const { data, error } = await getSupabase().from('images').select('*').eq('category', 'cs_seo').order('created_at', { ascending: true });
+                if (error) throw error;
+                if (data && data.length > 0) {
+                    return res.status(200).json({ success: true, data });
+                }
+                return res.status(200).json({ success: true, data: memorySeoPages.map(p => ({ id: p.id, image_url: JSON.stringify(p) })) });
+            } catch (err) {
+                console.warn('Get SEO DB error, returning memory fallback:', err.message);
+                return res.status(200).json({ success: true, data: memorySeoPages.map(p => ({ id: p.id, image_url: JSON.stringify(p) })) });
+            }
+        }
+
+        // POST /api/admin/seo
+        if (path === '/admin/seo' && req.method === 'POST') {
+            const auth = await authenticateAdmin(req);
+            if (!auth.authenticated) {
+                return res.status(auth.status).json({ success: false, message: auth.message });
+            }
+            const body = await parseBody(req);
+            const { id, payload } = body;
+
+            if (!payload || !payload.slug) {
+                return res.status(400).json({ success: false, message: 'Page slug is required' });
+            }
+            if (!payload.meta_description || !payload.meta_description.trim()) {
+                return res.status(400).json({ success: false, message: 'Meta Description is required' });
+            }
+
+            const idx = memorySeoPages.findIndex(p => p.slug === payload.slug);
+            if (idx !== -1) {
+                memorySeoPages[idx] = { ...memorySeoPages[idx], ...payload, id: id || memorySeoPages[idx].id };
+            } else {
+                memorySeoPages.push({ id: id || `seo_${Date.now()}`, ...payload });
+            }
+
+            try {
+                if (id && !String(id).startsWith('seo-') && !String(id).startsWith('seo_')) {
+                    const { error } = await getSupabase().from('images').update({
+                        image_url: JSON.stringify(payload)
+                    }).eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { data: existing } = await getSupabase().from('images').select('id, image_url').eq('category', 'cs_seo');
+                    const existingRow = (existing || []).find(row => {
+                        try { return JSON.parse(row.image_url).slug === payload.slug; } catch (e) { return false; }
+                    });
+                    if (existingRow) {
+                        const { error } = await getSupabase().from('images').update({
+                            image_url: JSON.stringify(payload)
+                        }).eq('id', existingRow.id);
+                        if (error) throw error;
+                    } else {
+                        const { error } = await getSupabase().from('images').insert([{
+                            image_url: JSON.stringify(payload),
+                            category: 'cs_seo'
+                        }]);
+                        if (error) throw error;
+                    }
+                }
+                return res.status(200).json({ success: true, message: 'SEO settings saved successfully' });
+            } catch (err) {
+                console.warn('Save SEO DB error (completed in memory):', err.message);
+                return res.status(200).json({ success: true, message: 'SEO settings saved successfully (memory fallback)' });
+            }
+        }
+
+        // POST /api/admin/seo/seed
+        if (path === '/admin/seo/seed' && req.method === 'POST') {
+            const auth = await authenticateAdmin(req);
+            if (!auth.authenticated) {
+                return res.status(auth.status).json({ success: false, message: auth.message });
+            }
+            memorySeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
+
+            try {
+                const { error: deleteError } = await getSupabase().from('images').delete().eq('category', 'cs_seo');
+                if (deleteError) console.warn('SEO seed delete warning:', deleteError.message);
+
+                const inserts = defaultSeoPages.map(page => ({
+                    image_url: JSON.stringify(page),
+                    category: 'cs_seo'
+                }));
+                const { error } = await getSupabase().from('images').insert(inserts);
+                if (error) throw error;
+                return res.status(200).json({ success: true, message: 'Default SEO pages seeded successfully' });
+            } catch (err) {
+                console.warn('Seed SEO database warning (seeded in memory):', err.message);
+                return res.status(200).json({ success: true, message: 'Default SEO pages seeded successfully (memory fallback)' });
             }
         }
 

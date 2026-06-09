@@ -117,6 +117,53 @@
             max-height: 90vh;
             overflow-y: auto;
         }
+        .modal-inner.modal-wide {
+            max-width: 820px;
+        }
+        .seo-section {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .seo-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.85rem 1.25rem;
+            background: rgba(92, 103, 242, 0.12);
+            border-bottom: 1px solid rgba(92, 103, 242, 0.2);
+            cursor: pointer;
+            user-select: none;
+        }
+        .seo-section-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #fff;
+            font-weight: 600;
+        }
+        .seo-section-chevron {
+            color: var(--color-accent-indigo);
+            font-size: 0.85rem;
+            transition: transform 0.2s ease;
+        }
+        .seo-section.collapsed .seo-section-chevron {
+            transform: rotate(180deg);
+        }
+        .seo-section-body {
+            padding: 1.5rem 1.25rem;
+        }
+        .seo-section.collapsed .seo-section-body {
+            display: none;
+        }
+        .seo-helper-text {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: 0.35rem;
+        }
+        .required-mark {
+            color: var(--color-accent-rose);
+        }
     </style>
     <script>
         // Auth Guard
@@ -152,6 +199,9 @@
             </div>
             <div class="admin-nav-item" onclick="switchPanel('studies')" id="nav-studies">
                 <span>📁</span> Case Studies
+            </div>
+            <div class="admin-nav-item" onclick="switchPanel('sitemap')" id="nav-sitemap">
+                <span>🗺️</span> Sitemap
             </div>
             <div class="admin-nav-item" onclick="switchPanel('settings')" id="nav-settings">
                 <span>⚙️</span> Global Settings
@@ -229,6 +279,36 @@
             </div>
         </div>
 
+        <!-- SITEMAP PANEL -->
+        <div class="admin-panel" id="panel-sitemap">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 2rem;">🗺️ Sitemap & SEO</h1>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">Manage page-level SEO settings — meta titles, descriptions, keywords, canonical URLs, and JSON-LD schema.</p>
+                </div>
+                <button class="btn btn-secondary" onclick="seedDefaultSeo()">Reset to Defaults</button>
+            </div>
+
+            <div class="glass-card" style="padding: 0; overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Page</th>
+                            <th>URL Path</th>
+                            <th>Meta Title</th>
+                            <th>Meta Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sitemap-table-body">
+                        <tr>
+                            <td colspan="5" class="text-center" style="padding: 3rem;">Loading sitemap pages...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- SETTINGS PANEL -->
         <div class="admin-panel" id="panel-settings">
             <div class="admin-header">
@@ -262,6 +342,55 @@
         </div>
 
     </main>
+
+    <!-- SEO EDIT MODAL -->
+    <div class="modal-wrap" id="seo-modal">
+        <div class="modal-inner modal-wide">
+            <h2 style="color: #fff; margin-bottom: 0.5rem;" id="seo-modal-title">Edit Page SEO</h2>
+            <p style="color: var(--color-text-muted); font-size: 0.9rem; margin-bottom: 2rem;" id="seo-modal-path"></p>
+            <form id="seo-form">
+                <input type="hidden" id="seo-db-id">
+                <input type="hidden" id="seo-slug">
+                <input type="hidden" id="seo-page-name">
+                <input type="hidden" id="seo-path">
+
+                <div class="seo-section" id="seo-settings-section">
+                    <div class="seo-section-header" onclick="toggleSeoSection()">
+                        <h3>SEO Settings</h3>
+                        <span class="seo-section-chevron">▲</span>
+                    </div>
+                    <div class="seo-section-body">
+                        <div class="form-group">
+                            <label class="form-label" for="seo-meta-title">Page Title (Meta Title)</label>
+                            <input type="text" id="seo-meta-title" class="form-control" placeholder="e.g. AI development solutions | Cypher Swift InfoTech">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="seo-meta-keywords">Meta Keyword</label>
+                            <input type="text" id="seo-meta-keywords" class="form-control" placeholder="keyword1, keyword2, keyword3">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="seo-meta-description">Meta Description<span class="required-mark">*</span></label>
+                            <textarea id="seo-meta-description" class="form-control" rows="4" placeholder="A concise description of the page for search engines..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="seo-canonical-url">Canonical URL</label>
+                            <input type="url" id="seo-canonical-url" class="form-control" placeholder="https://www.cypherswift.com/services">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="seo-schema-json">Schema (JSON)</label>
+                            <textarea id="seo-schema-json" class="form-control" rows="8" placeholder='{"@context": "https://schema.org", "@type": "WebPage", "name": "..."}' style="font-family: monospace; font-size: 0.85rem;"></textarea>
+                            <p class="seo-helper-text">Paste JSON-LD schema markup here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeSeoModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save SEO Settings</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- CASE STUDY MODAL -->
     <div class="modal-wrap" id="study-modal">
@@ -374,6 +503,8 @@
                 loadLeads();
             } else if (panelId === 'studies') {
                 loadCaseStudies();
+            } else if (panelId === 'sitemap') {
+                loadSitemapSeo();
             } else if (panelId === 'settings') {
                 loadSettings();
             }
@@ -567,6 +698,151 @@
                 }
             } catch (err) {
                 alert('Failed to delete study.');
+            }
+        }
+
+        // --- SITEMAP & SEO ---
+        let loadedSeoPages = [];
+
+        async function loadSitemapSeo() {
+            const tbody = document.getElementById('sitemap-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Loading sitemap pages...</td></tr>';
+
+            try {
+                const result = await secureFetch('/api/admin/seo');
+                if (!result.success) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--color-accent-rose);">Error: ${result.message}</td></tr>`;
+                    return;
+                }
+
+                loadedSeoPages = result.data || [];
+
+                if (loadedSeoPages.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="text-center">No pages found. Click "Reset to Defaults" to populate site pages.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = loadedSeoPages.map(item => {
+                    let payload = {};
+                    try { payload = JSON.parse(item.image_url); } catch(e) {}
+
+                    const desc = payload.meta_description || '—';
+                    const shortDesc = desc.length > 80 ? desc.substring(0, 80) + '…' : desc;
+
+                    return `
+                        <tr>
+                            <td><strong>${payload.page_name || payload.slug || 'Page'}</strong></td>
+                            <td><code style="color: var(--color-accent-cyan); font-size: 0.85rem;">${payload.path || '/'}</code></td>
+                            <td style="max-width: 220px;">${payload.meta_title || '—'}</td>
+                            <td style="max-width: 280px; font-size: 0.85rem;">${shortDesc}</td>
+                            <td>
+                                <button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="openSeoModal('${item.id}')">Edit SEO</button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center" style="color: var(--color-accent-rose);">Error loading sitemap SEO data.</td></tr>`;
+            }
+        }
+
+        function toggleSeoSection() {
+            document.getElementById('seo-settings-section').classList.toggle('collapsed');
+        }
+
+        function openSeoModal(id) {
+            const item = loadedSeoPages.find(x => String(x.id) === String(id));
+            if (!item) return;
+
+            let payload = {};
+            try { payload = JSON.parse(item.image_url); } catch(e) {}
+
+            document.getElementById('seo-db-id').value = item.id;
+            document.getElementById('seo-slug').value = payload.slug || '';
+            document.getElementById('seo-page-name').value = payload.page_name || '';
+            document.getElementById('seo-path').value = payload.path || '/';
+            document.getElementById('seo-meta-title').value = payload.meta_title || '';
+            document.getElementById('seo-meta-keywords').value = payload.meta_keywords || '';
+            document.getElementById('seo-meta-description').value = payload.meta_description || '';
+            document.getElementById('seo-canonical-url').value = payload.canonical_url || '';
+            document.getElementById('seo-schema-json').value = payload.schema_json || '';
+
+            document.getElementById('seo-modal-title').textContent = `Edit SEO — ${payload.page_name || payload.slug}`;
+            document.getElementById('seo-modal-path').textContent = `Page path: ${payload.path || '/'}`;
+            document.getElementById('seo-settings-section').classList.remove('collapsed');
+            document.getElementById('seo-modal').classList.add('open');
+        }
+
+        function closeSeoModal() {
+            document.getElementById('seo-modal').classList.remove('open');
+        }
+
+        document.getElementById('seo-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const metaDescription = document.getElementById('seo-meta-description').value.trim();
+            if (!metaDescription) {
+                alert('Meta Description is required.');
+                return;
+            }
+
+            const schemaRaw = document.getElementById('seo-schema-json').value.trim();
+            if (schemaRaw) {
+                try {
+                    let jsonToValidate = schemaRaw;
+                    const scriptMatch = schemaRaw.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+                    if (scriptMatch) jsonToValidate = scriptMatch[1].trim();
+                    JSON.parse(jsonToValidate);
+                } catch (err) {
+                    alert('Schema (JSON) must be valid JSON or JSON-LD inside a script tag. Please check your input.');
+                    return;
+                }
+            }
+
+            const payload = {
+                slug: document.getElementById('seo-slug').value,
+                page_name: document.getElementById('seo-page-name').value,
+                path: document.getElementById('seo-path').value,
+                meta_title: document.getElementById('seo-meta-title').value,
+                meta_keywords: document.getElementById('seo-meta-keywords').value,
+                meta_description: metaDescription,
+                canonical_url: document.getElementById('seo-canonical-url').value,
+                schema_json: schemaRaw
+            };
+
+            const id = document.getElementById('seo-db-id').value;
+
+            try {
+                const result = await secureFetch('/api/admin/seo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id || null, payload })
+                });
+
+                if (result.success) {
+                    alert('SEO settings saved successfully!');
+                    closeSeoModal();
+                    loadSitemapSeo();
+                } else {
+                    alert(`Error saving SEO: ${result.message}`);
+                }
+            } catch (err) {
+                alert('Server error saving SEO settings.');
+            }
+        });
+
+        async function seedDefaultSeo() {
+            if (!confirm('This will reset all page SEO settings to the default values from your site pages. Continue?')) return;
+            try {
+                const result = await secureFetch('/api/admin/seo/seed', { method: 'POST' });
+                if (result.success) {
+                    alert('Default SEO pages loaded successfully!');
+                    loadSitemapSeo();
+                } else {
+                    alert(result.message);
+                }
+            } catch (err) {
+                alert('Failed to seed default SEO pages.');
             }
         }
 
