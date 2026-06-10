@@ -8,7 +8,20 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs').promises;
 const nodemailer = require('nodemailer');
+const {
+    defaultSeoPages,
+    PUBLIC_PAGE_SLUGS,
+    BASE_URL,
+    slugToFilename,
+    getSeoForSlug,
+    injectSeoIntoHtml,
+    loadSeoPages
+} = require('./lib/seo-utils');
+const { getBranchBySlug, getSlimBranches, seedBranchesIfEmpty } = require('./lib/branch-db');
+const { buildLocalBusinessSchemaObject, buildLocalBusinessSchemaScript } = require('./lib/build-schema');
+const { buildSitemapXml } = require('./lib/sitemap');
 global.WebSocket = require('ws'); // Shim for older Node versions required by Supabase real-time
 const { createClient } = require('@supabase/supabase-js');
 
@@ -24,20 +37,9 @@ let memorySettings = {
     revenue: "₹3Cr+",
     growth: "2.5x",
     automation: "70%",
-    notification_email: "craftersofa974263@gmail.com"
+    notification_email: "craftersofa974263@gmail.com",
+    api_location: "https://ai-automation-website-mnhk.vercel.app"
 };
-const BASE_URL = 'https://ai-automation-website-mnhk.vercel.app';
-
-const defaultSeoPages = [
-    { slug: 'index', page_name: 'Home', path: '/', meta_title: 'Cypher Swift InfoTech | AI-Powered Revenue Systems & Sales Automation', meta_keywords: 'AI revenue systems, B2B sales automation, RevOps consulting, AI marketing', meta_description: 'Build predictable growth systems for SaaS, IT, FinTech & enterprise brands. Align Strategy, Marketing, Sales, and AI into a unified B2B revenue engine.', canonical_url: `${BASE_URL}/`, schema_json: '' },
-    { slug: 'services', page_name: 'Services', path: '/services', meta_title: 'Enterprise Automation & Advisory Services | Cypher Swift InfoTech', meta_keywords: 'AI advisory services, marketing automation, sales workflows, RevOps services', meta_description: 'Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).', canonical_url: `${BASE_URL}/services`, schema_json: '' },
-    { slug: 'industries', page_name: 'Industries', path: '/industries', meta_title: 'B2B Verticals Supported | Cypher Swift InfoTech', meta_keywords: 'B2B SaaS, FinTech automation, manufacturing sales, IT services revenue', meta_description: 'We deploy custom AI-powered revenue architectures across B2B SaaS, FinTech, Manufacturing, IT Services, Renewable Energy, and Enterprise Software.', canonical_url: `${BASE_URL}/industries`, schema_json: '' },
-    { slug: 'case-studies', page_name: 'Case Studies', path: '/case-studies', meta_title: 'B2B Success Stories & Metrics | Cypher Swift InfoTech', meta_keywords: 'B2B case studies, revenue growth results, sales automation success', meta_description: 'Read real results from B2B SaaS, manufacturing, real estate, and education firms. See how we improved qualified pipeline metrics, efficiency, and revenue visibility.', canonical_url: `${BASE_URL}/case-studies`, schema_json: '' },
-    { slug: 'pricing', page_name: 'Pricing', path: '/pricing', meta_title: 'B2B Revenue System Engagement Models | Cypher Swift InfoTech', meta_keywords: 'B2B pricing models, AI growth diagnostic, revenue system engagement', meta_description: 'Explore our flexible partnership models: From our 5-day AI Growth Diagnostic to end-to-end custom Revenue System builds with a 100% money-back guarantee framework.', canonical_url: `${BASE_URL}/pricing`, schema_json: '' },
-    { slug: 'contact', page_name: 'Contact', path: '/contact', meta_title: 'Book a B2B Consultation | Cypher Swift InfoTech', meta_keywords: 'B2B consultation, strategy session, AI growth diagnostic booking', meta_description: 'Request a Case Study, book a strategy session, or apply for our 5-day AI Growth Diagnostic with Cypher Swift InfoTech.', canonical_url: `${BASE_URL}/contact`, schema_json: '' },
-    { slug: 'about', page_name: 'About Us', path: '/about', meta_title: 'About Us | Cypher Swift InfoTech', meta_keywords: 'about Cypher Swift, AI business transformation, revenue systems company', meta_description: 'Positioned as a premier AI-Powered Business Transformation & Revenue Systems Company, we focus on engineering stable B2B workflows and strategic advisory.', canonical_url: `${BASE_URL}/about`, schema_json: '' }
-];
-
 let memorySeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
 
 let memoryCaseStudies = [
@@ -90,16 +92,119 @@ let memoryCaseStudies = [
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html for root route explicitly
-// Serve all HTML pages
-const htmlPages = ['services', 'industries', 'case-studies', 'pricing', 'contact', 'about', 'admin', 'admin-login'];
-htmlPages.forEach(page => {
+// For production, render JSON-LD server-side (SSR) so Googlebot reads it without JavaScript execution
+async function serveLocationPage(res, slug) {
+    const branch = getBranchBySlug(slug);
+    if (!branch) {
+        return res.status(404).send('Location not found');
+    }
+
+    const filePath = path.join(__dirname, 'public', 'location.html');
+    let html = await fs.readFile(filePath, 'utf8');
+
+    let currentApiLocation = memorySettings.api_location || BASE_URL;
+    try {
+        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
+        if (!error && data && data.length > 0) {
+            const parsed = JSON.parse(data[0].image_url);
+            if (parsed.api_location) currentApiLocation = parsed.api_location;
+        }
+    } catch(err) {}
+
+    const pageUrl = `${currentApiLocation}/locations/${branch.slug}`;
+    const title = `${branch.name} | Cypher Swift InfoTech`;
+    const description = `Visit ${branch.name} in ${branch.city}. AI automation, RevOps consulting, and revenue systems for B2B enterprises.`;
+    const schemaScript = buildLocalBusinessSchemaScript(branch);
+
+    html = html.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+    html = html.replace(/<meta name="description" content="[^"]*">/i,
+        `<meta name="description" content="${description.replace(/"/g, '&quot;')}">`);
+    html = html.replace(/<link rel="canonical" href="[^"]*">/i,
+        `<link rel="canonical" href="${pageUrl}">`);
+    html = html.replace('</head>', `    ${schemaScript}\n    <script>window.__BRANCH_SLUG__="${branch.slug}";</script>\n</head>`);
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(html);
+}
+
+async function servePageWithSeo(res, slug) {
+    const filename = slugToFilename(slug);
+    const filePath = path.join(__dirname, 'public', filename);
+    let html = await fs.readFile(filePath, 'utf8');
+    let currentApiLocation = memorySettings.api_location || BASE_URL;
+    try {
+        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
+        if (!error && data && data.length > 0) {
+            const parsed = JSON.parse(data[0].image_url);
+            if (parsed.api_location) currentApiLocation = parsed.api_location;
+        }
+    } catch(err) {}
+
+    const seo = await getSeoForSlug(supabase, slug, memorySeoPages);
+    html = injectSeoIntoHtml(html, seo, currentApiLocation);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    res.send(html);
+}
+
+// Public pages: inject admin-managed SEO before serving HTML
+app.get('/', async (req, res) => {
+    try { await servePageWithSeo(res, 'index'); } catch (err) { res.status(500).send('Error loading page'); }
+});
+app.get('/index.html', async (req, res) => {
+    try { await servePageWithSeo(res, 'index'); } catch (err) { res.status(500).send('Error loading page'); }
+});
+PUBLIC_PAGE_SLUGS.forEach(slug => {
+    if (slug === 'index') return;
+    app.get(`/${slug}.html`, async (req, res) => {
+        try { await servePageWithSeo(res, slug); } catch (err) { res.status(404).send('Page not found'); }
+    });
+    app.get(`/${slug}`, async (req, res) => {
+        try { await servePageWithSeo(res, slug); } catch (err) { res.status(404).send('Page not found'); }
+    });
+});
+
+// Location pages: server-side JSON-LD injection for local SEO
+app.get('/location.html', async (req, res) => {
+    const slug = req.query.location;
+    if (!slug) {
+        return res.sendFile(path.join(__dirname, 'public', 'location.html'));
+    }
+    try { await serveLocationPage(res, slug); } catch (err) { res.status(500).send('Error loading location page'); }
+});
+app.get('/locations/:slug', async (req, res) => {
+    try { await serveLocationPage(res, req.params.slug); } catch (err) { res.status(500).send('Error loading location page'); }
+});
+
+// Sitemap & robots
+app.get('/sitemap.xml', async (req, res) => {
+    let currentApiLocation = memorySettings.api_location;
+    try {
+        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
+        if (!error && data && data.length > 0) {
+            const parsed = JSON.parse(data[0].image_url);
+            if (parsed.api_location) currentApiLocation = parsed.api_location;
+        }
+    } catch(err) {}
+
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.send(buildSitemapXml(currentApiLocation));
+});
+app.get('/robots.txt', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
+});
+
+// Admin pages served as-is (no SEO injection needed)
+['admin', 'admin-login'].forEach(page => {
     app.get(`/${page}.html`, (req, res) => {
         res.sendFile(path.join(__dirname, 'public', `${page}.html`));
     });
 });
+
+app.use(express.static(path.join(__dirname, 'public')));
 // Gmail SMTP Transporter
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -148,6 +253,31 @@ async function authenticateAdmin(req, res, next) {
 
 // ── Public Routes ─────────────────────────────────────────────
 
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Local SEO Schema API — returns raw JSON-LD object for a branch
+app.get('/api/schema', (req, res) => {
+    const slug = req.query.location;
+    if (!slug) {
+        return res.status(400).json({ error: 'location query parameter is required' });
+    }
+    const branch = getBranchBySlug(slug);
+    if (!branch) {
+        return res.status(404).json({ error: 'Branch not found' });
+    }
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(buildLocalBusinessSchemaObject(branch));
+});
+
+// List all branches (slim) — used by admin UI and location index
+app.get('/api/branches', (req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json(getSlimBranches());
+});
+
 // 1. Fetch Global Settings
 app.get('/api/stats', async (req, res) => {
     try {
@@ -160,7 +290,25 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-// 2. Fetch Dynamic Case Studies
+// 2. Fetch Public SEO Data (used by pages / external tools)
+app.get('/api/seo', async (req, res) => {
+    try {
+        const slug = req.query.slug;
+        if (slug) {
+            const seo = await getSeoForSlug(supabase, slug, memorySeoPages);
+            return res.json({ success: true, data: seo });
+        }
+        const pages = memorySeoPages.length > 0
+            ? memorySeoPages
+            : await loadSeoPages(supabase);
+        res.json({ success: true, data: pages });
+    } catch (err) {
+        console.warn('Fetch SEO warning:', err.message);
+        res.json({ success: true, data: defaultSeoPages });
+    }
+});
+
+// 3. Fetch Dynamic Case Studies
 app.get('/api/case-studies', async (req, res) => {
     try {
         const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_case_study').order('created_at', { ascending: true });
@@ -587,9 +735,11 @@ app.post('/api/admin/case-studies/seed', authenticateAdmin, async (req, res) => 
 
 // ── Start Server (local only) / Export for Vercel ─────────────
 if (require.main === module) {
+    seedBranchesIfEmpty();
     app.listen(PORT, () => {
         console.log(`\n🌐 CypherSwift InfoTech Secure Server running at http://localhost:${PORT}`);
-        console.log(`📧 Email notifications → ${process.env.EMAIL_USER}\n`);
+        console.log(`📧 Email notifications → ${process.env.EMAIL_USER}`);
+        console.log(`📍 Local SEO: http://localhost:${PORT}/locations/bangalore-hq\n`);
     });
 }
 

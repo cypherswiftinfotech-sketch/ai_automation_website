@@ -6,6 +6,13 @@
 
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
+const {
+    defaultSeoPages,
+    getSeoForSlug,
+    loadSeoPages
+} = require('../lib/seo-utils');
+const { getBranchBySlug, getSlimBranches, seedBranchesIfEmpty } = require('../lib/branch-db');
+const { buildLocalBusinessSchemaObject } = require('../lib/build-schema');
 
 // Initialize Supabase Backend Client (lazy)
 let supabase = null;
@@ -22,20 +29,9 @@ let memorySettings = {
     revenue: "₹3Cr+",
     growth: "2.5x",
     automation: "70%",
-    notification_email: "craftersofa974263@gmail.com"
+    notification_email: "craftersofa974263@gmail.com",
+    api_location: "https://ai-automation-website-mnhk.vercel.app"
 };
-const BASE_URL = 'https://ai-automation-website-mnhk.vercel.app';
-
-const defaultSeoPages = [
-    { slug: 'index', page_name: 'Home', path: '/', meta_title: 'Cypher Swift InfoTech | AI-Powered Revenue Systems & Sales Automation', meta_keywords: 'AI revenue systems, B2B sales automation, RevOps consulting, AI marketing', meta_description: 'Build predictable growth systems for SaaS, IT, FinTech & enterprise brands. Align Strategy, Marketing, Sales, and AI into a unified B2B revenue engine.', canonical_url: `${BASE_URL}/`, schema_json: '' },
-    { slug: 'services', page_name: 'Services', path: '/services', meta_title: 'Enterprise Automation & Advisory Services | Cypher Swift InfoTech', meta_keywords: 'AI advisory services, marketing automation, sales workflows, RevOps services', meta_description: 'Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).', canonical_url: `${BASE_URL}/services`, schema_json: '' },
-    { slug: 'industries', page_name: 'Industries', path: '/industries', meta_title: 'B2B Verticals Supported | Cypher Swift InfoTech', meta_keywords: 'B2B SaaS, FinTech automation, manufacturing sales, IT services revenue', meta_description: 'We deploy custom AI-powered revenue architectures across B2B SaaS, FinTech, Manufacturing, IT Services, Renewable Energy, and Enterprise Software.', canonical_url: `${BASE_URL}/industries`, schema_json: '' },
-    { slug: 'case-studies', page_name: 'Case Studies', path: '/case-studies', meta_title: 'B2B Success Stories & Metrics | Cypher Swift InfoTech', meta_keywords: 'B2B case studies, revenue growth results, sales automation success', meta_description: 'Read real results from B2B SaaS, manufacturing, real estate, and education firms. See how we improved qualified pipeline metrics, efficiency, and revenue visibility.', canonical_url: `${BASE_URL}/case-studies`, schema_json: '' },
-    { slug: 'pricing', page_name: 'Pricing', path: '/pricing', meta_title: 'B2B Revenue System Engagement Models | Cypher Swift InfoTech', meta_keywords: 'B2B pricing models, AI growth diagnostic, revenue system engagement', meta_description: 'Explore our flexible partnership models: From our 5-day AI Growth Diagnostic to end-to-end custom Revenue System builds with a 100% money-back guarantee framework.', canonical_url: `${BASE_URL}/pricing`, schema_json: '' },
-    { slug: 'contact', page_name: 'Contact', path: '/contact', meta_title: 'Book a B2B Consultation | Cypher Swift InfoTech', meta_keywords: 'B2B consultation, strategy session, AI growth diagnostic booking', meta_description: 'Request a Case Study, book a strategy session, or apply for our 5-day AI Growth Diagnostic with Cypher Swift InfoTech.', canonical_url: `${BASE_URL}/contact`, schema_json: '' },
-    { slug: 'about', page_name: 'About Us', path: '/about', meta_title: 'About Us | Cypher Swift InfoTech', meta_keywords: 'about Cypher Swift, AI business transformation, revenue systems company', meta_description: 'Positioned as a premier AI-Powered Business Transformation & Revenue Systems Company, we focus on engineering stable B2B workflows and strategic advisory.', canonical_url: `${BASE_URL}/about`, schema_json: '' }
-];
-
 let memorySeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
 
 let memoryCaseStudies = [
@@ -168,6 +164,33 @@ module.exports = async function handler(req, res) {
     try {
         // ── Public Routes ─────────────────────────────────────
 
+        // GET /api/health
+        if (path === '/health' && req.method === 'GET') {
+            return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+        }
+
+        // GET /api/schema?location=slug
+        if (path === '/schema' && req.method === 'GET') {
+            seedBranchesIfEmpty();
+            const slug = url.searchParams.get('location');
+            if (!slug) {
+                return res.status(400).json({ error: 'location query parameter is required' });
+            }
+            const branch = getBranchBySlug(slug);
+            if (!branch) {
+                return res.status(404).json({ error: 'Branch not found' });
+            }
+            res.setHeader('Cache-Control', 'public, max-age=3600');
+            return res.status(200).json(buildLocalBusinessSchemaObject(branch));
+        }
+
+        // GET /api/branches
+        if (path === '/branches' && req.method === 'GET') {
+            seedBranchesIfEmpty();
+            res.setHeader('Cache-Control', 'public, max-age=3600');
+            return res.status(200).json(getSlimBranches());
+        }
+
         // GET /api/stats
         if (path === '/stats' && req.method === 'GET') {
             try {
@@ -177,6 +200,24 @@ module.exports = async function handler(req, res) {
             } catch (err) {
                 console.warn('Fetch stats database connection warning (using memory fallback):', err.message);
                 return res.status(200).json({ success: true, data: memorySettings });
+            }
+        }
+
+        // GET /api/seo
+        if (path === '/seo' && req.method === 'GET') {
+            try {
+                const slug = url.searchParams.get('slug');
+                if (slug) {
+                    const seo = await getSeoForSlug(getSupabase(), slug, memorySeoPages);
+                    return res.status(200).json({ success: true, data: seo });
+                }
+                const pages = memorySeoPages.length > 0
+                    ? memorySeoPages
+                    : await loadSeoPages(getSupabase());
+                return res.status(200).json({ success: true, data: pages });
+            } catch (err) {
+                console.warn('Fetch SEO warning:', err.message);
+                return res.status(200).json({ success: true, data: defaultSeoPages });
             }
         }
 

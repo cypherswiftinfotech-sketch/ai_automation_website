@@ -284,7 +284,7 @@
             <div class="admin-header">
                 <div>
                     <h1 style="font-size: 2rem;">🗺️ Sitemap & SEO</h1>
-                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">Manage page-level SEO settings — meta titles, descriptions, keywords, canonical URLs, and JSON-LD schema.</p>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">Edit SEO here and it updates live on all public website pages — title, description, keywords, canonical URL, and JSON-LD schema.</p>
                 </div>
                 <button class="btn btn-secondary" onclick="seedDefaultSeo()">Reset to Defaults</button>
             </div>
@@ -335,6 +335,10 @@
                     <div class="form-group">
                         <label class="form-label" for="settings-email">Email Notification Target</label>
                         <input type="email" id="settings-email" class="form-control" placeholder="craftersofa974263@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="settings-api-location">API Location for SEO (Base URL)</label>
+                        <input type="url" id="settings-api-location" class="form-control" placeholder="https://ai-automation-website-mnhk.vercel.app" required>
                     </div>
                     <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Save Global Config</button>
                 </form>
@@ -820,7 +824,7 @@
                 });
 
                 if (result.success) {
-                    alert('SEO settings saved successfully!');
+                    alert('SEO settings saved! Changes are now live on the website.');
                     closeSeoModal();
                     loadSitemapSeo();
                 } else {
@@ -861,12 +865,14 @@
                     document.getElementById('settings-growth').value = payload.growth || '2.5x';
                     document.getElementById('settings-automation').value = payload.automation || '70%';
                     document.getElementById('settings-email').value = payload.notification_email || 'craftersofa974263@gmail.com';
+                    document.getElementById('settings-api-location').value = payload.api_location || 'https://ai-automation-website-mnhk.vercel.app';
                 } else {
                     // Set default display values if no row exists in DB
                     document.getElementById('settings-revenue').value = '₹3Cr+';
                     document.getElementById('settings-growth').value = '2.5x';
                     document.getElementById('settings-automation').value = '70%';
                     document.getElementById('settings-email').value = 'craftersofa974263@gmail.com';
+                    document.getElementById('settings-api-location').value = 'https://ai-automation-website-mnhk.vercel.app';
                 }
             } catch (err) {
                 console.warn('Failed to load settings.');
@@ -880,7 +886,8 @@
                 revenue: document.getElementById('settings-revenue').value,
                 growth: document.getElementById('settings-growth').value,
                 automation: document.getElementById('settings-automation').value,
-                notification_email: document.getElementById('settings-email').value
+                notification_email: document.getElementById('settings-email').value,
+                api_location: document.getElementById('settings-api-location').value
             };
 
             try {

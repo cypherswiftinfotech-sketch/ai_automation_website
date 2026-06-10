@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location | Cypher Swift InfoTech</title>
+    <meta name="description" content="Cypher Swift InfoTech office location — AI automation and revenue systems consulting.">
+    <link rel="canonical" href="">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <!-- Each branch needs its own URL — never put multiple LocalBusiness schemas on one page -->
+    <!-- JSON-LD injected server-side in production; JS fallback below for local dev -->
+    <style>
+        .location-page { min-height: 100vh; background: #0f111a; color: #e2e8f0; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+        .location-header { padding: 1.5rem 2rem; border-bottom: 1px solid #1e293b; }
+        .location-header a { color: #818cf8; text-decoration: none; font-size: 0.9rem; }
+        .location-header a:hover { text-decoration: underline; }
+        .location-container { max-width: 640px; margin: 3rem auto; padding: 0 1.5rem; }
+        .location-card {
+            background: #1a1d2e; border: 1px solid #2d3748; border-radius: 16px;
+            padding: 2rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .location-card h1 { margin: 0 0 0.5rem; font-size: 1.75rem; color: #fff; }
+        .location-card .city { color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem; }
+        .status-badge {
+            display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem;
+        }
+        .status-open { background: rgba(34,197,94,0.2); color: #22c55e; }
+        .status-closed { background: rgba(239,68,68,0.2); color: #ef4444; }
+        .detail-row { display: flex; gap: 0.75rem; margin-bottom: 1rem; align-items: flex-start; }
+        .detail-row .icon { font-size: 1.1rem; min-width: 1.5rem; }
+        .detail-row .label { color: #94a3b8; font-size: 0.8rem; }
+        .detail-row .value { color: #e2e8f0; font-size: 0.95rem; }
+        .detail-row a { color: #38bdf8; text-decoration: none; }
+        .detail-row a:hover { text-decoration: underline; }
+        .rating-stars { color: #fbbf24; font-size: 1.1rem; letter-spacing: 2px; }
+        .rating-meta { color: #94a3b8; font-size: 0.85rem; margin-top: 0.25rem; }
+        .maps-btn {
+            display: inline-block; margin-top: 1.5rem; padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, #5c67f2, #a855f7); color: #fff;
+            border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem;
+        }
+        .maps-btn:hover { opacity: 0.9; }
+        .loading { text-align: center; padding: 4rem; color: #94a3b8; }
+        .error-msg { color: #ef4444; text-align: center; padding: 4rem; }
+    </style>
+</head>
+<body class="location-page">
+    <header class="location-header">
+        <a href="/">← Back to Cypher Swift InfoTech</a>
+    </header>
+
+    <main class="location-container" id="location-root">
+        <div class="loading" id="loading">Loading location…</div>
+    </main>
+
+    <script>
+    (function () {
+        // Each branch needs its own URL — never put multiple LocalBusiness schemas on one page
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get('location') || window.__BRANCH_SLUG__;
+        const root = document.getElementById('location-root');
+
+        if (!slug) {
+            root.innerHTML = '<p class="error-msg">No location specified. Use ?location=slug in the URL.</p>';
+            return;
+        }
+
+        const ALL_DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+        function isOpenNow(openingHours) {
+            if (!openingHours || !openingHours.length) return false;
+            const now = new Date();
+            const dayName = ALL_DAYS[now.getDay()];
+            const mins = now.getHours() * 60 + now.getMinutes();
+
+            for (const block of openingHours) {
+                const days = expandDays(block.dayOfWeek);
+                if (!days.includes(dayName)) continue;
+                const [oh, om] = block.opens.split(':').map(Number);
+                const [ch, cm] = block.closes.split(':').map(Number);
+                if (mins >= oh * 60 + om && mins < ch * 60 + cm) return true;
+            }
+            return false;
+        }
+
+        function expandDays(dayOfWeek) {
+            const ALL = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+            if (!Array.isArray(dayOfWeek)) return ALL;
+            const out = [];
+            for (const entry of dayOfWeek) {
+                if (entry.includes('-')) {
+                    const [s, e] = entry.split('-').map(x => x.trim());
+                    const si = ALL.indexOf(s), ei = ALL.indexOf(e);
+                    if (si !== -1 && ei !== -1) for (let i = si; i <= ei; i++) out.push(ALL[i]);
+                } else out.push(entry);
+            }
+            return out.length ? out : ALL;
+        }
+
+        function formatHours(openingHours) {
+            if (!openingHours || !openingHours.length) return 'Contact for hours';
+            return openingHours.map(h => {
+                const days = h.dayOfWeek.join(', ');
+                return `${days}: ${h.opens} – ${h.closes}`;
+            }).join('<br>');
+        }
+
+        function renderStars(rating) {
+            const full = Math.floor(rating);
+            const half = rating % 1 >= 0.5 ? 1 : 0;
+            return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - half);
+        }
+
+        function injectSchema(schemaObj) {
+            if (document.getElementById('cs-local-schema')) return;
+            const script = document.createElement('script');
+            script.type = 'application/ld+json';
+            script.id = 'cs-local-schema';
+            script.textContent = JSON.stringify(schemaObj);
+            document.head.appendChild(script);
+        }
+
+        function render(branch, schema) {
+            const open = isOpenNow(branch.openingHours);
+            const mapsUrl = `https://maps.google.com/?q=${branch.lat},${branch.lng}`;
+            const address = `${branch.street}, ${branch.city}, ${branch.state} ${branch.pincode}`;
+
+            document.title = `${branch.name} | Cypher Swift InfoTech`;
+            const canonical = document.querySelector('link[rel="canonical"]');
+            if (canonical) canonical.href = `${window.location.origin}/locations/${branch.slug}`;
+
+            root.innerHTML = `
+                <div class="location-card">
+                    <h1>${branch.name}</h1>
+                    <p class="city">${branch.city}, ${branch.state}</p>
+                    <span class="status-badge ${open ? 'status-open' : 'status-closed'}">${open ? 'Open Now' : 'Closed'}</span>
+
+                    <div class="detail-row">
+                        <span class="icon">📍</span>
+                        <div>
+                            <div class="label">Address</div>
+                            <div class="value">${address}</div>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="icon">📞</span>
+                        <div>
+                            <div class="label">Phone</div>
+                            <div class="value"><a href="tel:${branch.phone}">${branch.phone}</a></div>
+                        </div>
+                    </div>
+                    <div class="detail-row">
+                        <span class="icon">🕐</span>
+                        <div>
+                            <div class="label">Hours</div>
+                            <div class="value">${formatHours(branch.openingHours)}</div>
+                        </div>
+                    </div>
+                    ${branch.rating ? `
+                    <div class="detail-row">
+                        <span class="icon">⭐</span>
+                        <div>
+                            <div class="label">Rating</div>
+                            <div class="rating-stars">${renderStars(branch.rating)}</div>
+                            <div class="rating-meta">${branch.rating} / 5 (${branch.reviewCount} reviews)</div>
+                        </div>
+                    </div>` : ''}
+
+                    <a class="maps-btn" href="${mapsUrl}" target="_blank" rel="noopener">View on Google Maps</a>
+                </div>
+            `;
+
+            if (schema) injectSchema(schema);
+        }
+
+        fetch(`/api/schema?location=${encodeURIComponent(slug)}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Branch not found');
+                return res.json();
+            })
+            .then(schema => render({
+                name: schema.name,
+                slug: slug,
+                street: schema.address.streetAddress,
+                city: schema.address.addressLocality,
+                state: schema.address.addressRegion,
+                pincode: schema.address.postalCode,
+                phone: schema.telephone,
+                lat: schema.geo.latitude,
+                lng: schema.geo.longitude,
+                rating: schema.aggregateRating ? parseFloat(schema.aggregateRating.ratingValue) : null,
+                reviewCount: schema.aggregateRating ? parseInt(schema.aggregateRating.reviewCount, 10) : 0,
+                openingHours: (schema.openingHoursSpecification || []).map(h => ({
+                    dayOfWeek: h.dayOfWeek,
+                    opens: h.opens,
+                    closes: h.closes
+                }))
+            }, schema))
+            .catch(() => {
+                root.innerHTML = '<p class="error-msg">Location not found. <a href="/" style="color:#818cf8">Return home</a></p>';
+            });
+    })();
+    </script>
+</body>
+</html>
