@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from models.schemas import QueryRequest, QueryResponse
 from services.query_service import answer_query
-from middleware.auth_middleware import get_current_user
+from middleware.auth_middleware import get_current_user, get_optional_user
 from services.conversation_service import get_or_create_conversation, end_conversation
 from services.lead_service import get_or_create_lead, update_lead
 
@@ -41,7 +41,6 @@ async def init_session(
     return {"conversation_id": conv["id"]}
 
 
-from middleware.auth_middleware import get_optional_user
 
 @router.post("/ask", response_model=QueryResponse)
 async def ask(
