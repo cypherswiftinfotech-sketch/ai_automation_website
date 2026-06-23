@@ -1,211 +1,89 @@
 /* ═══════════════════════════════════════════════════════════════
-   CYPHER SWIFT — Premium Interactions & Animation Layer
-   Custom cursor, magnetic buttons, ripple, particles, card tilt
+   CYPHER SWIFT — Clean Interactions & Micro-animations
+   Subtle, professional effects — no gimmicks
 ═══════════════════════════════════════════════════════════════ */
 
-/* ── Custom Cursor ───────────────────────────────────────────── */
-*, *::before, *::after { cursor: none !important; }
-
-#cs-cursor {
-    position: fixed;
-    top: 0; left: 0;
-    width: 12px; height: 12px;
-    background: var(--color-accent-indigo, #5c67f2);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: width 0.2s, height 0.2s, background 0.2s, opacity 0.2s;
-    mix-blend-mode: screen;
-}
-
-#cs-cursor-ring {
-    position: fixed;
-    top: 0; left: 0;
-    width: 38px; height: 38px;
-    border: 1.5px solid rgba(92, 103, 242, 0.5);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    transition: width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                height 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                border-color 0.35s,
-                opacity 0.35s;
-}
-
-/* Cursor hover states */
-body.cursor-hover #cs-cursor {
-    width: 8px; height: 8px;
-    background: #fff;
-}
-body.cursor-hover #cs-cursor-ring {
-    width: 52px; height: 52px;
-    border-color: rgba(92, 103, 242, 0.8);
-    background: rgba(92, 103, 242, 0.06);
-}
-body.cursor-clicking #cs-cursor {
-    width: 6px; height: 6px;
-    background: var(--color-accent-purple, #a855f7);
-}
-body.cursor-clicking #cs-cursor-ring {
-    width: 28px; height: 28px;
-    border-color: var(--color-accent-purple, #a855f7);
-}
-
-/* ── Button Upgrade ──────────────────────────────────────────── */
+/* ── Button Enhancements ──────────────────────────────────────── */
 .btn {
     will-change: transform;
-    /* magnetic moves handled by JS inline style */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
-/* Ripple bubble spawned on click */
-.btn-ripple {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(0);
-    animation: rippleExpand 0.6s linear forwards;
-    pointer-events: none;
-    z-index: 4;
-}
-
-@keyframes rippleExpand {
-    to { transform: scale(4); opacity: 0; }
-}
-
-/* Primary button pulsing glow ring */
-.btn-primary {
-    animation: btnGlow 4s ease-in-out infinite;
-}
+/* Primary button subtle glow */
 .btn-primary:hover {
-    animation: none;
+    box-shadow: 0 8px 30px rgba(92, 103, 242, 0.4);
+    transform: translateY(-2px);
 }
 
-@keyframes btnGlow {
-    0%, 100% { box-shadow: 0 8px 30px rgba(92, 103, 242, 0.30); }
-    50%       { box-shadow: 0 8px 40px rgba(92, 103, 242, 0.55), 0 0 60px rgba(168, 85, 247, 0.15); }
-}
-
-/* Secondary button border trace on hover */
-.btn-secondary {
-    --border-angle: 0turn;
-    transition: background 0.4s, transform 0.3s, box-shadow 0.3s;
-}
+/* Secondary button border glow on hover */
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: transparent;
-    box-shadow: 0 0 0 1.5px rgba(92, 103, 242, 0.6), 0 8px 30px rgba(92, 103, 242, 0.2);
-    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 0 1.5px rgba(92, 103, 242, 0.5), 0 6px 20px rgba(92, 103, 242, 0.15);
+    transform: translateY(-2px);
 }
 
-/* ── Particle canvas ─────────────────────────────────────────── */
-#cs-particles {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 99997;
-}
-
-/* ── Background glow follows cursor ─────────────────────────── */
-#cs-follow-glow {
-    position: fixed;
-    width: 500px; height: 500px;
-    background: radial-gradient(circle, rgba(92, 103, 242, 0.07) 0%, transparent 70%);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: -1;
-    transform: translate(-50%, -50%);
-    transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                top  0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    filter: blur(30px);
-}
-
-/* ── Glass card 3D tilt ──────────────────────────────────────── */
+/* ── Card hover ──────────────────────────────────────────────── */
 .glass-card {
-    transform-style: preserve-3d;
-    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                box-shadow 0.4s, border-color 0.4s;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
-
-/* Shine layer inside card on tilt */
-.glass-card .card-shine {
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: radial-gradient(circle at var(--mx,50%) var(--my,50%),
-                rgba(255,255,255,0.08) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
-    z-index: 2;
-}
-.glass-card:hover .card-shine {
-    opacity: 1;
+.glass-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* ── Industry + challenge card entrance stagger ──────────────── */
 .industry-card, .challenge-card, .service-card {
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.industry-card.visible, .challenge-card.visible, .service-card.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* ── Nav link hover glow dot ─────────────────────────────────── */
+/* ── Nav link hover underline ────────────────────────────────── */
+.nav-link {
+    position: relative;
+}
 .nav-link::before {
     content: '';
     position: absolute;
-    bottom: -1px; left: 50%;
-    transform: translateX(-50%) scale(0);
-    width: 4px; height: 4px;
-    border-radius: 50%;
+    bottom: -2px; left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 100%; height: 2px;
     background: var(--color-accent-indigo);
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-    opacity: 0;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+    border-radius: 1px;
 }
-.nav-link:hover::before {
-    transform: translateX(-50%) scale(1);
-    opacity: 1;
+.nav-link:hover::before,
+.nav-link.active::before {
+    transform: translateX(-50%) scaleX(1);
 }
 
-/* ── Section tag shimmer on page load ────────────────────────── */
+/* ── Section tag — subtle pill style, no float ───────────────── */
 .section-tag {
-    animation: tagFloat 6s ease-in-out infinite;
-}
-@keyframes tagFloat {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-3px); }
+    /* Remove the floating animation entirely */
+    animation: none;
 }
 
-/* ── Stat number count-up glow ───────────────────────────────── */
-.stat-revenue-val, .stat-growth-val, .stat-automation-val {
-    display: inline-block;
-    transition: text-shadow 0.3s;
-}
-.trust-metric-item:hover .stat-revenue-val,
-.trust-metric-item:hover .stat-growth-val,
-.trust-metric-item:hover .stat-automation-val {
-    text-shadow: 0 0 18px currentColor;
-}
-
-/* ── Logo icon spin-pulse ────────────────────────────────────── */
+/* ── Logo icon subtle pulse ──────────────────────────────────── */
 .logo-icon {
     animation: logoBreath 3s ease-in-out infinite;
 }
 @keyframes logoBreath {
     0%, 100% { filter: drop-shadow(0 0 3px rgba(219, 39, 119, 0.3)); }
-    50%       { filter: drop-shadow(0 0 10px rgba(219, 39, 119, 0.6)); }
+    50%       { filter: drop-shadow(0 0 8px rgba(219, 39, 119, 0.5)); }
 }
 
-/* ── Footer contact hover lift ───────────────────────────────── */
+/* ── Footer contact hover ────────────────────────────────────── */
 .footer-contact-info li {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+    transition: transform 0.3s ease, color 0.3s;
 }
 .footer-contact-info li:hover {
-    transform: translateX(5px);
+    transform: translateX(4px);
     color: var(--color-text-primary);
-}
-.footer-contact-info li:hover svg {
-    filter: drop-shadow(0 0 6px var(--color-accent-indigo));
 }
 
 /* ── Page intro fade-in ──────────────────────────────────────── */
@@ -214,8 +92,19 @@ body.cursor-clicking #cs-cursor-ring {
     to   { opacity: 1; transform: translateY(0); }
 }
 .hero-content, .hero-visual {
-    animation: pageReveal 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    animation: pageReveal 0.8s ease both;
 }
 .hero-visual {
     animation-delay: 0.15s;
+}
+
+/* ── Stat number glow on hover ───────────────────────────────── */
+.stat-revenue-val, .stat-growth-val, .stat-automation-val {
+    display: inline-block;
+    transition: text-shadow 0.3s;
+}
+.trust-metric-item:hover .stat-revenue-val,
+.trust-metric-item:hover .stat-growth-val,
+.trust-metric-item:hover .stat-automation-val {
+    text-shadow: 0 0 18px currentColor;
 }
