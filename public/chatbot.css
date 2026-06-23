@@ -119,3 +119,124 @@
   background-color: #555;
   cursor: not-allowed;
 }
+
+/* =========================================
+   Pre-Chat Lead Form Styles
+   ========================================= */
+
+#liveavatar-form-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  font-family: inherit;
+}
+
+#liveavatar-form-content {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  border: 1px solid #333;
+}
+
+#liveavatar-form-content h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+#liveavatar-form-content p {
+  margin: 0 0 20px 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+#liveavatar-form-error {
+  color: #ef4444;
+  margin-bottom: 16px;
+  display: none;
+}
+
+.liveavatar-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.liveavatar-form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.liveavatar-form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.liveavatar-form-label {
+  margin-bottom: 4px;
+  font-size: 0.875rem;
+  color: #ccc;
+}
+
+.liveavatar-form-input, .liveavatar-form-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #2c2c2c;
+  color: #fff;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.liveavatar-form-input:focus, .liveavatar-form-select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.liveavatar-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+#liveavatar-form-cancel {
+  padding: 8px 16px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+#liveavatar-form-submit {
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#liveavatar-form-submit:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .liveavatar-form-grid {
+    grid-template-columns: 1fr;
+  }
+}

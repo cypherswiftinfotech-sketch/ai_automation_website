@@ -10,15 +10,16 @@ router = APIRouter(prefix="/query", tags=["query"])
 from pydantic import BaseModel as _BaseModel
 
 class InitSessionRequest(_BaseModel):
+    user_id: str
     language: str = "en"
     pre_chat_data: dict = {}
 
 @router.post("/init")
 async def init_session(
     body: InitSessionRequest,
-    current_user: dict = Depends(get_current_user),
+    current_user: dict | None = Depends(get_optional_user),
 ):
-    user_id = current_user["id"]
+    user_id = current_user["id"] if current_user else body.user_id
     conv = get_or_create_conversation(user_id=user_id, language=body.language)
     
     lead = get_or_create_lead(user_id, conv["id"])
