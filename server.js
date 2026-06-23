@@ -589,7 +589,16 @@ app.delete('/api/admin/case-studies/:id', authenticateAdmin, async (req, res) =>
 // 8.5. Fetch Chatbot Logs (Protected)
 app.get('/api/admin/chatbot-logs', authenticateAdmin, async (req, res) => {
     try {
-        const { data, error } = await supabase.from('conversations').select('*').order('created_at', { ascending: false }).limit(100);
+        // We use the Chatbot Database if configured, otherwise fallback to main
+        const cbUrl = process.env.CHATBOT_SUPABASE_URL || process.env.SUPABASE_URL;
+        const cbKey = process.env.CHATBOT_SUPABASE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
+        
+        let cbClient = supabase;
+        if (process.env.CHATBOT_SUPABASE_URL) {
+            cbClient = createClient(cbUrl, cbKey);
+        }
+
+        const { data, error } = await cbClient.from('conversations').select('*').order('created_at', { ascending: false }).limit(100);
         if (error) throw error;
         res.json({ success: true, data: data || [] });
     } catch (err) {
