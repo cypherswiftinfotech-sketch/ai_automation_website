@@ -15,6 +15,7 @@ yarn-error.log*
 # Environment variables
 .env
 .env.*
+backend/.env
 
 # Local config files
 config.local.*
@@ -39,3 +40,13 @@ Thumbs.db
 *.db
 data/
 
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+*.egg
+backend/settings.json

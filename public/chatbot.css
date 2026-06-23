@@ -1,0 +1,121 @@
+/* =========================================
+   Standalone Text Chatbot Styles
+   ========================================= */
+
+#liveavatar-chat-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-family: inherit;
+}
+
+#liveavatar-chat-window {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 350px;
+  height: 500px;
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  z-index: 9999;
+  overflow: hidden;
+  border: 1px solid #333;
+  display: none;
+  font-family: inherit;
+}
+
+#liveavatar-chat-header {
+  padding: 15px;
+  background-color: #2a2a2a;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+#liveavatar-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+#liveavatar-message-list {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.liveavatar-message-bubble {
+  max-width: 85%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.liveavatar-message-user {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: #fff;
+}
+
+.liveavatar-message-avatar {
+  align-self: flex-start;
+  background-color: #444;
+  color: #fff;
+}
+
+#liveavatar-input-area {
+  padding: 15px;
+  background-color: #2a2a2a;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #333;
+}
+
+#liveavatar-chat-input {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #444;
+  background-color: #1e1e1e;
+  color: #fff;
+  outline: none;
+  font-size: 14px;
+}
+
+#liveavatar-send-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 0 15px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#liveavatar-send-btn:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+}

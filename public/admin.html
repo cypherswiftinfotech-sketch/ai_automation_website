@@ -203,6 +203,9 @@
             <div class="admin-nav-item" onclick="switchPanel('sitemap')" id="nav-sitemap">
                 <span>🗺️</span> Sitemap
             </div>
+            <div class="admin-nav-item" onclick="switchPanel('chatbot')" id="nav-chatbot">
+                <span>🤖</span> Chatbot Logs
+            </div>
             <div class="admin-nav-item" onclick="switchPanel('settings')" id="nav-settings">
                 <span>⚙️</span> Global Settings
             </div>
@@ -342,6 +345,34 @@
                     </div>
                     <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem; width: 100%;">Save Global Config</button>
                 </form>
+            </div>
+        </div>
+
+        <!-- CHATBOT PANEL -->
+        <div class="admin-panel" id="panel-chatbot">
+            <div class="admin-header">
+                <div>
+                    <h1 style="font-size: 2rem;">🤖 Chatbot Conversations</h1>
+                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">View AI consultant interaction logs.</p>
+                </div>
+            </div>
+
+            <div class="glass-card" style="padding: 0; overflow-x: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Summary</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chatbot-table-body">
+                        <tr>
+                            <td colspan="4" class="text-center" style="padding: 3rem;">Loading conversations...</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -509,6 +540,8 @@
                 loadCaseStudies();
             } else if (panelId === 'sitemap') {
                 loadSitemapSeo();
+            } else if (panelId === 'chatbot') {
+                loadChatbotLogs();
             } else if (panelId === 'settings') {
                 loadSettings();
             }
@@ -569,6 +602,42 @@
             } catch (err) {
                 alert('Failed to delete lead.');
             }
+        }
+
+        // --- CHATBOT LOGS ---
+        async function loadChatbotLogs() {
+            const tbody = document.getElementById('chatbot-table-body');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center">Fetching conversations...</td></tr>';
+
+            try {
+                // Fetch from the python backend (running on port 8001)
+                const result = await secureFetch('/api/admin/chatbot-logs');
+                if (!result || !result.success) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: var(--color-accent-rose);">Error: ${result ? result.message : 'Unknown Error'}</td></tr>`;
+                    return;
+                }
+
+                const data = result.data;
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center">No chatbot conversations found.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.map(item => `
+                    <tr>
+                        <td><strong>${item.user_id || 'Anonymous'}</strong></td>
+                        <td>${item.summary || '—'}</td>
+                        <td>${new Date(item.created_at).toLocaleString()}</td>
+                        <td><button class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;" onclick="viewChatbotLog('${item.id}')">View</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center" style="color: var(--color-accent-rose);">Error loading chatbot logs.</td></tr>`;
+            }
+        }
+
+        function viewChatbotLog(id) {
+            alert("Viewing details for conversation " + id + " not yet implemented in frontend.");
         }
 
         // --- CASE STUDIES ---
@@ -935,5 +1004,6 @@
         // Initial Load
         loadLeads();
     </script>
+    <script src="chatbot.js"></script>
 </body>
 </html>

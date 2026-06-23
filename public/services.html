@@ -3,32 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Automation & Advisory Services | Cypher Swift InfoTech</title>
-    <meta name="description" content="Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ai-automation-website-mnhk.vercel.app/services">
-    <meta property="og:title" content="Enterprise Automation & Advisory Services | Cypher Swift InfoTech">
-    <meta property="og:description" content="Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).">
-    <meta property="og:image" content="https://ai-automation-website-mnhk.vercel.app/logo.svg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://ai-automation-website-mnhk.vercel.app/services">
-    <meta property="twitter:title" content="Enterprise Automation & Advisory Services | Cypher Swift InfoTech">
-    <meta property="twitter:description" content="Explore our four operational pillars: Strategic Growth Advisory, AI-Powered Marketing, Intelligent Sales Workflows, and Revenue Operations (RevOps).">
-    <meta property="twitter:image" content="https://ai-automation-website-mnhk.vercel.app/logo.svg">
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://ai-automation-website-mnhk.vercel.app/services">
+    <title>Services - AI Automation & SaaS | Cypher Swift InfoTech</title>
+    <meta name="description" content="Cypher Swift InfoTech helps organizations design and implement AI-powered marketing and sales systems.">
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="custom-components.css">
     <link rel="stylesheet" href="interactions.css">
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <script src="config.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Dropdown styles for header nav */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; background: rgba(15, 17, 26, 0.95);
+            min-width: 250px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100;
+            border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            backdrop-filter: blur(10px); top: 100%; left: 0; padding: 0.5rem 0;
+        }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a {
+            color: #fff; padding: 12px 16px; text-decoration: none; display: block;
+            font-size: 0.9rem; transition: background 0.2s;
+        }
+        .dropdown-content a:hover { background: rgba(255,255,255,0.05); color: var(--color-accent-cyan); }
+        
+        /* Modal for industries */
+        .modal {
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            align-items: center; justify-content: center;
+        }
+        .modal-content {
+            background: var(--bg-secondary); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg); padding: 2.5rem; max-width: 600px; width: 90%;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute; top: 1rem; right: 1.5rem; color: #fff; font-size: 1.5rem;
+            cursor: pointer; transition: color 0.2s;
+        }
+        .close-modal:hover { color: var(--color-accent-cyan); }
+        
+        /* Accordion for FAQ */
+        .faq-item {
+            border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            margin-bottom: 1rem; background: rgba(255,255,255,0.02);
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 1.25rem; cursor: pointer; display: flex; justify-content: space-between;
+            align-items: center; font-weight: 600; color: #fff;
+        }
+        .faq-answer {
+            padding: 0 1.25rem; max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out, padding 0.3s ease;
+            color: var(--color-text-secondary);
+        }
+        .faq-item.active .faq-answer { padding: 0 1.25rem 1.25rem 1.25rem; max-height: 500px; }
+        .faq-item.active .faq-question { color: var(--color-accent-cyan); }
+    </style>
 </head>
 <body>
 
@@ -46,7 +78,14 @@
             </a>
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="services.html" class="nav-link active">Services</a></li>
+                <li class="dropdown">
+                    <a href="services.html" class="nav-link active">Services ▼</a>
+                    <div class="dropdown-content">
+                        <a href="service-ai-automation.html">AI Automation & SaaS</a>
+                        <a href="service-saas-marketing.html">SaaS Marketing Services</a>
+                        <a href="service-saas-sales.html">SaaS Sales Services</a>
+                    </div>
+                </li>
                 <li><a href="industries.html" class="nav-link">Industries</a></li>
                 <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
                 <li><a href="pricing.html" class="nav-link">Pricing</a></li>
@@ -62,217 +101,411 @@
         </div>
     </header>
 
-    <!-- Services Hero Section -->
-    <section class="case-study-hero">
-        <div class="container text-center">
-            <span class="section-tag">System Pillars</span>
-            <h1>Our Connected Revenue Framework</h1>
-            <p style="max-width: 700px; margin: 1.5rem auto 0 auto;">We design, construct, and support standard operational pillars to align your marketing and sales activity into one clean revenue growth system.</p>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container text-center" style="max-width: 900px;">
+            <span class="subtitle" style="display: inline-block; margin-bottom: 1rem; color: var(--color-accent-indigo); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">AI Automation for Marketing and Sales</span>
+            <h1 style="font-size: clamp(2.5rem, 4.5vw, 4rem); line-height: 1.1; margin-bottom: 1.5rem;">Build an Intelligent Revenue System for Predictable Growth</h1>
+            <p style="margin: 0 auto 1.5rem auto; font-size: 1.15rem;">Most organizations already have marketing teams, sales teams, CRM systems, and software tools. However, these systems often operate independently, resulting in limited visibility, inefficient workflows, inconsistent qualification, and unpredictable growth.</p>
+            <p style="margin: 0 auto 2.5rem auto; font-size: 1.15rem; color: var(--color-accent-indigo);">Cypher Swift InfoTech helps organizations design and implement AI-powered marketing and sales systems that align strategy, technology, processes, and teams into a connected and measurable business engine.</p>
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-bottom: 2.5rem;">
+                <span class="section-tag" style="margin-bottom: 0;">Strategic Advisory</span>
+                <span class="section-tag" style="margin-bottom: 0;">SaaS Implementation</span>
+                <span class="section-tag" style="margin-bottom: 0;">AI Automation</span>
+                <span class="section-tag" style="margin-bottom: 0;">Consultation</span>
+            </div>
+
+            <div class="btn-group" style="justify-content: center;">
+                <a href="contact.html?type=diagnostic" class="btn btn-primary">Request a Business Diagnostic</a>
+                <a href="contact.html?type=consultation" class="btn btn-secondary">Book a Consultation</a>
+            </div>
         </div>
     </section>
 
-    <!-- Service Pillar 1: Strategic Growth Advisory -->
-    <section id="advisory" class="section-padding">
+    <!-- Growth Solutions Options -->
+    <section class="section-padding" style="background: var(--bg-secondary); position: relative;">
         <div class="container">
-            <div class="challenge-grid">
-                <div>
-                    <span class="section-tag" style="color: var(--color-accent-purple); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2);">Pillar 01</span>
-                    <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff; margin: 1rem 0;">Strategic Growth Advisory</h2>
-                    <p style="margin-bottom: 2rem;">Before investing in workflow tools or hiring SDRs, you must align your positioning and GTM strategy. We evaluate your core metrics to design custom growth paths that guarantee ROI.</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-purple); margin-bottom: 0.5rem;">Market Positioning</h4>
-                            <p style="font-size: 0.85rem;">Define distinct value propositions that separate you from commodity suppliers.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-purple); margin-bottom: 0.5rem;">GTM Planning</h4>
-                            <p style="font-size: 0.85rem;">Create targeted campaign roadmaps to enter new geographic or enterprise sectors.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-purple); margin-bottom: 0.5rem;">Demand Mapping</h4>
-                            <p style="font-size: 0.85rem;">Map decision makers and search intent profiles for ideal account acquisition.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-purple); margin-bottom: 0.5rem;">Revenue Planning</h4>
-                            <p style="font-size: 0.85rem;">Align marketing spends directly with pipeline velocity benchmarks and targets.</p>
-                        </div>
+            <div class="section-header">
+                <span class="section-tag">Growth Solutions</span>
+                <h2>Choose the Right Growth Solution</h2>
+                <p>Every organization has different objectives, challenges, and growth priorities. We offer flexible engagement models designed to align with your current business stage and requirements.</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- Option 1 -->
+                <div class="glass-card service-card" style="border-top: 3px solid var(--color-accent-indigo);">
+                    <div style="font-size: 0.85rem; color: var(--color-accent-indigo); font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Option 1</div>
+                    <h3 style="margin-bottom: 1rem;">AI Automation & SaaS</h3>
+                    <p style="margin-bottom: 1.5rem; flex-grow: 1;">Complete Revenue Growth System. Designed for organizations looking to improve both marketing and sales functions through strategic advisory, SaaS implementation, and AI automation.</p>
+                    <a href="service-ai-automation.html" class="btn btn-secondary" style="width: 100%; text-align: center;">Explore Option 1</a>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="glass-card service-card" style="border-top: 3px solid var(--color-accent-purple);">
+                    <div style="font-size: 0.85rem; color: var(--color-accent-purple); font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Option 2</div>
+                    <h3 style="margin-bottom: 1rem;">SaaS Marketing Services</h3>
+                    <p style="margin-bottom: 1.5rem; flex-grow: 1;">Marketing Optimization & Demand Generation System. Focuses specifically on improving marketing activities and creating systems that attract, nurture, and engage potential customers more effectively.</p>
+                    <a href="service-saas-marketing.html" class="btn btn-secondary" style="width: 100%; text-align: center;">Explore Option 2</a>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="glass-card service-card" style="border-top: 3px solid var(--color-accent-indigo);">
+                    <div style="font-size: 0.85rem; color: var(--color-accent-indigo); font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px;">Option 3</div>
+                    <h3 style="margin-bottom: 1rem;">SaaS Sales Services</h3>
+                    <p style="margin-bottom: 1.5rem; flex-grow: 1;">Sales Enablement & Conversion Optimization System. Designed for organizations that generate inquiries but face challenges in converting prospects into customers.</p>
+                    <a href="service-saas-sales.html" class="btn btn-secondary" style="width: 100%; text-align: center;">Explore Option 3</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recommendation Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="diagnostic-banner">
+                <div class="diagnostic-grid" style="grid-template-columns: 1fr; text-align: center;">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 style="margin-bottom: 1.5rem; color: #fff;">Not Sure Which Service is Best for Your Organization?</h2>
+                        <p style="margin: 0 auto 1.5rem auto; font-size: 1.1rem;">Cypher Swift generally recommends beginning with a <strong style="color: var(--color-accent-indigo);">Business Diagnostic Assessment</strong> before selecting an implementation approach.</p>
+                        <p style="margin: 0 auto 2rem auto; color: var(--color-text-secondary);">The assessment helps organizations understand their current situation, identify operational gaps, and receive recommendations tailored to their objectives, business model, and growth stage. Following the diagnostic, our team suggests the most suitable service model, implementation roadmap, estimated timeline, and consultation approach.</p>
+                        <a href="contact.html?type=diagnostic" class="btn btn-primary" style="margin-top: 1rem;">Start Business Diagnostic</a>
                     </div>
                 </div>
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--radius-lg); display: flex; flex-direction: column; justify-content: center;">
-                    <h3 style="color: #fff; margin-bottom: 1.5rem;">Advisory Phase Focus</h3>
-                    <ul class="why-points" style="gap: 1.25rem;">
-                        <li class="why-point-item">
-                            <div class="why-point-check" style="background: rgba(168, 85, 247, 0.1); color: var(--color-accent-purple);">1</div>
-                            <div>
-                                <h4 style="color: #fff;">Operational Audit</h4>
-                                <p style="font-size: 0.85rem;">Identify existing pipeline friction points and tool underutilization.</p>
-                            </div>
-                        </li>
-                        <li class="why-point-item">
-                            <div class="why-point-check" style="background: rgba(168, 85, 247, 0.1); color: var(--color-accent-purple);">2</div>
-                            <div>
-                                <h4 style="color: #fff;">Architecture Blueprinting</h4>
-                                <p style="font-size: 0.85rem;">Draft precise process workflows showing leads and data flows.</p>
-                            </div>
-                        </li>
-                        <li class="why-point-item">
-                            <div class="why-point-check" style="background: rgba(168, 85, 247, 0.1); color: var(--color-accent-purple);">3</div>
-                            <div>
-                                <h4 style="color: #fff;">Team Accountability Setup</h4>
-                                <p style="font-size: 0.85rem;">Align departments around standard operational metrics.</p>
-                            </div>
-                        </li>
+            </div>
+        </div>
+    </section>
+
+    <!-- Is This Service Suitable -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <h2>Is This Service Suitable for Your Organization?</h2>
+            </div>
+            
+            <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="glass-card service-card">
+                    <div class="service-icon">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3>Startup Companies</h3>
+                    <p style="margin-top: 0.5rem; color: var(--color-text-secondary);">Organizations looking to establish structured marketing and sales foundations from day one.</p>
+                </div>
+                
+                <div class="glass-card service-card">
+                    <div class="service-icon" style="background: rgba(168, 85, 247, 0.1); color: var(--color-accent-purple);">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <h3>Mid-Sized Businesses</h3>
+                    <p style="margin-top: 0.5rem; color: var(--color-text-secondary);">Companies facing inconsistent lead quality, unclear workflows, and limited visibility.</p>
+                </div>
+                
+                <div class="glass-card service-card">
+                    <div class="service-icon" style="background: rgba(92, 103, 242, 0.1); color: var(--color-accent-indigo);">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3>Enterprise Organizations</h3>
+                    <p style="margin-top: 0.5rem; color: var(--color-text-secondary);">Businesses seeking optimization, automation, and highly scalable operational systems.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Industries Section -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Strategic Focus</span>
+                <h2>Industries That Benefit from Our Service</h2>
+                <p>Click on an industry tier to see detailed benefits and applications.</p>
+            </div>
+            
+            <div class="industries-grid" style="max-width: 900px; margin: 0 auto; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="glass-card industry-card" style="padding: 2rem; cursor: pointer; border-top: 3px solid var(--color-accent-indigo);" onclick="openIndustryModal('tier1')">
+                    <h3 style="color: var(--color-accent-indigo); margin-bottom: 1rem;">Tier 1 (Primary)</h3>
+                    <ul class="service-features" style="text-align: left; border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> SaaS & Technology</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Healthcare & HealthTech</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Financial Services</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Professional Services</li>
                     </ul>
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--color-accent-indigo); font-weight: 600;">Click for details &rarr;</div>
+                </div>
+                
+                <div class="glass-card industry-card" style="padding: 2rem; cursor: pointer; border-top: 3px solid var(--color-accent-purple);" onclick="openIndustryModal('tier2')">
+                    <h3 style="color: var(--color-accent-purple); margin-bottom: 1rem;">Tier 2 (Growth)</h3>
+                    <ul class="service-features" style="text-align: left; border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Real Estate</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Renewable Energy</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> EdTech</li>
+                    </ul>
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--color-accent-purple); font-weight: 600;">Click for details &rarr;</div>
+                </div>
+                
+                <div class="glass-card industry-card" style="padding: 2rem; cursor: pointer; border-top: 3px solid var(--color-accent-indigo);" onclick="openIndustryModal('tier3')">
+                    <h3 style="color: var(--color-accent-indigo); margin-bottom: 1rem;">Tier 3 (Selective)</h3>
+                    <ul class="service-features" style="text-align: left; border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Manufacturing</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> E-commerce & Retail</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Hospitality & Travel</li>
+                    </ul>
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: var(--color-accent-indigo); font-weight: 600;">Click for details &rarr;</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Service Pillar 2: AI-Powered Marketing Automation -->
-    <section id="marketing" class="section-padding" style="background: var(--bg-secondary);">
+    <!-- Industry Modals -->
+    <div id="industryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeIndustryModal()">&times;</span>
+            <h2 id="modalTitle" style="color: #fff; margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;"></h2>
+            <div id="modalBody" style="color: var(--color-text-secondary); line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <!-- Challenges Section -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
         <div class="container">
-            <div class="challenge-grid" style="direction: rtl;">
-                <div style="direction: ltr;">
-                    <span class="section-tag" style="color: var(--color-accent-indigo); background: rgba(92, 103, 242, 0.1); border-color: rgba(92, 103, 242, 0.2);">Pillar 02</span>
-                    <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff; margin: 1rem 0;">AI-Powered Marketing</h2>
-                    <p style="margin-bottom: 2rem;">Build automated lead generation, intent identification, and qualification pathways that deliver validated meetings to your sales team.</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.5rem;">Audience Intelligence</h4>
-                            <p style="font-size: 0.85rem;">Discover target accounts looking for your solutions using intent data indicators.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.5rem;">Lead Scoring</h4>
-                            <p style="font-size: 0.85rem;">Calculate target intent scores dynamically based on content interactions.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.5rem;">Campaign Workflows</h4>
-                            <p style="font-size: 0.85rem;">Build multi-channel drip programs that match buyer stages.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.5rem;">Funnel Optimization</h4>
-                            <p style="font-size: 0.85rem;">Maximize conversions from landing page visits to booked calls.</p>
-                        </div>
-                    </div>
+            <div class="section-header">
+                <h2>Common Challenges We Help Solve</h2>
+                <p>Identify the bottlenecks that prevent your predictable growth.</p>
+            </div>
+            
+            <div class="challenge-cards" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="challenge-card">
+                    <div class="challenge-icon">📉</div>
+                    <h3>Low Conversion Efficiency</h3>
+                    <p>Marketing generates inquiries, but few convert into qualified opportunities.</p>
                 </div>
-                <div style="direction: ltr; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--radius-lg); display: flex; flex-direction: column; justify-content: center;">
-                    <h3 style="color: #fff; margin-bottom: 1.5rem;">Marketing Workflow Architecture</h3>
-                    <div style="padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.5rem; color: var(--color-text-muted);">
-                            <span>Target Account Visit</span>
-                            <span>Intent Identified</span>
-                        </div>
-                        <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; position: relative; margin-bottom: 1.5rem;">
-                            <div style="position: absolute; top: 0; left: 0; height: 100%; width: 75%; background: var(--color-accent-indigo); border-radius: 3px;"></div>
-                        </div>
-                        <div style="font-size: 0.85rem; color: #fff; margin-bottom: 0.5rem;">💡 <strong>AI Trigger:</strong> Target account downloads resource. Intent score reaches 85.</div>
-                        <div style="font-size: 0.85rem; color: var(--color-accent-cyan);">➔ Automatically drafts custom follow-up sequence.</div>
-                    </div>
+                <div class="challenge-card">
+                    <div class="challenge-icon">⏳</div>
+                    <h3>Lost Productivity</h3>
+                    <p>Sales teams spend significant time on unqualified prospects instead of closing.</p>
+                </div>
+                <div class="challenge-card">
+                    <div class="challenge-icon">blind</div>
+                    <h3>Limited Visibility</h3>
+                    <p>CRM systems are underutilized, leading to blind spots in operations.</p>
+                </div>
+                <div class="challenge-card">
+                    <div class="challenge-icon">🧩</div>
+                    <h3>Workflow Confusion</h3>
+                    <p>Multiple tools operate independently, breaking the data continuity.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Service Pillar 3: AI-Powered Sales Automation -->
-    <section id="sales" class="section-padding">
+    <!-- Why Diagnostic -->
+    <section class="section-padding">
         <div class="container">
             <div class="challenge-grid">
                 <div>
-                    <span class="section-tag" style="color: var(--color-accent-cyan); background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2);">Pillar 03</span>
-                    <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff; margin: 1rem 0;">AI-Powered Sales Automation</h2>
-                    <p style="margin-bottom: 2rem;">Help your account managers focus on actual sales calls. Automate meeting scheduling, follow-ups, CRM entry, and lead qualification.</p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-cyan); margin-bottom: 0.5rem;">CRM Automation</h4>
-                            <p style="font-size: 0.85rem;">Eliminate manual entries. Auto-sync lead data, email logs, and transcripts.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-cyan); margin-bottom: 0.5rem;">Follow-Up Engines</h4>
-                            <p style="font-size: 0.85rem;">Ensure contacts receive responses in under 5 minutes to maximize close rates.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-cyan); margin-bottom: 0.5rem;">Meeting Qualification</h4>
-                            <p style="font-size: 0.85rem;">Verify prospect budget, authority, and needs before securing bookings.</p>
-                        </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-cyan); margin-bottom: 0.5rem;">Pipeline Management</h4>
-                            <p style="font-size: 0.85rem;">Automate lead stage movements based on real contact activity.</p>
-                        </div>
-                    </div>
+                    <h2>Why We Start with a Business Diagnostic</h2>
+                    <p style="margin: 1.5rem 0; font-size: 1.1rem; color: var(--color-text-secondary);">Before recommending any implementation, we conduct a business diagnostic assessment. This allows organizations to understand their current environment and identify the most effective path forward.</p>
+                    <a href="contact.html?type=diagnostic" class="btn btn-primary" style="margin-top: 1rem;">Get Assessed</a>
                 </div>
-                <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--radius-lg); display: flex; flex-direction: column; justify-content: center;">
-                    <h3 style="color: #fff; margin-bottom: 1.5rem;">Sales Acceleration Benchmarks</h3>
-                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
-                            <span>Initial Response Speed</span>
-                            <strong style="color: var(--color-accent-cyan);">&lt; 3 Minutes</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
-                            <span>Manual CRM Update Reduction</span>
-                            <strong style="color: var(--color-accent-cyan);">90% Saved</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.75rem;">
-                            <span>Meeting Attendance Rate</span>
-                            <strong style="color: var(--color-accent-cyan);">92% Show-up</strong>
-                        </div>
+                <div class="glass-card" style="padding: 2.5rem; background: rgba(255,255,255,0.02);">
+                    <h3 style="color: #fff; margin-bottom: 1.5rem;">Diagnostic Assessment Covers:</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <ul style="list-style: none; padding: 0; color: var(--color-text-secondary);">
+                            <li style="margin-bottom: 0.75rem;">✓ Marketing Activities</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Sales Processes</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Current Tech Stack</li>
+                            <li style="margin-bottom: 0.75rem;">✓ CRM Usage</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Brand Positioning</li>
+                            <li>✓ Content Strategy</li>
+                        </ul>
+                        <ul style="list-style: none; padding: 0; color: var(--color-text-secondary);">
+                            <li style="margin-bottom: 0.75rem;">✓ Lead Qualification</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Competitor Analysis</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Client Scripts</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Internal Workflows</li>
+                            <li style="margin-bottom: 0.75rem;">✓ Operational Gaps</li>
+                            <li>✓ Growth Opportunities</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Service Pillar 4: Revenue Operations (RevOps) -->
-    <section id="revops" class="section-padding" style="background: var(--bg-secondary);">
+    <!-- Our Approach & Service Plans -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
         <div class="container">
-            <div class="challenge-grid" style="direction: rtl;">
-                <div style="direction: ltr;">
-                    <span class="section-tag" style="color: var(--color-accent-emerald); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.2);">Pillar 04</span>
-                    <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff; margin: 1rem 0;">Revenue Operations (RevOps)</h2>
-                    <p style="margin-bottom: 2rem;">Unify your technical structures to build a single hub of operations. Align marketing, sales, and management under centralized dashboards.</p>
+            <h2 class="text-center" style="margin-bottom: 4rem;">Our Approach</h2>
+            
+                <div class="glass-card" style="padding: 2.5rem; display: flex; flex-direction: column; height: 100%;">
+                    <div style="background: var(--color-accent-indigo); color: #fff; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 1.25rem; margin-bottom: 1.5rem; flex-shrink: 0;">1</div>
+                    <h3 style="color: #fff; margin: 0 0 1rem 0;">Business Diagnostic</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">Analyze your current business systems and identify opportunities for improvement.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-top: auto;">
+                        <span style="color: var(--color-accent-indigo);">Deliverable:</span> Business Diagnostic Report
+                    </div>
+                </div>
+                
+                <div class="glass-card" style="padding: 2.5rem; display: flex; flex-direction: column; height: 100%;">
+                    <div style="background: var(--color-accent-purple); color: #fff; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 1.25rem; margin-bottom: 1.5rem; flex-shrink: 0;">2</div>
+                    <h3 style="color: #fff; margin: 0 0 1rem 0;">Strategic Advisory</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">Develop a practical roadmap aligned with your objectives.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-top: auto;">
+                        <span style="color: var(--color-accent-purple);">Deliverable:</span> Growth Blueprint
+                    </div>
+                </div>
+                
+                <div class="glass-card" style="padding: 2.5rem; display: flex; flex-direction: column; height: 100%;">
+                    <div style="background: var(--color-accent-indigo); color: #fff; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 1.25rem; margin-bottom: 1.5rem; flex-shrink: 0;">3</div>
+                    <h3 style="color: #fff; margin: 0 0 1rem 0;">AI Automation & SaaS Implementation</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">Depending on requirements: Lead Qual, CRM, AI Agents, Workflow Design, Custom Solutions.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-top: auto;">
+                        <span style="color: var(--color-accent-indigo);">Deliverable:</span> Configured Systems
+                    </div>
+                </div>
+                
+                <div class="glass-card" style="padding: 2.5rem; display: flex; flex-direction: column; height: 100%;">
+                    <div style="background: var(--color-accent-purple); color: #fff; width: 3rem; height: 3rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: bold; font-size: 1.25rem; margin-bottom: 1.5rem; flex-shrink: 0;">4</div>
+                    <h3 style="color: #fff; margin: 0 0 1rem 0;">Consultation & Optimization</h3>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">Support internal teams to ensure adoption, usability, and continuous improvement.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 0.75rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-top: auto;">
+                        <span style="color: var(--color-accent-purple);">Deliverable:</span> Optimization Recommendations
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Plans -->
+            <div class="glass-card" style="padding: 3rem; background: rgba(0,0,0,0.2);">
+                <h2 style="margin-bottom: 1.5rem; text-align: center;">Service Plans</h2>
+                <p style="text-align: center; color: var(--color-text-secondary); margin-bottom: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">Because every organization has unique requirements, implementation recommendations are provided after completing the business diagnostic.</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <h3 style="color: #fff; margin-bottom: 1rem;">Startup Plan</h3>
+                        <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Designed for early-stage companies requiring foundational systems and structured workflows.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border); border-top: 3px solid var(--color-accent-cyan);">
+                        <h3 style="color: #fff; margin-bottom: 1rem;">Growth Plan</h3>
+                        <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Designed for mid-sized organizations seeking better qualification, visibility, and automation.</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: var(--radius-md); border: 1px solid var(--glass-border);">
+                        <h3 style="color: #fff; margin-bottom: 1rem;">Enterprise Plan</h3>
+                        <p style="color: var(--color-text-secondary); font-size: 0.95rem;">Designed for organizations requiring advanced integrations, optimization, reporting systems, and scalable infrastructure.</p>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 2rem; font-size: 0.85rem; color: var(--color-text-muted);">Implementation scope, timelines, and investment discussions are conducted after the diagnostic assessment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expected Outcomes & Why Cypher Swift -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="challenge-grid">
+                <div>
+                    <h2 style="margin-bottom: 1.5rem;">Expected Outcomes</h2>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Organizations implementing this framework may experience improvements in:</p>
                     
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-emerald); margin-bottom: 0.5rem;">Visibility Dashboards</h4>
-                            <p style="font-size: 0.85rem;">Display lead origins, pipeline speed, and close conversion metrics.</p>
+                        <div>
+                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.75rem;">Marketing</h4>
+                            <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0; font-size: 0.95rem;">
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Improved targeting</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Better messaging</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Enhanced visibility</li>
+                            </ul>
                         </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-emerald); margin-bottom: 0.5rem;">Forecast Systems</h4>
-                            <p style="font-size: 0.85rem;">Calculate future revenue targets based on qualified opportunities.</p>
+                        <div>
+                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.75rem;">Sales</h4>
+                            <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0; font-size: 0.95rem;">
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> More qualified meetings</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Consistent follow-up</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Structured processes</li>
+                            </ul>
                         </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-emerald); margin-bottom: 0.5rem;">Team Alignment</h4>
-                            <p style="font-size: 0.85rem;">Establish clear workflow criteria between marketing handoffs and sales calls.</p>
+                        <div>
+                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.75rem;">Operations</h4>
+                            <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0; font-size: 0.95rem;">
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Reduced manual activities</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Standardized workflows</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Improved collaboration</li>
+                            </ul>
                         </div>
-                        <div class="glass-card" style="padding: 1.5rem;">
-                            <h4 style="color: var(--color-accent-emerald); margin-bottom: 0.5rem;">Process Audit</h4>
-                            <p style="font-size: 0.85rem;">Continually optimize sequences to remove delays and improve speed.</p>
+                        <div>
+                            <h4 style="color: var(--color-accent-indigo); margin-bottom: 0.75rem;">Leadership</h4>
+                            <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0; font-size: 0.95rem;">
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Greater visibility</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Faster decision making</li>
+                                <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Scalable systems</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-                <div style="direction: ltr; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 3rem; border-radius: var(--radius-lg); display: flex; flex-direction: column; justify-content: center;">
-                    <h3 style="color: #fff; margin-bottom: 1.5rem;">RevOps System Stack</h3>
-                    <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">We connect your toolset into one cohesive architecture:</p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">HubSpot CRM</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">Salesforce</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">Make.com</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">Zapier</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">OpenAI API</span>
-                        <span style="background: rgba(255,255,255,0.05); padding: 0.4rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; border: 1px solid var(--glass-border);">Custom Webhooks</span>
-                    </div>
+                
+                <div class="glass-card" style="padding: 3rem; background: linear-gradient(135deg, rgba(6, 182, 212, 0.1) 0%, rgba(15,17,26,0.9) 100%);">
+                    <h2 style="margin-bottom: 1.5rem; color: #fff;">Why Cypher Swift?</h2>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">Many organizations already use CRMs, project management platforms, marketing tools, and analytics solutions.</p>
+                    <p style="color: var(--color-text-secondary); margin-bottom: 1rem;">The challenge is rarely the absence of software. <strong>The challenge is aligning strategy, technology, people, and processes into a system that consistently supports business growth.</strong></p>
+                    <p style="color: #fff; font-weight: 500;">Cypher Swift combines strategic advisory, SaaS implementation, AI automation, and consultation services to help organizations build measurable, sustainable, and scalable business systems.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- General CTA Section -->
+    <!-- FAQ Section -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 3rem;">Frequently Asked Questions</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do I need a CRM before implementing AI automation?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">No. Existing systems can be reviewed during the diagnostic assessment. If you don't have one, we can recommend and implement the right CRM for your needs.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Will AI replace my team?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">No. The objective is to enhance productivity and improve operational efficiency. AI handles repetitive tasks and qualification, allowing your human team to focus on high-value interactions and closing deals.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How long does implementation take?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">Timelines depend on the scope and complexity of the project, which is determined after the initial Business Diagnostic.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Do you only provide software implementation?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">No. Cypher Swift provides Strategic Advisory, SaaS Implementation, AI Automation, Consultation, and Optimization Support to ensure a complete operational transformation.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
     <section class="section-padding" style="border-top: 1px solid var(--glass-border);">
         <div class="container text-center">
-            <h2 style="max-width: 700px; margin: 0 auto 1.5rem auto;">Align Your Revenue Systems Today</h2>
-            <p style="max-width: 600px; margin: 0 auto 3rem auto;">Stop letting qualified prospects slip through manual process gaps. Create a connected revenue system engineered for scale.</p>
+            <h2 style="max-width: 700px; margin: 0 auto 1.5rem auto;">Ready to Transform Your Revenue System?</h2>
+            <p style="max-width: 600px; margin: 0 auto 3rem auto; color: var(--color-text-secondary);">Stop letting qualified prospects slip through manual process gaps. Create a connected revenue system engineered for scale.</p>
             <div class="btn-group" style="justify-content: center;">
                 <a href="contact.html?type=diagnostic" class="btn btn-primary">Schedule a System Diagnostic</a>
                 <a href="contact.html" class="btn btn-secondary">Contact our Team</a>
@@ -282,6 +515,7 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <!-- Reusing existing footer content -->
         <div class="container">
             <div class="footer-grid">
                 <div class="footer-brand">
@@ -292,12 +526,11 @@
                     <p>Building predictable revenue growth systems through strategic advisory, sales alignment, and AI automation.</p>
                 </div>
                 <div>
-                    <h4 class="footer-heading">Systems</h4>
+                    <h4 class="footer-heading">Services</h4>
                     <ul class="footer-links">
-                        <li><a href="services.html#advisory">Strategic Advisory</a></li>
-                        <li><a href="services.html#marketing">Marketing Systems</a></li>
-                        <li><a href="services.html#sales">Sales Systems</a></li>
-                        <li><a href="services.html#revops">Revenue Operations</a></li>
+                        <li><a href="service-ai-automation.html">AI Automation & SaaS</a></li>
+                        <li><a href="service-saas-marketing.html">SaaS Marketing Services</a></li>
+                        <li><a href="service-saas-sales.html">SaaS Sales Services</a></li>
                     </ul>
                 </div>
                 <div>
@@ -328,7 +561,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <div>© 2026 <a href="https://www.cypherswift.com/" target="_blank" rel="noopener" style="color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color var(--transition-fast);" onmouseover="this.style.borderColor='var(--color-text-muted)'" onmouseout="this.style.borderColor='transparent'">Cypher Swift InfoTech</a>. All rights reserved.</div>
+                <div>© 2026 Cypher Swift InfoTech. All rights reserved.</div>
                 <div class="footer-legal-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
@@ -339,5 +572,77 @@
 
     <script src="script.js"></script>
     <script src="interactions.js"></script>
+    <script>
+        // Industry Modal Logic
+        const industryDetails = {
+            tier1: `
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #fff; margin-bottom: 0.75rem;">Healthcare & HealthTech Applications</h3>
+                    <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Patient Consultation Agents</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Symptom Collection Assistants</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Appointment Scheduling Systems</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Treatment Information Consultants</li>
+                    </ul>
+                </div>
+                <p>We provide specialized systems for SaaS & Technology, Financial Services & FinTech, and Professional Services looking to scale operations, automate patient/client intake, and streamline administrative workflows.</p>
+            `,
+            tier2: `
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #fff; margin-bottom: 0.75rem;">Growth Industries</h3>
+                    <p>For Real Estate, Renewable Energy, and EdTech sectors, our AI automation focuses on scaling lead generation, accelerating inquiry response times, and automating routine follow-ups to drive faster conversions.</p>
+                </div>
+            `,
+            tier3: `
+                <div style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #fff; margin-bottom: 0.75rem;">Selective Projects</h3>
+                    <p>In Manufacturing, E-commerce & Retail, and Hospitality & Travel, we strategically deploy automation systems to optimize customer service inquiries, streamline vendor communications, and manage large volumes of operational data efficiently.</p>
+                </div>
+            `
+        };
+
+        const modalTitles = {
+            tier1: 'Tier 1 Industries: Primary Focus',
+            tier2: 'Tier 2 Industries: Growth Focus',
+            tier3: 'Tier 3 Industries: Selective Projects'
+        };
+
+        function openIndustryModal(tier) {
+            document.getElementById('modalTitle').innerText = modalTitles[tier];
+            document.getElementById('modalBody').innerHTML = industryDetails[tier];
+            document.getElementById('industryModal').style.display = 'flex';
+        }
+
+        function closeIndustryModal() {
+            document.getElementById('industryModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('industryModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // FAQ Accordion Logic
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentNode;
+                const isActive = item.classList.contains('active');
+                
+                // Close all other items
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.faq-question span:last-child').textContent = '+';
+                });
+
+                if (!isActive) {
+                    item.classList.add('active');
+                    question.querySelector('span:last-child').textContent = '−';
+                }
+            });
+        });
+    </script>
+    <script src="chatbot.js"></script>
 </body>
 </html>

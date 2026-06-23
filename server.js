@@ -586,6 +586,18 @@ app.delete('/api/admin/case-studies/:id', authenticateAdmin, async (req, res) =>
     }
 });
 
+// 8.5. Fetch Chatbot Logs (Protected)
+app.get('/api/admin/chatbot-logs', authenticateAdmin, async (req, res) => {
+    try {
+        const { data, error } = await supabase.from('conversations').select('*').order('created_at', { ascending: false }).limit(100);
+        if (error) throw error;
+        res.json({ success: true, data: data || [] });
+    } catch (err) {
+        console.warn('Fetch chatbot logs DB error (returning empty list):', err.message);
+        res.json({ success: true, data: [] });
+    }
+});
+
 // 9. Fetch Sitemap SEO Pages (Protected)
 app.get('/api/admin/seo', authenticateAdmin, async (req, res) => {
     try {
