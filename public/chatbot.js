@@ -1,31 +1,96 @@
 /**
  * Standalone Chatbot Integration (Without Pre-Chat Form)
  */
+// chatbot.js v2 — updated API_URL to http://127.0.0.1:8000 and improved error reporting.
 
-(function() {
-  const API_URL = "http://localhost:8002"; // <-- UPDATE THIS TO YOUR BACKEND URL IF NEEDED
+(function () {
+  const API_URL = "http://127.0.0.1:8000"; // <-- UPDATE THIS TO YOUR BACKEND URL IF NEEDED
 
   // State
   let conversationId = "";
   let token = ""; // Optional if backend supports anonymous
   let userId = crypto.randomUUID();
   let isLoading = false;
-  let chatStarted = false;
+  let greetingShown = false;
 
   // --- HTML Structure Injection ---
   function injectHTML() {
     // Inject CSS
     if (!document.querySelector('link[href="chatbot.css"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'chatbot.css';
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "chatbot.css";
       document.head.appendChild(link);
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = `
       <!-- Floating Button -->
       <button id="liveavatar-chat-btn">💬 Chat with Us</button>
+
+      <!-- Pre-Chat Lead Form Modal -->
+      <div id="liveavatar-form-modal" aria-hidden="true">
+        <div id="liveavatar-form-content" role="dialog" aria-modal="true" aria-labelledby="liveavatar-form-title">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
+            <h3 id="liveavatar-form-title" style="margin:0 0 8px 0;">Get Your Diagnostic</h3>
+            <button id="liveavatar-form-close" type="button" style="border:none;background:transparent;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+          </div>
+          <p style="margin:0 0 18px 0;color:#aaa;font-size:0.9rem;">Share your details and we’ll email you the 5-day sales & AI growth diagnostic.</p>
+          <div id="liveavatar-form-error" style="color:#ef4444;margin-bottom:16px;display:none;"></div>
+
+          <form id="diagnostic-form" autocomplete="on">
+            <div class="liveavatar-form-grid">
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="full-name">Full Name</label>
+                <input class="liveavatar-form-input" type="text" id="full-name" required />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="email">Business Email</label>
+                <input class="liveavatar-form-input" type="email" id="email" required />
+              </div>
+
+              <div class="liveavatar-form-group full-width">
+                <label class="liveavatar-form-label" for="website">Company Website</label>
+                <input class="liveavatar-form-input" type="url" id="website" required />
+              </div>
+
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="company-size">Company Size</label>
+                <select class="liveavatar-form-select" id="company-size" required>
+                  <option value="startup">Startup (< 20 Reps)</option>
+                  <option value="midmarket">Mid-Market (20 - 100 Reps)</option>
+                  <option value="enterprise">Enterprise (100+ Reps)</option>
+                </select>
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="request-type">Request Type</label>
+                <select class="liveavatar-form-select" id="request-type" required>
+                  <option value="diagnostic" selected>5-Day AI Growth Diagnostic</option>
+                  <option value="strategy">Strategy Blueprint Session</option>
+                  <option value="case-study">Full Case Study Request</option>
+                  <option value="partnership">Retainer Partnership Discussion</option>
+                </select>
+              </div>
+
+              <div class="liveavatar-form-group full-width">
+                <label class="liveavatar-form-label" for="message">Strategic Context (Optional)</label>
+                <textarea class="liveavatar-form-input" id="message" rows="4" placeholder="Briefly describe your existing CRM stack or growth constraints..."></textarea>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:18px;">
+              <div style="font-size:12px;color:#71717a;line-height:1.4;">
+                <div>Estimated investment</div>
+                <div style="font-weight:800;color:#e4e4e7;margin-top:2px;" id="calc-estimate">$900 / ₹75,000</div>
+              </div>
+              <div class="liveavatar-form-actions">
+                <button id="liveavatar-form-cancel" type="button">Cancel</button>
+                <button id="liveavatar-form-submit" type="submit">Submit Request</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
 
       <!-- Chat Window -->
       <div id="liveavatar-chat-window">
@@ -39,89 +104,6 @@
           <button id="liveavatar-send-btn">Send</button>
         </div>
       </div>
-
-      <!-- Pre-Chat Lead Form Modal -->
-      <div id="liveavatar-form-modal">
-        <div id="liveavatar-form-content">
-          <h3>Before we begin...</h3>
-          <p>Please tell us a bit about yourself to get the best diagnostic.</p>
-          <div id="liveavatar-form-error"></div>
-
-          <div class="liveavatar-form-grid">
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Name *</label>
-              <input type="text" id="lf-name" class="liveavatar-form-input" required />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Business Mail *</label>
-              <input type="email" id="lf-email" class="liveavatar-form-input" required />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Calling/WhatsApp Number</label>
-              <input type="text" id="lf-phone" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Company Name</label>
-              <input type="text" id="lf-company" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Role/Designation</label>
-              <input type="text" id="lf-role" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Company Website</label>
-              <input type="text" id="lf-website" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Location</label>
-              <input type="text" id="lf-location" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Number of Employees</label>
-              <input type="text" id="lf-employees" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Budget Range</label>
-              <input type="text" id="lf-budget" class="liveavatar-form-input" />
-            </div>
-            <div class="liveavatar-form-group">
-              <label class="liveavatar-form-label">Industry Type</label>
-              <select id="lf-industry" class="liveavatar-form-select">
-                <option value="">Select...</option>
-                <option value="AI Agent Development">AI Agent Development</option>
-                <option value="SaaS Product Development">SaaS Product Development</option>
-                <option value="Website / Application Development">Website / Application Development</option>
-                <option value="CRM / ERP / LMS Development">CRM / ERP / LMS Development</option>
-              </select>
-            </div>
-            <div class="liveavatar-form-group full-width">
-              <label class="liveavatar-form-label">Service Requirement</label>
-              <select id="lf-service" class="liveavatar-form-select">
-                <option value="">Select...</option>
-                <option value="AI Agent Development">AI Agent Development</option>
-                <option value="SaaS Product Development">SaaS Product Development</option>
-                <option value="Website / Application Development">Website / Application Development</option>
-                <option value="CRM / ERP / LMS Development">CRM / ERP / LMS Development</option>
-              </select>
-            </div>
-            <div class="liveavatar-form-group full-width">
-              <label class="liveavatar-form-label">Expected Timeline</label>
-              <select id="lf-timeline" class="liveavatar-form-select">
-                <option value="">Select...</option>
-                <option value="Immediately">Immediately</option>
-                <option value="Within 1 Month">Within 1 Month</option>
-                <option value="Within 3 Months">Within 3 Months</option>
-                <option value="Planning Stage">Planning Stage</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="liveavatar-form-actions">
-            <button id="liveavatar-form-cancel">Cancel</button>
-            <button id="liveavatar-form-submit">Submit & Start Chat</button>
-          </div>
-        </div>
-      </div>
     `;
     document.body.appendChild(container);
   }
@@ -130,30 +112,46 @@
   async function apiFetch(endpoint, options = {}) {
     const headers = { "Content-Type": "application/json", ...options.headers };
     if (token) headers["Authorization"] = `Bearer ${token}`;
-    const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
-    if (!res.ok) throw new Error(await res.text());
+    const url = `${API_URL}${endpoint}`;
+    let res;
+    try {
+      res = await fetch(url, { ...options, headers });
+    } catch (networkErr) {
+      throw new Error(
+        `Network error contacting ${url} — is the backend running on ${API_URL}? (${networkErr.message})`,
+      );
+    }
+    if (!res.ok) {
+      let body = "";
+      try {
+        body = await res.text();
+      } catch (_) {}
+      throw new Error(
+        `Backend ${res.status} at ${url}: ${body || res.statusText}`,
+      );
+    }
     return res.json();
   }
 
   async function askQuery(queryText) {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    return apiFetch('/query/ask', {
-      method: 'POST',
+    return apiFetch("/query/ask", {
+      method: "POST",
       body: JSON.stringify({
         user_id: userId,
         query: queryText,
         language: "multi",
         conversation_id: conversationId || undefined,
-        timezone
-      })
+        timezone,
+      }),
     });
   }
 
   // --- UI Helpers ---
   function appendMessage(role, text) {
-    const list = document.getElementById('liveavatar-message-list');
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `liveavatar-message-bubble ${role === 'user' ? 'liveavatar-message-user' : 'liveavatar-message-avatar'}`;
+    const list = document.getElementById("liveavatar-message-list");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `liveavatar-message-bubble ${role === "user" ? "liveavatar-message-user" : "liveavatar-message-avatar"}`;
     msgDiv.innerText = text;
     list.appendChild(msgDiv);
     list.scrollTop = list.scrollHeight;
@@ -161,157 +159,243 @@
 
   function setLoading(state) {
     isLoading = state;
-    document.getElementById('liveavatar-send-btn').disabled = state;
+    document.getElementById("liveavatar-send-btn").disabled = state;
     if (state) {
-      const typingMsg = document.createElement('div');
+      const typingMsg = document.createElement("div");
       typingMsg.id = "liveavatar-typing";
-      typingMsg.className = "liveavatar-message-bubble liveavatar-message-avatar";
+      typingMsg.className =
+        "liveavatar-message-bubble liveavatar-message-avatar";
       typingMsg.innerText = "Typing...";
-      document.getElementById('liveavatar-message-list').appendChild(typingMsg);
+      document.getElementById("liveavatar-message-list").appendChild(typingMsg);
     } else {
-      const typingMsg = document.getElementById('liveavatar-typing');
+      const typingMsg = document.getElementById("liveavatar-typing");
       if (typingMsg) typingMsg.remove();
     }
   }
 
   // --- Event Handlers ---
   async function handleSend() {
-    const input = document.getElementById('liveavatar-chat-input');
+    const input = document.getElementById("liveavatar-chat-input");
     const text = input.value.trim();
     if (!text || isLoading) return;
-    
-    input.value = '';
-    appendMessage('user', text);
+
+    input.value = "";
+    appendMessage("user", text);
     setLoading(true);
 
     try {
       const result = await askQuery(text);
       if (result.conversation_id) conversationId = result.conversation_id;
-      appendMessage('avatar', result.answer);
+      appendMessage("avatar", result.answer);
     } catch (err) {
       console.error(err);
-      appendMessage('avatar', "Sorry, I encountered an error. Please try again.");
+      appendMessage(
+        "avatar",
+        "Sorry, I encountered an error. Please try again.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
-  // --- Modal & Lead Form Logic ---
-  const modal = document.getElementById('liveavatar-form-modal');
-  const errorDiv = document.getElementById('liveavatar-form-error');
-
-  function openPreChatForm() {
-    if (chatStarted) {
-      // If chat already started, just open chat window
-      document.getElementById('liveavatar-chat-window').style.display = 'flex';
-      return;
-    }
-    const modal = document.getElementById('liveavatar-form-modal');
-    modal.style.display = 'flex';
-  }
-
-  function closePreChatForm() {
-    document.getElementById('liveavatar-form-modal').style.display = 'none';
-  }
-
-  async function handleFormSubmit() {
-    const name = document.getElementById('lf-name').value.trim();
-    const email = document.getElementById('lf-email').value.trim();
-
-    if (!name || !email) {
-      errorDiv.innerText = "Name and Business Mail are required.";
-      errorDiv.style.display = "block";
-      return;
-    }
-
-    const preChatData = {
-      name,
-      email,
-      phone: document.getElementById('lf-phone').value.trim(),
-      company_name: document.getElementById('lf-company').value.trim(),
-      role: document.getElementById('lf-role').value.trim(),
-      company_website: document.getElementById('lf-website').value.trim(),
-      location: document.getElementById('lf-location').value.trim(),
-      num_employees: document.getElementById('lf-employees').value.trim(),
-      budget_range: document.getElementById('lf-budget').value.trim(),
-      industry_type: document.getElementById('lf-industry').value,
-      service_requirement: document.getElementById('lf-service').value,
-      expected_timeline: document.getElementById('lf-timeline').value,
-    };
-
-    const submitBtn = document.getElementById('liveavatar-form-submit');
-    submitBtn.innerText = "Submitting...";
-    submitBtn.disabled = true;
-    errorDiv.style.display = "none";
-
+  // Auto-trigger an AI intro the first time the chat is opened in a session.
+  async function triggerGreeting() {
+    if (greetingShown || isLoading) return;
+    greetingShown = true;
+    setLoading(true);
     try {
-      // Initialize Session
-      const res = await apiFetch('/query/init', {
-        method: 'POST',
-        body: JSON.stringify({
-          user_id: userId,
-          language: "en",
-          pre_chat_data: preChatData
-        })
-      });
-      if (res.conversation_id) conversationId = res.conversation_id;
-
-      // Close modal and open chat
-      closePreChatForm();
-      const chatWindow = document.getElementById('liveavatar-chat-window');
-      chatWindow.style.display = 'flex';
-      
-      chatStarted = true;
-      setLoading(true);
-      
-      // Auto trigger greeting
       const result = await askQuery("hello");
-      appendMessage('avatar', result.answer);
+      if (result.conversation_id) conversationId = result.conversation_id;
+      appendMessage("avatar", result.answer);
     } catch (err) {
-      errorDiv.innerText = err.message || "Failed to submit form.";
-      errorDiv.style.display = "block";
+      console.error(err);
+      appendMessage(
+        "avatar",
+        "Hi! I'm Avor, your AI consultant avatar at Cypher Swift InfoTech. How can I help you today?",
+      );
     } finally {
-      submitBtn.innerText = "Submit & Start Chat";
-      submitBtn.disabled = false;
       setLoading(false);
     }
+  }
+
+  // --- Modal Helpers ---
+  function setModalOpen(open) {
+    const modal = document.getElementById("liveavatar-form-modal");
+    if (!modal) return;
+    modal.style.display = open ? "flex" : "none";
+    modal.setAttribute("aria-hidden", open ? "false" : "true");
+
+    // Close chat when opening modal (prevents overlapping UI)
+    const chatWindow = document.getElementById("liveavatar-chat-window");
+    if (open && chatWindow) chatWindow.style.display = "none";
+
+    // Restore chat when closing
+    if (!open && chatWindow) {
+      // If chat was opened before, show it again.
+      // Otherwise keep it hidden (display is inline-set by this script).
+      const shouldShowChat = chatWindow.dataset.wasVisible === "true";
+      chatWindow.style.display = shouldShowChat ? "flex" : "none";
+    }
+  }
+
+  function isDiagnosticUrlIntent() {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("type") === "diagnostic";
+    } catch {
+      return false;
+    }
+  }
+
+  function preselectAndOpenModal() {
+    // open only if diagnostic intent
+    if (!isDiagnosticUrlIntent()) return;
+    setModalOpen(true);
+
+    // Preselect request type in case it differs
+    const rt = document.getElementById("request-type");
+    if (rt) rt.value = "diagnostic";
   }
 
   // --- Initialization ---
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener("DOMContentLoaded", () => {
     injectHTML();
 
-    const chatBtn = document.getElementById('liveavatar-chat-btn');
-    const chatWindow = document.getElementById('liveavatar-chat-window');
+    const chatBtn = document.getElementById("liveavatar-chat-btn");
+    const chatWindow = document.getElementById("liveavatar-chat-window");
 
-    chatBtn.addEventListener('click', async () => {
-      if (chatWindow.style.display === 'flex') {
-        chatWindow.style.display = 'none';
-      } else {
-        // If they click the chat bubble and haven't started, open form instead
-        openPreChatForm();
-      }
+    chatBtn.addEventListener("click", async () => {
+      const isOpen = chatWindow.style.display === "flex";
+      const next = isOpen ? "none" : "flex";
+      chatWindow.dataset.wasVisible = next === "flex" ? "true" : "false";
+      chatWindow.style.display = next;
+      if (!isOpen) await triggerGreeting();
     });
 
-    document.getElementById('liveavatar-close-btn').addEventListener('click', () => {
-      chatWindow.style.display = 'none';
-    });
+    document
+      .getElementById("liveavatar-close-btn")
+      .addEventListener("click", () => {
+        chatWindow.style.display = "none";
+      });
 
-    document.getElementById('liveavatar-send-btn').addEventListener('click', handleSend);
-    document.getElementById('liveavatar-chat-input').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') handleSend();
-    });
+    // Modal close
+    const modalCloseBtn = document.getElementById("liveavatar-form-close");
+    if (modalCloseBtn) {
+      modalCloseBtn.addEventListener("click", () => setModalOpen(false));
+    }
 
-    // Form Event Listeners
-    document.getElementById('liveavatar-form-cancel').addEventListener('click', closePreChatForm);
-    document.getElementById('liveavatar-form-submit').addEventListener('click', handleFormSubmit);
+    // Cancel button
+    const cancelBtn = document.getElementById("liveavatar-form-cancel");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => setModalOpen(false));
+    }
 
-    // Intercept 'Get Diagnostic' links to open modal
-    document.querySelectorAll('a[href*="diagnostic"]').forEach(link => {
-      link.addEventListener('click', (e) => {
+    // Estimate calculator (sync with contact.html logic)
+    const pricingSelect = document.getElementById("company-size");
+    const pricingResult = document.getElementById("calc-estimate");
+    if (pricingSelect && pricingResult) {
+      pricingSelect.addEventListener("change", (e) => {
+        const val = e.target.value;
+        if (val === "startup") {
+          pricingResult.textContent = "$900 / ₹75,000";
+        } else if (val === "midmarket") {
+          pricingResult.textContent = "$1,800 / ₹1,50,000";
+        } else if (val === "enterprise") {
+          pricingResult.textContent = "Custom Strategy Pricing";
+        }
+      });
+    }
+
+    // Submit form
+    const contactForm = document.getElementById("diagnostic-form");
+    if (contactForm) {
+      contactForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        openPreChatForm();
+
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn ? submitBtn.innerHTML : "";
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = "<span>Processing Request...</span>";
+        }
+
+        const name = document.getElementById("full-name")?.value || "";
+        const email = document.getElementById("email")?.value || "";
+        const website = document.getElementById("website")?.value || "";
+        const size =
+          document.getElementById("company-size")?.value || "startup";
+        const type =
+          document.getElementById("request-type")?.value || "diagnostic";
+        const context = document.getElementById("message")?.value || "";
+
+        try {
+          const res = await fetch(`${API_URL}/api/leads`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name,
+              email,
+              website,
+              companySize: size,
+              requestType: type,
+              strategicContext: context,
+            }),
+          });
+
+          const result = await res.json().catch(() => ({}));
+          if (!res.ok || result?.success === false) {
+            const detail =
+              result?.message || result?.detail || "Submission failed";
+            const errEl = document.getElementById("liveavatar-form-error");
+            if (errEl) {
+              errEl.textContent = detail;
+              errEl.style.display = "block";
+            }
+            return;
+          }
+
+          alert(
+            `Thank you for submitting your Diagnostic Request!\n\nOur lead strategist will email you at ${email} within 2 hours to confirm your scheduling. Your request has also been logged securely in our system database.`,
+          );
+          contactForm.reset();
+          setModalOpen(false);
+        } catch (err) {
+          console.error(err);
+          const errEl = document.getElementById("liveavatar-form-error");
+          if (errEl) {
+            errEl.textContent = "Lead submission failed. Please try again.";
+            errEl.style.display = "block";
+          }
+        } finally {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+          }
+        }
+      });
+    }
+
+    // Only open modal when landing page asks for diagnostic intent.
+    preselectAndOpenModal();
+
+    // Intercept all "Get Diagnostic" links so they open the popup form
+    // instead of navigating away to contact.html
+    document.querySelectorAll('a[href*="type=diagnostic"]').forEach(link => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        setModalOpen(true);
+        const rt = document.getElementById("request-type");
+        if (rt) rt.value = "diagnostic";
       });
     });
+
+    document
+      .getElementById("liveavatar-send-btn")
+      .addEventListener("click", handleSend);
+    document
+      .getElementById("liveavatar-chat-input")
+      .addEventListener("keypress", (e) => {
+        if (e.key === "Enter") handleSend();
+      });
   });
 })();
