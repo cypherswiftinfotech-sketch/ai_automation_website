@@ -6,16 +6,38 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #007bff;
+  width: 56px;
+  height: 56px;
+  background: #007bff;
   color: #fff;
   border: none;
-  border-radius: 30px;
-  padding: 12px 20px;
-  font-size: 16px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
   z-index: 9999;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Floating circle behind the icon */
+#liveavatar-chat-btn::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.25);
+  z-index: -1;
+  animation: liveavatar-float 2.2s ease-in-out infinite;
+}
+
+@keyframes liveavatar-float {
+  0%, 100% { transform: translateY(0); opacity: 0.95; }
+  50% { transform: translateY(-6px); opacity: 1; }
 }
 
 #liveavatar-chat-window {

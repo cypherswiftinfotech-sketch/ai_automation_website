@@ -28,6 +28,13 @@
     <link rel="stylesheet" href="interactions.css">
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background: rgba(15, 17, 26, 0.95); min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100; border: 1px solid var(--glass-border); border-radius: var(--radius-md); backdrop-filter: blur(10px); top: 100%; left: 0; padding: 0.5rem 0; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a { color: #fff; padding: 12px 16px; text-decoration: none; display: block; font-size: 0.9rem; transition: background 0.2s; }
+        .dropdown-content a:hover { background: rgba(255,255,255,0.05); color: var(--color-accent-indigo); }
+    </style>
 </head>
 <body>
 
@@ -45,7 +52,13 @@
             </a>
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link">Home</a></li>
-                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li class="dropdown">
+                    <a href="services.html" class="nav-link">Services ▼</a>
+                    <div class="dropdown-content">
+                        <a href="service-ai-agent-consulting.html">AI Agent &amp; AI Consultant Development</a>
+                        <a href="services.html">AI Automation for Marketing and Sales</a>
+                    </div>
+                </li>
                 <li><a href="industries.html" class="nav-link">Industries</a></li>
                 <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
                 <li><a href="pricing.html" class="nav-link">Pricing</a></li>

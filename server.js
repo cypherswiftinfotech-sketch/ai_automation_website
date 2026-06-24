@@ -42,6 +42,66 @@ let memorySettings = {
 };
 let memorySeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
 
+// ── Performance cache (reduces per-request Supabase round trips) ──
+// NOTE: this server is currently not clustered; in-memory caching is effective.
+const CACHE_TTL_MS = Number(process.env.SEOCACHE_TTL_MS || 5 * 60 * 1000); // 5 minutes
+let cachedCsSettings = null; // parsed settings object
+let cachedApiLocation = null;
+let cachedSeoPages = null;
+let cachedSeoPagesFetchedAt = 0;
+let cachedCsSettingsFetchedAt = 0;
+
+function isCacheFresh(ts) {
+    return typeof ts === 'number' && (Date.now() - ts) < CACHE_TTL_MS;
+}
+
+async function getCsSettingsCached() {
+    if (isCacheFresh(cachedCsSettingsFetchedAt) && cachedCsSettings) {
+        return cachedCsSettings;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from('images')
+            .select('*')
+            .eq('category', 'cs_settings')
+            .limit(1);
+
+        if (!error && data && data.length > 0) {
+            const parsed = JSON.parse(data[0].image_url);
+            cachedCsSettings = parsed;
+            cachedApiLocation = parsed && parsed.api_location ? parsed.api_location : null;
+            cachedCsSettingsFetchedAt = Date.now();
+            return parsed;
+        }
+    } catch (err) {
+        // ignore: fallback to memorySettings
+    }
+
+    cachedCsSettings = memorySettings;
+    cachedApiLocation = memorySettings && memorySettings.api_location ? memorySettings.api_location : null;
+    cachedCsSettingsFetchedAt = Date.now();
+    return cachedCsSettings;
+}
+
+async function getSeoPagesCached() {
+    if (cachedSeoPages && isCacheFresh(cachedSeoPagesFetchedAt)) {
+        return cachedSeoPages;
+    }
+
+    try {
+        const pages = await loadSeoPages(supabase);
+        cachedSeoPages = pages;
+        cachedSeoPagesFetchedAt = Date.now();
+        return pages;
+    } catch (err) {
+        cachedSeoPages = defaultSeoPages.map((p, idx) => ({ id: `seo-${idx + 1}`, ...p }));
+        cachedSeoPagesFetchedAt = Date.now();
+        return cachedSeoPages;
+    }
+}
+
+
 let memoryCaseStudies = [
     {
         id: "cs-sample-1",
@@ -103,14 +163,9 @@ async function serveLocationPage(res, slug) {
     const filePath = path.join(__dirname, 'public', 'location.html');
     let html = await fs.readFile(filePath, 'utf8');
 
-    let currentApiLocation = memorySettings.api_location || BASE_URL;
-    try {
-        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
-        if (!error && data && data.length > 0) {
-            const parsed = JSON.parse(data[0].image_url);
-            if (parsed.api_location) currentApiLocation = parsed.api_location;
-        }
-    } catch(err) {}
+    const settings = await getCsSettingsCached();
+    let currentApiLocation = settings && settings.api_location ? settings.api_location : (memorySettings.api_location || BASE_URL);
+
 
     const pageUrl = `${currentApiLocation}/locations/${branch.slug}`;
     const title = `${branch.name} | Cypher Swift InfoTech`;
@@ -133,21 +188,21 @@ async function servePageWithSeo(res, slug) {
     const filename = slugToFilename(slug);
     const filePath = path.join(__dirname, 'public', filename);
     let html = await fs.readFile(filePath, 'utf8');
-    let currentApiLocation = memorySettings.api_location || BASE_URL;
-    try {
-        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
-        if (!error && data && data.length > 0) {
-            const parsed = JSON.parse(data[0].image_url);
-            if (parsed.api_location) currentApiLocation = parsed.api_location;
-        }
-    } catch(err) {}
 
-    const seo = await getSeoForSlug(supabase, slug, memorySeoPages);
+    const settings = await getCsSettingsCached();
+    let currentApiLocation = settings && settings.api_location ? settings.api_location : (memorySettings.api_location || BASE_URL);
+
+    const allSeoPages = await getSeoPagesCached();
+    const seo = (allSeoPages && allSeoPages.length > 0)
+        ? (allSeoPages.find(p => p.slug === slug) || defaultSeoPages.find(p => p.slug === slug) || null)
+        : (await getSeoForSlug(supabase, slug, memorySeoPages));
+
     html = injectSeoIntoHtml(html, seo, currentApiLocation);
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     res.send(html);
 }
+
 
 // Public pages: inject admin-managed SEO before serving HTML
 app.get('/', async (req, res) => {
@@ -180,19 +235,14 @@ app.get('/locations/:slug', async (req, res) => {
 
 // Sitemap & robots
 app.get('/sitemap.xml', async (req, res) => {
-    let currentApiLocation = memorySettings.api_location;
-    try {
-        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
-        if (!error && data && data.length > 0) {
-            const parsed = JSON.parse(data[0].image_url);
-            if (parsed.api_location) currentApiLocation = parsed.api_location;
-        }
-    } catch(err) {}
+    const settings = await getCsSettingsCached();
+    let currentApiLocation = settings && settings.api_location ? settings.api_location : memorySettings.api_location;
 
     res.setHeader('Content-Type', 'application/xml');
     res.setHeader('Cache-Control', 'public, max-age=3600');
     res.send(buildSitemapXml(currentApiLocation));
 });
+
 app.get('/robots.txt', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'robots.txt'));
 });
@@ -281,32 +331,31 @@ app.get('/api/branches', (req, res) => {
 // 1. Fetch Global Settings
 app.get('/api/stats', async (req, res) => {
     try {
-        const { data, error } = await supabase.from('images').select('*').eq('category', 'cs_settings').limit(1);
-        if (error) throw error;
-        res.json({ success: true, data: data && data.length > 0 ? JSON.parse(data[0].image_url) : memorySettings });
+        const settings = await getCsSettingsCached();
+        res.json({ success: true, data: settings || memorySettings });
     } catch (err) {
-        console.warn('Fetch stats database connection warning (using memory fallback):', err.message);
+        console.warn('Fetch stats warning (using memory fallback):', err.message);
         res.json({ success: true, data: memorySettings });
     }
 });
+
 
 // 2. Fetch Public SEO Data (used by pages / external tools)
 app.get('/api/seo', async (req, res) => {
     try {
         const slug = req.query.slug;
+        const pages = await getSeoPagesCached();
         if (slug) {
-            const seo = await getSeoForSlug(supabase, slug, memorySeoPages);
+            const seo = pages.find(p => p.slug === slug) || defaultSeoPages.find(p => p.slug === slug) || null;
             return res.json({ success: true, data: seo });
         }
-        const pages = memorySeoPages.length > 0
-            ? memorySeoPages
-            : await loadSeoPages(supabase);
         res.json({ success: true, data: pages });
     } catch (err) {
         console.warn('Fetch SEO warning:', err.message);
         res.json({ success: true, data: defaultSeoPages });
     }
 });
+
 
 // 3. Fetch Dynamic Case Studies
 app.get('/api/case-studies', async (req, res) => {

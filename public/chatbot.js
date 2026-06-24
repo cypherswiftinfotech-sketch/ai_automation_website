@@ -26,67 +26,91 @@
     const container = document.createElement("div");
     container.innerHTML = `
       <!-- Floating Button -->
-      <button id="liveavatar-chat-btn">💬 Chat with Us</button>
+      <button id="liveavatar-chat-btn" aria-label="Chat with us" title="Chat with us">💬</button>
 
       <!-- Pre-Chat Lead Form Modal -->
       <div id="liveavatar-form-modal" aria-hidden="true">
         <div id="liveavatar-form-content" role="dialog" aria-modal="true" aria-labelledby="liveavatar-form-title">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px;">
-            <h3 id="liveavatar-form-title" style="margin:0 0 8px 0;">Get Your Diagnostic</h3>
+            <h3 id="liveavatar-form-title" style="margin:0 0 8px 0;">Request a Business Diagnostic</h3>
             <button id="liveavatar-form-close" type="button" style="border:none;background:transparent;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
           </div>
-          <p style="margin:0 0 18px 0;color:#aaa;font-size:0.9rem;">Share your details and we’ll email you the 5-day sales & AI growth diagnostic.</p>
+          <p style="margin:0 0 18px 0;color:#aaa;font-size:0.9rem;">Tell us a bit about your organization and our team will follow up with a tailored diagnostic.</p>
           <div id="liveavatar-form-error" style="color:#ef4444;margin-bottom:16px;display:none;"></div>
 
           <form id="diagnostic-form" autocomplete="on">
             <div class="liveavatar-form-grid">
               <div class="liveavatar-form-group">
-                <label class="liveavatar-form-label" for="full-name">Full Name</label>
-                <input class="liveavatar-form-input" type="text" id="full-name" required />
+                <label class="liveavatar-form-label" for="lf-name">Name *</label>
+                <input class="liveavatar-form-input" type="text" id="lf-name" required />
               </div>
               <div class="liveavatar-form-group">
-                <label class="liveavatar-form-label" for="email">Business Email</label>
-                <input class="liveavatar-form-input" type="email" id="email" required />
+                <label class="liveavatar-form-label" for="lf-email">Business Mail *</label>
+                <input class="liveavatar-form-input" type="email" id="lf-email" required />
               </div>
-
-              <div class="liveavatar-form-group full-width">
-                <label class="liveavatar-form-label" for="website">Company Website</label>
-                <input class="liveavatar-form-input" type="url" id="website" required />
-              </div>
-
               <div class="liveavatar-form-group">
-                <label class="liveavatar-form-label" for="company-size">Company Size</label>
-                <select class="liveavatar-form-select" id="company-size" required>
-                  <option value="startup">Startup (< 20 Reps)</option>
-                  <option value="midmarket">Mid-Market (20 - 100 Reps)</option>
-                  <option value="enterprise">Enterprise (100+ Reps)</option>
+                <label class="liveavatar-form-label" for="lf-phone">Calling/WhatsApp Number</label>
+                <input class="liveavatar-form-input" type="text" id="lf-phone" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-company">Company Name</label>
+                <input class="liveavatar-form-input" type="text" id="lf-company" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-role">Role/Designation</label>
+                <input class="liveavatar-form-input" type="text" id="lf-role" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-website">Company Website</label>
+                <input class="liveavatar-form-input" type="text" id="lf-website" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-location">Location</label>
+                <input class="liveavatar-form-input" type="text" id="lf-location" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-employees">Number of Employees</label>
+                <input class="liveavatar-form-input" type="text" id="lf-employees" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-budget">Budget Range</label>
+                <input class="liveavatar-form-input" type="text" id="lf-budget" />
+              </div>
+              <div class="liveavatar-form-group">
+                <label class="liveavatar-form-label" for="lf-industry">Industry Type</label>
+                <select class="liveavatar-form-select" id="lf-industry">
+                  <option value="">Select...</option>
+                  <option value="AI Agent Development">AI Agent Development</option>
+                  <option value="SaaS Product Development">SaaS Product Development</option>
+                  <option value="Website / Application Development">Website / Application Development</option>
+                  <option value="CRM / ERP / LMS Development">CRM / ERP / LMS Development</option>
                 </select>
               </div>
-              <div class="liveavatar-form-group">
-                <label class="liveavatar-form-label" for="request-type">Request Type</label>
-                <select class="liveavatar-form-select" id="request-type" required>
-                  <option value="diagnostic" selected>5-Day AI Growth Diagnostic</option>
-                  <option value="strategy">Strategy Blueprint Session</option>
-                  <option value="case-study">Full Case Study Request</option>
-                  <option value="partnership">Retainer Partnership Discussion</option>
+              <div class="liveavatar-form-group full-width">
+                <label class="liveavatar-form-label" for="lf-service">Service Requirement</label>
+                <select class="liveavatar-form-select" id="lf-service">
+                  <option value="">Select...</option>
+                  <option value="AI Agent Development">AI Agent Development</option>
+                  <option value="SaaS Product Development">SaaS Product Development</option>
+                  <option value="Website / Application Development">Website / Application Development</option>
+                  <option value="CRM / ERP / LMS Development">CRM / ERP / LMS Development</option>
                 </select>
               </div>
-
               <div class="liveavatar-form-group full-width">
-                <label class="liveavatar-form-label" for="message">Strategic Context (Optional)</label>
-                <textarea class="liveavatar-form-input" id="message" rows="4" placeholder="Briefly describe your existing CRM stack or growth constraints..."></textarea>
+                <label class="liveavatar-form-label" for="lf-timeline">Expected Timeline</label>
+                <select class="liveavatar-form-select" id="lf-timeline">
+                  <option value="">Select...</option>
+                  <option value="Immediately">Immediately</option>
+                  <option value="Within 1 Month">Within 1 Month</option>
+                  <option value="Within 3 Months">Within 3 Months</option>
+                  <option value="Planning Stage">Planning Stage</option>
+                </select>
               </div>
             </div>
 
-            <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:18px;">
-              <div style="font-size:12px;color:#71717a;line-height:1.4;">
-                <div>Estimated investment</div>
-                <div style="font-weight:800;color:#e4e4e7;margin-top:2px;" id="calc-estimate">$900 / ₹75,000</div>
-              </div>
-              <div class="liveavatar-form-actions">
-                <button id="liveavatar-form-cancel" type="button">Cancel</button>
-                <button id="liveavatar-form-submit" type="submit">Submit Request</button>
-              </div>
+            <div class="liveavatar-form-actions" style="margin-top:20px;">
+              <button id="liveavatar-form-cancel" type="button">Cancel</button>
+              <button id="liveavatar-form-submit" type="submit">Submit &amp; Request Diagnostic</button>
             </div>
           </form>
         </div>
@@ -290,80 +314,74 @@
       cancelBtn.addEventListener("click", () => setModalOpen(false));
     }
 
-    // Estimate calculator (sync with contact.html logic)
-    const pricingSelect = document.getElementById("company-size");
-    const pricingResult = document.getElementById("calc-estimate");
-    if (pricingSelect && pricingResult) {
-      pricingSelect.addEventListener("change", (e) => {
-        const val = e.target.value;
-        if (val === "startup") {
-          pricingResult.textContent = "$900 / ₹75,000";
-        } else if (val === "midmarket") {
-          pricingResult.textContent = "$1,800 / ₹1,50,000";
-        } else if (val === "enterprise") {
-          pricingResult.textContent = "Custom Strategy Pricing";
-        }
-      });
-    }
-
-    // Submit form
+    // Submit form — collect lead data and init session via /query/init
     const contactForm = document.getElementById("diagnostic-form");
     if (contactForm) {
       contactForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        const name = document.getElementById("lf-name")?.value.trim() || "";
+        const email = document.getElementById("lf-email")?.value.trim() || "";
+
+        if (!name || !email) {
+          const errEl = document.getElementById("liveavatar-form-error");
+          if (errEl) {
+            errEl.textContent = "Name and Business Mail are required.";
+            errEl.style.display = "block";
+          }
+          return;
+        }
+
         const submitBtn = contactForm.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn ? submitBtn.innerHTML : "";
         if (submitBtn) {
           submitBtn.disabled = true;
-          submitBtn.innerHTML = "<span>Processing Request...</span>";
+          submitBtn.innerHTML = "<span>Submitting...</span>";
         }
 
-        const name = document.getElementById("full-name")?.value || "";
-        const email = document.getElementById("email")?.value || "";
-        const website = document.getElementById("website")?.value || "";
-        const size =
-          document.getElementById("company-size")?.value || "startup";
-        const type =
-          document.getElementById("request-type")?.value || "diagnostic";
-        const context = document.getElementById("message")?.value || "";
+        const preChatData = {
+          name,
+          email,
+          phone: document.getElementById("lf-phone")?.value.trim() || "",
+          company_name: document.getElementById("lf-company")?.value.trim() || "",
+          role: document.getElementById("lf-role")?.value.trim() || "",
+          company_website: document.getElementById("lf-website")?.value.trim() || "",
+          location: document.getElementById("lf-location")?.value.trim() || "",
+          num_employees: document.getElementById("lf-employees")?.value.trim() || "",
+          budget_range: document.getElementById("lf-budget")?.value.trim() || "",
+          industry_type: document.getElementById("lf-industry")?.value || "",
+          service_requirement: document.getElementById("lf-service")?.value || "",
+          expected_timeline: document.getElementById("lf-timeline")?.value || "",
+        };
+
+        const errEl = document.getElementById("liveavatar-form-error");
+        if (errEl) errEl.style.display = "none";
 
         try {
-          const res = await fetch(`${API_URL}/api/leads`, {
+          // Initialize session with lead data
+          const res = await apiFetch("/query/init", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name,
-              email,
-              website,
-              companySize: size,
-              requestType: type,
-              strategicContext: context,
+              user_id: userId,
+              language: "en",
+              pre_chat_data: preChatData,
             }),
           });
+          if (res.conversation_id) conversationId = res.conversation_id;
 
-          const result = await res.json().catch(() => ({}));
-          if (!res.ok || result?.success === false) {
-            const detail =
-              result?.message || result?.detail || "Submission failed";
-            const errEl = document.getElementById("liveavatar-form-error");
-            if (errEl) {
-              errEl.textContent = detail;
-              errEl.style.display = "block";
-            }
-            return;
-          }
-
-          alert(
-            `Thank you for submitting your Diagnostic Request!\n\nOur lead strategist will email you at ${email} within 2 hours to confirm your scheduling. Your request has also been logged securely in our system database.`,
-          );
+          // Close form and open chat
           contactForm.reset();
           setModalOpen(false);
+          const chatWindow = document.getElementById("liveavatar-chat-window");
+          chatWindow.dataset.wasVisible = "true";
+          chatWindow.style.display = "flex";
+
+          // Auto-trigger greeting
+          await triggerGreeting();
         } catch (err) {
           console.error(err);
-          const errEl = document.getElementById("liveavatar-form-error");
           if (errEl) {
-            errEl.textContent = "Lead submission failed. Please try again.";
+            errEl.textContent = err.message || "Submission failed. Please try again.";
             errEl.style.display = "block";
           }
         } finally {
@@ -378,9 +396,10 @@
     // Only open modal when landing page asks for diagnostic intent.
     preselectAndOpenModal();
 
-    // Intercept all "Get Diagnostic" links so they open the popup form
-    // instead of navigating away to contact.html
-    document.querySelectorAll('a[href*="type=diagnostic"]').forEach(link => {
+    // Intercept ONLY the header "Get Diagnostic" CTA so it opens the popup
+    // form instead of navigating to contact.html. Other diagnostic links on
+    // the page (e.g. in-page hero CTAs) keep their normal navigation.
+    document.querySelectorAll('.nav-cta a[href*="type=diagnostic"]').forEach(link => {
       link.addEventListener("click", (e) => {
         e.preventDefault();
         setModalOpen(true);

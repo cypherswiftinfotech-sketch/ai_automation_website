@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent & AI Consultant Development | Cypher Swift InfoTech</title>
+    <meta name="description" content="Build intelligent AI consultants, knowledge assistants, and business agents tailored to your organization. Develop AI agents that explain services, answer questions, qualify leads, and schedule meetings.">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="custom-components.css">
+    <link rel="stylesheet" href="interactions.css">
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <script src="config.js"></script>
+    <style>
+        /* Phase timeline styles */
+        .phase-card {
+            position: relative;
+            padding: 2.5rem 2rem 2rem 2rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .phase-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+        .phase-num {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--color-accent-indigo);
+            text-transform: uppercase;
+        }
+        .phase-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0 1.5rem 0;
+        }
+        .phase-list li {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            padding: 0.35rem 0 0.35rem 1.25rem;
+            position: relative;
+        }
+        .phase-list li::before {
+            content: "▸";
+            color: var(--color-accent-indigo);
+            position: absolute;
+            left: 0;
+        }
+        .phase-deliverable {
+            margin-top: auto;
+            padding: 0.75rem 1rem;
+            background: rgba(92, 103, 242, 0.08);
+            border-left: 3px solid var(--color-accent-indigo);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+        }
+        .phase-deliverable strong {
+            color: var(--color-accent-indigo);
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+        .plan-card {
+            padding: 2.5rem 2rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .plan-card:hover { transform: translateY(-4px); border-color: var(--color-accent-indigo); }
+        .plan-card.featured { border-top: 3px solid var(--color-accent-purple); }
+        .plan-icon {
+            width: 56px; height: 56px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(92, 103, 242, 0.1);
+            color: var(--color-accent-indigo);
+            border-radius: 50%;
+            margin-bottom: 1.5rem;
+        }
+        .plan-card.featured .plan-icon { background: rgba(168, 85, 247, 0.1); color: var(--color-accent-purple); }
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+        .plan-features li {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            position: relative;
+        }
+        .plan-features li::before {
+            content: "✓";
+            color: var(--color-accent-indigo);
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+        .plan-suitable {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+        .agent-type-card {
+            padding: 2rem;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+        .agent-type-card:hover { transform: translateY(-3px); border-color: var(--color-accent-indigo); }
+        .agent-num {
+            flex-shrink: 0;
+            width: 36px; height: 36px;
+            background: var(--color-accent-indigo);
+            color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .agent-type-card:nth-child(2) .agent-num { background: var(--color-accent-purple); }
+        .agent-type-card:nth-child(3) .agent-num { background: var(--color-accent-cyan); }
+        .agent-type-card:nth-child(4) .agent-num { background: var(--color-accent-emerald); }
+        .agent-type-card:nth-child(5) .agent-num { background: var(--color-accent-purple); }
+        .agent-type-card:nth-child(6) .agent-num { background: var(--color-accent-cyan); }
+        .agent-type-card:nth-child(7) .agent-num { background: var(--color-accent-emerald); }
+        .agent-type-card h4 {
+            color: #fff;
+            margin: 0 0 0.35rem 0;
+            font-size: 1.05rem;
+        }
+        .agent-type-card p {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .capability-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem 1.5rem;
+        }
+        .capability-list li {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .capability-list li::before {
+            content: "✓";
+            color: var(--color-accent-indigo);
+            position: absolute;
+            left: 0;
+            font-weight: 700;
+        }
+        @media (max-width: 640px) {
+            .capability-list { grid-template-columns: 1fr; }
+        }
+
+        /* Dropdown styles for header nav */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; background: rgba(15, 17, 26, 0.95);
+            min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100;
+            border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            backdrop-filter: blur(10px); top: 100%; left: 0; padding: 0.5rem 0;
+        }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a {
+            color: #fff; padding: 12px 16px; text-decoration: none; display: block;
+            font-size: 0.9rem; transition: background 0.2s;
+        }
+        .dropdown-content a:hover { background: rgba(255,255,255,0.05); color: var(--color-accent-indigo); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow-container">
+        <div class="bg-glow-1"></div>
+        <div class="bg-glow-2"></div>
+    </div>
+
+    <!-- Header / Navigation -->
+    <header class="header-nav">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <div class="logo-icon"></div>
+                CypherSwift <span>InfoTech</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li class="dropdown">
+                    <a href="services.html" class="nav-link active">Services ▼</a>
+                    <div class="dropdown-content">
+                        <a href="service-ai-agent-consulting.html" style="color: var(--color-accent-indigo);">AI Agent &amp; AI Consultant Development</a>
+                        <a href="services.html">AI Automation for Marketing and Sales</a>
+                    </div>
+                </li>
+                <li><a href="industries.html" class="nav-link">Industries</a></li>
+                <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
+                <li><a href="pricing.html" class="nav-link">Pricing</a></li>
+                <li><a href="about.html" class="nav-link">Company</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="contact.html?type=diagnostic" class="btn btn-secondary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Get Diagnostic</a>
+            </div>
+            <button class="hamburger">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container text-center" style="max-width: 950px;">
+            <span class="subtitle" style="display: inline-block; margin-bottom: 1rem; color: var(--color-accent-indigo); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">AI Agent Development &amp; Consulting</span>
+            <h1 style="font-size: clamp(2.4rem, 4.5vw, 3.8rem); line-height: 1.1; margin-bottom: 1.5rem;">AI Agent &amp; AI Consultant Development</h1>
+            <p style="margin: 0 auto 1.5rem auto; font-size: 1.2rem; color: var(--color-accent-indigo); font-weight: 500;">Build Intelligent AI Consultants, Knowledge Assistants and Business Agents Tailored to Your Organization</p>
+            <p style="margin: 0 auto 2.5rem auto; font-size: 1.1rem;">Develop AI-powered consultants and assistants that can explain services, answer questions, collect requirements, qualify opportunities, schedule meetings, and support internal teams with contextual knowledge.</p>
+
+            <!-- Service highlights card -->
+            <div class="glass-card" style="max-width: 900px; margin: 0 auto 2.5rem auto; padding: 1.5rem 2rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem 1.5rem; border-top: 3px solid var(--color-accent-indigo);">
+                <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-text-secondary); font-size: 0.95rem;">
+                    <span style="color: var(--color-accent-indigo);">◆</span> Strategic Advisory
+                </span>
+                <span style="color: var(--glass-border);">•</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-text-secondary); font-size: 0.95rem;">
+                    <span style="color: var(--color-accent-purple);">◆</span> AI Development
+                </span>
+                <span style="color: var(--glass-border);">•</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-text-secondary); font-size: 0.95rem;">
+                    <span style="color: var(--color-accent-indigo);">◆</span> Knowledge Engineering
+                </span>
+                <span style="color: var(--glass-border);">•</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-text-secondary); font-size: 0.95rem;">
+                    <span style="color: var(--color-accent-purple);">◆</span> Deployment
+                </span>
+                <span style="color: var(--glass-border);">•</span>
+                <span style="display: inline-flex; align-items: center; gap: 0.4rem; color: var(--color-text-secondary); font-size: 0.95rem;">
+                    <span style="color: var(--color-accent-indigo);">◆</span> Continuous Improvement
+                </span>
+            </div>
+
+            <div class="btn-group" style="justify-content: center;">
+                <a href="contact.html?type=consultation" class="btn btn-primary">Request Discovery Session</a>
+                <a href="contact.html?type=consultation" class="btn btn-secondary">Book a Consultation</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is AI Agent Development -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Overview</span>
+                <h2>What is AI Agent Development?</h2>
+            </div>
+            <div class="challenge-grid">
+                <div>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.25rem;">AI Agent Development involves designing intelligent assistants that can understand conversations, retrieve approved information, perform predefined actions, and interact with users in a natural and professional manner.</p>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.25rem;">Unlike traditional chatbots, AI Agents can understand intent, maintain context, present business knowledge, and guide users through structured consultations.</p>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7;">Cypher Swift develops AI Agents that act as consultants, advisors, assistants, trainers, and customer-facing representatives while maintaining security, consistency, and brand identity.</p>
+                </div>
+                <div class="glass-card" style="padding: 2.5rem; background: linear-gradient(135deg, rgba(92,103,242,0.1) 0%, rgba(15,17,26,0.9) 100%);">
+                    <h3 style="color: #fff; margin-bottom: 1.5rem;">Key Capabilities</h3>
+                    <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Natural language understanding</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Contextual memory across sessions</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Retrieval-augmented responses</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Action execution and integrations</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Brand-aligned tone and persona</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What is an AI Consultant -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Specialized</span>
+                <h2>What is an AI Consultant?</h2>
+                <p style="max-width: 800px; margin: 0 auto;">An AI Consultant is a specialized AI Agent designed to provide professional consultations similar to a domain expert.</p>
+            </div>
+
+            <div class="glass-card" style="padding: 3rem; max-width: 1000px; margin: 0 auto; background: linear-gradient(135deg, rgba(92,103,242,0.08) 0%, rgba(15,17,26,0.9) 100%);">
+                <ul class="capability-list">
+                    <li>Explain products and services</li>
+                    <li>Answer approved business questions</li>
+                    <li>Collect requirements</li>
+                    <li>Present case studies</li>
+                    <li>Recommend relevant solutions</li>
+                    <li>Schedule meetings</li>
+                    <li>Assist with internal knowledge retrieval</li>
+                    <li>Support multilingual conversations</li>
+                    <li>Qualify leads and prospects</li>
+                    <li>Escalate complex discussions to specialists</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Agent Types We Develop -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Agent Catalog</span>
+                <h2>AI Agent Types We Develop</h2>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+                <div class="agent-type-card">
+                    <div class="agent-num">1</div>
+                    <div>
+                        <h4>AI Business Consultant</h4>
+                        <p>Strategic advisory AI that supports business decisions, evaluates opportunities, and recommends services aligned to your objectives.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">2</div>
+                    <div>
+                        <h4>AI Knowledge Assistant</h4>
+                        <p>Internal knowledge retrieval agent that helps teams find approved documents, policies, FAQs, and case studies on demand.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">3</div>
+                    <div>
+                        <h4>AI Sales Consultant</h4>
+                        <p>Engages prospects, qualifies opportunities, presents offerings, and books meetings directly into your sales calendar.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">4</div>
+                    <div>
+                        <h4>AI Healthcare Consultant</h4>
+                        <p>Patient-facing assistant for symptom collection, treatment information, appointment scheduling, and follow-up workflows.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">5</div>
+                    <div>
+                        <h4>AI Interview Preparation Consultant</h4>
+                        <p>Coaches candidates with role-specific questions, feedback, and mock interview sessions tailored to job requirements.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">6</div>
+                    <div>
+                        <h4>AI Customer Service Agent</h4>
+                        <p>Handles high-volume support inquiries, resolves common questions, and escalates complex issues to human specialists.</p>
+                    </div>
+                </div>
+                <div class="agent-type-card">
+                    <div class="agent-num">7</div>
+                    <div>
+                        <h4>AI Live Avatar Consultant</h4>
+                        <p>Real-time avatar experience that speaks to users naturally while representing your brand, services, and approved knowledge.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Development Methodology -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Methodology</span>
+                <h2>Our Development Methodology</h2>
+                <p>A five-phase approach that takes your AI Consultant from idea to production-ready system.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <!-- Phase 1 -->
+                <div class="phase-card">
+                    <div class="phase-num">Phase 01</div>
+                    <h3 style="color: #fff; margin: 0 0 0.5rem 0;">Discovery Session</h3>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0 0.75rem 0;">Align on goals, audience, and outcomes before writing a single prompt.</p>
+                    <ul class="phase-list">
+                        <li>Business Objectives</li>
+                        <li>Target Audience</li>
+                        <li>Expected Outcomes</li>
+                        <li>Use Cases</li>
+                    </ul>
+                    <div class="phase-deliverable">
+                        <strong>Deliverable</strong>
+                        Requirements Analysis Report
+                    </div>
+                </div>
+
+                <!-- Phase 2 -->
+                <div class="phase-card">
+                    <div class="phase-num">Phase 02</div>
+                    <h3 style="color: #fff; margin: 0 0 0.5rem 0;">Knowledge Engineering</h3>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0 0.75rem 0;">Curate and structure every piece of approved information the agent will use.</p>
+                    <ul class="phase-list">
+                        <li>Documents</li>
+                        <li>FAQs</li>
+                        <li>Websites</li>
+                        <li>Policies</li>
+                        <li>Case Studies</li>
+                        <li>Company Services</li>
+                    </ul>
+                    <div class="phase-deliverable">
+                        <strong>Deliverable</strong>
+                        Structured Knowledge Base
+                    </div>
+                </div>
+
+                <!-- Phase 3 -->
+                <div class="phase-card">
+                    <div class="phase-num">Phase 03</div>
+                    <h3 style="color: #fff; margin: 0 0 0.5rem 0;">Conversation Design</h3>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0 0.75rem 0;">Map the dialogue, escalation rules, and meeting flows the agent will follow.</p>
+                    <ul class="phase-list">
+                        <li>Greeting Flow</li>
+                        <li>Requirement Collection</li>
+                        <li>Question Handling</li>
+                        <li>Escalation Rules</li>
+                        <li>Meeting Scheduling</li>
+                    </ul>
+                    <div class="phase-deliverable">
+                        <strong>Deliverable</strong>
+                        Conversation Blueprint
+                    </div>
+                </div>
+
+                <!-- Phase 4 -->
+                <div class="phase-card">
+                    <div class="phase-num">Phase 04</div>
+                    <h3 style="color: #fff; margin: 0 0 0.5rem 0;">AI Development</h3>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0 0.75rem 0;">Build the agent, wire it to your tools, and prepare it for production traffic.</p>
+                    <ul class="phase-list">
+                        <li>RAG Integration</li>
+                        <li>LLM Configuration</li>
+                        <li>Avatar Integration</li>
+                        <li>CRM Integration</li>
+                        <li>Calendar Integration</li>
+                        <li>Analytics Setup</li>
+                    </ul>
+                    <div class="phase-deliverable">
+                        <strong>Deliverable</strong>
+                        Working AI Agent
+                    </div>
+                </div>
+
+                <!-- Phase 5 -->
+                <div class="phase-card">
+                    <div class="phase-num">Phase 05</div>
+                    <h3 style="color: #fff; margin: 0 0 0.5rem 0;">Testing &amp; Optimization</h3>
+                    <p style="color: var(--color-text-muted); font-size: 0.85rem; margin: 0 0 0.75rem 0;">Stress-test scenarios, refine prompts, and harden the system for live use.</p>
+                    <ul class="phase-list">
+                        <li>Scenario Testing</li>
+                        <li>Prompt Improvements</li>
+                        <li>Performance Monitoring</li>
+                        <li>Continuous Learning</li>
+                    </ul>
+                    <div class="phase-deliverable">
+                        <strong>Deliverable</strong>
+                        Production Ready System
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Plans -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Engagement Plans</span>
+                <h2>Service Plans</h2>
+                <p>Pick the plan that matches your stage. Every plan can be customized after the discovery session.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                <!-- Starter -->
+                <div class="plan-card">
+                    <div class="plan-icon">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--color-accent-indigo); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Starter</span>
+                    <h3 style="color: #fff; margin: 0.5rem 0 0.5rem 0;">Starter Plan</h3>
+                    <ul class="plan-features">
+                        <li>Website Assistant</li>
+                        <li>Lead Collection</li>
+                        <li>FAQ Automation</li>
+                    </ul>
+                    <div class="plan-suitable">Suitable for startups</div>
+                </div>
+
+                <!-- Growth -->
+                <div class="plan-card featured">
+                    <div class="plan-icon">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18M9 17V9m4 8V5m4 12v-6" /></svg>
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--color-accent-purple); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Most Popular</span>
+                    <h3 style="color: #fff; margin: 0.5rem 0 0.5rem 0;">Growth Plan</h3>
+                    <ul class="plan-features">
+                        <li>AI Consultant</li>
+                        <li>Knowledge Assistant</li>
+                        <li>Meeting Scheduler</li>
+                        <li>CRM Integration</li>
+                    </ul>
+                    <div class="plan-suitable">Suitable for growing businesses</div>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="plan-card">
+                    <div class="plan-icon">
+                        <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--color-accent-indigo); font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">Enterprise</span>
+                    <h3 style="color: #fff; margin: 0.5rem 0 0.5rem 0;">Enterprise Plan</h3>
+                    <ul class="plan-features">
+                        <li>Live AI Avatar</li>
+                        <li>Advanced Integrations</li>
+                        <li>Analytics</li>
+                        <li>Multilingual Support</li>
+                        <li>Custom Workflows</li>
+                    </ul>
+                    <div class="plan-suitable">Suitable for enterprises</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Cypher Swift -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Why Us</span>
+                <h2>Why Cypher Swift?</h2>
+            </div>
+            <div class="challenge-grid">
+                <div>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.25rem;">Cypher Swift does not simply develop chatbots.</p>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.25rem;">We design AI-powered consultation systems that represent your business knowledge, interact professionally with users, collect relevant information, support internal teams, and provide scalable consultation experiences.</p>
+                    <p style="color: var(--color-text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.25rem;">Every AI Consultant is developed according to organizational objectives, workflows, and industry requirements.</p>
+                    <p style="color: #fff; font-size: 1.1rem; line-height: 1.7; font-weight: 500;">Our approach combines strategic advisory, knowledge engineering, AI development, implementation, and continuous optimization to ensure long-term usability and measurable value.</p>
+                </div>
+                <div class="glass-card" style="padding: 2.5rem; background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(15,17,26,0.9) 100%);">
+                    <h3 style="color: #fff; margin-bottom: 1.5rem;">What Sets Us Apart</h3>
+                    <ul class="service-features" style="border: none; padding-top: 0; margin-top: 0;">
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Consultation-first design philosophy</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Curated knowledge engineering</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Native CRM and calendar integrations</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Multilingual conversation support</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Live avatar experience</li>
+                        <li><svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" /></svg> Long-term optimization and support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section-padding" style="background: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2>Frequently Asked Questions</h2>
+            </div>
+            <div style="max-width: 850px; margin: 0 auto;">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can the AI Agent schedule meetings?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">Yes. It can integrate with calendars, suggest available time slots, and collect meeting preferences.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can the AI Agent speak multiple languages?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">Yes. Responses can be generated in multiple languages while preserving the meaning of approved English content.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can the AI Agent learn from new information?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">Yes. Authorized users may add, update, or remove knowledge entries through the backend.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Will it replace human consultants?</span>
+                        <span>+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p style="padding-bottom: 1rem;">No. The objective is to improve accessibility, consistency, and efficiency while allowing specialists to focus on higher-value discussions.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="section-padding" style="border-top: 1px solid var(--glass-border);">
+        <div class="container text-center">
+            <h2 style="max-width: 800px; margin: 0 auto 1.25rem auto;">Looking to Develop an AI Consultant for Your Organization?</h2>
+            <p style="max-width: 700px; margin: 0 auto 2.5rem auto; color: var(--color-text-secondary); font-size: 1.1rem;">Discover how customized AI Agents can support consultations, improve productivity, and enhance customer experiences.</p>
+            <div class="btn-group" style="justify-content: center;">
+                <a href="contact.html?type=consultation" class="btn btn-primary">Request Discovery Session</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="margin-top: 0; padding-top: 2rem;">
+                <div>© 2026 Cypher Swift InfoTech. All rights reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="interactions.js"></script>
+    <script src="chatbot.js"></script>
+    <script>
+        // FAQ Accordion Logic (matches services.html)
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const item = question.parentNode;
+                const isActive = item.classList.contains('active');
+                document.querySelectorAll('.faq-item').forEach(otherItem => {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.faq-question span:last-child').textContent = '+';
+                });
+                if (!isActive) {
+                    item.classList.add('active');
+                    question.querySelector('span:last-child').textContent = '−';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

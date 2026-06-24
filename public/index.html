@@ -30,6 +30,22 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* Dropdown styles for header nav */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; background: rgba(15, 17, 26, 0.95);
+            min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100;
+            border: 1px solid var(--glass-border); border-radius: var(--radius-md);
+            backdrop-filter: blur(10px); top: 100%; left: 0; padding: 0.5rem 0;
+        }
+        .dropdown:hover .dropdown-content { display: block; }
+        .dropdown-content a {
+            color: #fff; padding: 12px 16px; text-decoration: none; display: block;
+            font-size: 0.9rem; transition: background 0.2s;
+        }
+        .dropdown-content a:hover { background: rgba(255,255,255,0.05); color: var(--color-accent-indigo); }
+    </style>
 </head>
 <body>
 
@@ -48,7 +64,13 @@
             </a>
             <ul class="nav-menu">
                 <li><a href="index.html" class="nav-link active">Home</a></li>
-                <li><a href="services.html" class="nav-link">Services</a></li>
+                <li class="dropdown">
+                    <a href="services.html" class="nav-link">Services ▼</a>
+                    <div class="dropdown-content">
+                        <a href="service-ai-agent-consulting.html">AI Agent &amp; AI Consultant Development</a>
+                        <a href="services.html">AI Automation for Marketing and Sales</a>
+                    </div>
+                </li>
                 <li><a href="industries.html" class="nav-link">Industries</a></li>
                 <li><a href="case-studies.html" class="nav-link">Case Studies</a></li>
                 <li><a href="pricing.html" class="nav-link">Pricing</a></li>
@@ -66,6 +88,21 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <canvas id="heroPipelineCanvas" class="hero-pipeline-canvas" aria-hidden="true"></canvas>
+        <div class="hero-background-stats" aria-hidden="true">
+            <div class="hero-float-stat" style="--stat-x: 0.08; --stat-y: 0.67;">
+                <div class="hero-float-stat-label">Qualified Leads (MQL)</div>
+                <div class="hero-float-stat-val" style="color: var(--color-accent-cyan);">
+                    2,842 <span class="hero-float-stat-chip" style="color: var(--color-accent-emerald);">+40%</span>
+                </div>
+            </div>
+            <div class="hero-float-stat" style="--stat-x: 0.62; --stat-y: 0.67;">
+                <div class="hero-float-stat-label">Automation Efficiency</div>
+                <div class="hero-float-stat-val" style="color: var(--color-accent-purple);">
+                    72% <span class="hero-float-stat-chip" style="color: var(--color-accent-emerald);">Optimal</span>
+                </div>
+            </div>
+        </div>
         <div class="container hero-grid">
             <div class="hero-content">
                 <span class="subtitle">Predictable Revenue Systems</span>
@@ -93,8 +130,10 @@
                     <a href="case-studies.html" class="btn btn-secondary">View Case Studies</a>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="dashboard-preview">
+            <div class="hero-visual" style="position: relative; z-index: 2;">
+                <div class="dashboard-preview" style="opacity: 0; visibility: hidden;"> 
+
+
                     <div class="dashboard-header">
                         <span class="dot dot-red"></span>
                         <span class="dot dot-yellow"></span>
@@ -102,15 +141,15 @@
                         <span style="color: var(--color-text-muted); font-size: 0.75rem; margin-left: auto;">cypherswift.revenue-engine.ai</span>
                     </div>
                     <div class="dashboard-screen">
-                        <div class="chart-placeholder">
-                            <svg class="chart-line-svg" preserveAspectRatio="none" viewBox="0 0 100 100">
+                        <div class="chart-placeholder" style="position: relative; z-index: 1;">
+                            <svg class="chart-line-svg" preserveAspectRatio="none" viewBox="0 0 100 100" style="opacity: 0.0; pointer-events: none;" aria-hidden="true">
                                 <defs>
                                     <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="0%" stop-color="var(--color-accent-indigo)" stop-opacity="0.3"></stop>
                                         <stop offset="100%" stop-color="var(--color-accent-purple)" stop-opacity="0.0"></stop>
                                     </linearGradient>
                                 </defs>
-                                <path d="M 0 80 Q 20 60 40 70 T 80 30 T 100 10 L 100 100 L 0 100 Z" fill="url(#chartGrad)"></path>
+                        <path d="M 0 80 Q 20 60 40 70 T 80 30 T 100 10 L 100 100 L 0 100 Z" fill="url(#chartGrad)"></path>
                                 <path d="M 0 80 Q 20 60 40 70 T 80 30 T 100 10" fill="none" stroke="var(--color-accent-indigo)" stroke-width="2"></path>
                             </svg>
                             <span style="z-index: 1; font-weight: 700; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: var(--radius-sm);">+157% Pipeline Growth</span>
@@ -417,35 +456,35 @@
             </div>
 
             <div class="services-grid">
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">🎯</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">Qualified Opportunities</h4>
-                    <p style="font-size: 0.95rem;">Filter out low-intent requests. Sales reps spend time speaking with validated decision makers.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">🎯</div>
+                    <h4>Qualified Opportunities</h4>
+                    <p>Filter out low-intent requests. Sales reps spend time speaking with validated decision makers.</p>
                 </div>
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">⚡</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">Operational Efficiency</h4>
-                    <p style="font-size: 0.95rem;">Eliminate hours of manual data entry, lead logging, and CRM record tracking with secure APIs.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">⚡</div>
+                    <h4>Operational Efficiency</h4>
+                    <p>Eliminate hours of manual data entry, lead logging, and CRM record tracking with secure APIs.</p>
                 </div>
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">📊</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">Revenue Visibility</h4>
-                    <p style="font-size: 0.95rem;">Access clean, real-time performance indicators showing exact channel conversions and sales speed.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">📊</div>
+                    <h4>Revenue Visibility</h4>
+                    <p>Access clean, real-time performance indicators showing exact channel conversions and sales speed.</p>
                 </div>
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">⏱️</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">Time Optimization</h4>
-                    <p style="font-size: 0.95rem;">Automate initial qualifying queries so teams focus their skills on proposals and closing deals.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">⏱️</div>
+                    <h4>Time Optimization</h4>
+                    <p>Automate initial qualifying queries so teams focus their skills on proposals and closing deals.</p>
                 </div>
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">🔄</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">Process Consistency</h4>
-                    <p style="font-size: 0.95rem;">Build repeatable, non-person-dependent workflows. The business retains intellectual capital.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">🔄</div>
+                    <h4>Process Consistency</h4>
+                    <p>Build repeatable, non-person-dependent workflows. The business retains intellectual capital.</p>
                 </div>
-                <div class="glass-card" style="padding: 2rem;">
-                    <span style="font-size: 2rem;">🤖</span>
-                    <h4 style="margin: 1rem 0; color: #fff;">AI-Powered Intelligence</h4>
-                    <p style="font-size: 0.95rem;">Utilize LLMs to analyze call transcripts, email feedback, and optimize follow-up messaging dynamically.</p>
+                <div class="glass-card outcome-card">
+                    <div class="icon-badge">🤖</div>
+                    <h4>AI-Powered Intelligence</h4>
+                    <p>Utilize LLMs to analyze call transcripts, email feedback, and optimize follow-up messaging dynamically.</p>
                 </div>
             </div>
         </div>
@@ -514,36 +553,36 @@
                 <p>Deploying AI automation and revenue systems for enterprises across major technology hubs.</p>
             </div>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem;">
-                <a href="/locations/bangalore-hq" class="glass-card" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block; transition: transform 0.2s;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">📍</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Bangalore</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">India HQ</p>
+            <div class="location-grid">
+                <a href="/locations/bangalore-hq" class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">📍</div>
+                    <h4>Bangalore</h4>
+                    <p>India HQ</p>
                 </a>
-                <a href="/locations/mumbai" class="glass-card" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block; transition: transform 0.2s;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">📍</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Mumbai</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Financial Hub</p>
+                <a href="/locations/mumbai" class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">📍</div>
+                    <h4>Mumbai</h4>
+                    <p>Financial Hub</p>
                 </a>
-                <a href="/locations/delhi-ncr" class="glass-card" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block; transition: transform 0.2s;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">📍</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Delhi NCR</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Enterprise Sector</p>
+                <a href="/locations/delhi-ncr" class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">📍</div>
+                    <h4>Delhi NCR</h4>
+                    <p>Enterprise Sector</p>
                 </a>
-                <a href="/locations/hyderabad" class="glass-card" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block; transition: transform 0.2s;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">📍</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Hyderabad</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Tech Corridor</p>
+                <a href="/locations/hyderabad" class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">📍</div>
+                    <h4>Hyderabad</h4>
+                    <p>Tech Corridor</p>
                 </a>
-                <a href="/locations/pune" class="glass-card" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block; transition: transform 0.2s;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">📍</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Pune</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">IT & Manufacturing</p>
+                <a href="/locations/pune" class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">📍</div>
+                    <h4>Pune</h4>
+                    <p>IT & Manufacturing</p>
                 </a>
-                <div class="glass-card" style="padding: 1.5rem; text-align: center;">
-                    <span style="font-size: 2rem; color: var(--color-accent-red);">🌐</span>
-                    <h4 style="margin: 0.5rem 0; color: #fff;">Global Remote</h4>
-                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Worldwide Delivery</p>
+                <div class="glass-card location-card">
+                    <div class="icon-badge icon-badge-center">🌐</div>
+                    <h4>Global Remote</h4>
+                    <p>Worldwide Delivery</p>
                 </div>
             </div>
         </div>

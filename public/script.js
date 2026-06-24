@@ -51,19 +51,235 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Interactive Dashboard Simulation (For landing page visual)
-    const linePath = document.querySelector('.chart-line-svg path');
-    if (linePath) {
-        // Animate path drawing
-        const length = linePath.getTotalLength();
-        linePath.style.strokeDasharray = length;
-        linePath.style.strokeDashoffset = length;
+    // Hero animated pipeline background (canvas)
+    const heroSection = document.querySelector('.hero');
+    const canvas = document.getElementById('heroPipelineCanvas');
+
+    if (heroSection && canvas) {
+        const ctx = canvas.getContext('2d');
+        let rafId = 0;
+        let w = 0;
+        let h = 0;
         
-        setTimeout(() => {
-            linePath.style.transition = 'stroke-dashoffset 3s cubic-bezier(0.4, 0, 0.2, 1)';
-            linePath.style.strokeDashoffset = '0';
-        }, 500);
+        // Scale original SVG viewBox (0..100) into canvas pixels.
+        const SV = {
+            minX: 0,
+            maxX: 100,
+            minY: 0,
+            maxY: 100
+        };
+
+        function getComputedVars() {
+            const cs = getComputedStyle(document.documentElement);
+            return {
+                indigo: cs.getPropertyValue('--color-accent-indigo').trim(),
+                purple: cs.getPropertyValue('--color-accent-purple').trim(),
+                cyan: cs.getPropertyValue('--color-accent-cyan').trim(),
+            };
+        }
+
+        function resize() {
+            const rect = heroSection.getBoundingClientRect();
+            w = Math.max(10, Math.floor(rect.width));
+            h = Math.max(10, Math.floor(rect.height));
+
+            const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+            canvas.width = Math.floor(w * dpr);
+            canvas.height = Math.floor(h * dpr);
+            canvas.style.width = `${w}px`;
+            canvas.style.height = `${h}px`;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        // Curve definition matches the static SVG path.
+        // We'll approximate the same poly-bezier using the sampled SVG path shape.
+        function curvePoint(t) {
+            // t in [0..1] over x from 0..100 with a hand-tuned mapping matching the SVG:
+            // Path: M 0 80 Q 20 60 40 70 T 80 30 T 100 10
+            // We'll build using chained quadratic Beziers.
+            const x = 100 * t;
+
+            // Segment breakpoints (based on x): 0->40, 40->80, 80->100
+            if (t <= 0.4) {
+                // 0..0.4 maps to 0..40
+                const u = t / 0.4; // 0..1
+                // Quadratic from P0(0,80) to P2(40,70) with control P1(20,60)
+                const X0 = 0, Y0 = 80;
+                const X1 = 20, Y1 = 60;
+                const X2 = 40, Y2 = 70;
+                const px = (1-u)*(1-u)*X0 + 2*(1-u)*u*X1 + u*u*X2;
+                const py = (1-u)*(1-u)*Y0 + 2*(1-u)*u*Y1 + u*u*Y2;
+                return { x: px, y: py };
+            }
+            if (t <= 0.8) {
+                // 0.4..0.8 maps to 40..80
+                const u = (t - 0.4) / 0.4;
+                // Quadratic from P0(40,70) to P2(80,30) with control derived from 'T'
+                // The 'T' reflects the previous control: from first segment control(20,60) reflect around P0(40,70)
+                // Reflected control: (60,80)
+                const X0 = 40, Y0 = 70;
+                const X1 = 60, Y1 = 80;
+                const X2 = 80, Y2 = 30;
+                const px = (1-u)*(1-u)*X0 + 2*(1-u)*u*X1 + u*u*X2;
+                const py = (1-u)*(1-u)*Y0 + 2*(1-u)*u*Y1 + u*u*Y2;
+                return { x: px, y: py };
+            }
+
+            // 0.8..1 maps to 80..100
+            const u = (t - 0.8) / 0.2;
+            // Quadratic from P0(80,30) to P2(100,10) with reflected control.
+            // Previous control for segment2 (60,80) reflected around P0(80,30) => (100, -20)
+            const X0 = 80, Y0 = 30;
+            const X1 = 100, Y1 = -20;
+            const X2 = 100, Y2 = 10;
+            const px = (1-u)*(1-u)*X0 + 2*(1-u)*u*X1 + u*u*X2;
+            const py = (1-u)*(1-u)*Y0 + 2*(1-u)*u*Y1 + u*u*Y2;
+            return { x: px, y: py };
+        }
+
+        function mapToCanvas(px, py) {
+            // SVG y increases downward; keep same.
+            return {
+                x: (px - SV.minX) / (SV.maxX - SV.minX) * w,
+                y: (py - SV.minY) / (SV.maxY - SV.minY) * h,
+            };
+        }
+
+        function drawBackgroundStatsGrid() {
+            // faint horizontal grid lines
+            ctx.save();
+            const gridColor = 'rgba(156, 163, 175, 0.12)';
+            ctx.strokeStyle = gridColor;
+            ctx.lineWidth = 1;
+            const lines = 6;
+            for (let i = 1; i < lines; i++) {
+                const y = (h / lines) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        function render(progress) {
+            ctx.clearRect(0, 0, w, h);
+            const vars = getComputedVars();
+
+            drawBackgroundStatsGrid();
+
+            // Determine current draw endpoint.
+            const drawT = progress; // 0..1
+
+            // Sample points along curve for both fill and stroke.
+            const samples = 140;
+            const pts = [];
+            const fillPts = [];
+
+            for (let i = 0; i <= samples; i++) {
+                const t = (i / samples) * drawT;
+                const sp = curvePoint(t);
+                const c = mapToCanvas(sp.x, sp.y);
+                pts.push(c);
+                fillPts.push(c);
+            }
+
+            // Gradient fill (below curve) similar to static SVG chartGrad.
+            // We'll create a canvas linear gradient from top->bottom with same stops.
+            const fillGrad = ctx.createLinearGradient(0, 0, 0, h);
+            // Stop alpha matches the SVG stop-opacity values: 0.3 and 0.0
+            fillGrad.addColorStop(0, `${vars.indigo}4D`); // ~0.3
+            fillGrad.addColorStop(1, `${vars.purple}00`);
+
+            ctx.save();
+            ctx.fillStyle = fillGrad;
+
+            // Build filled area path: follow curve then down to bottom and close.
+            if (fillPts.length > 2) {
+                ctx.beginPath();
+                ctx.moveTo(fillPts[0].x, fillPts[0].y);
+                for (let i = 1; i < fillPts.length; i++) {
+                    ctx.lineTo(fillPts[i].x, fillPts[i].y);
+                }
+                ctx.lineTo(fillPts[fillPts.length - 1].x, h);
+                ctx.lineTo(fillPts[0].x, h);
+                ctx.closePath();
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // Stroke path drawn up to drawT.
+            ctx.save();
+            ctx.strokeStyle = vars.indigo;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            if (pts.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(pts[0].x, pts[0].y);
+                for (let i = 1; i < pts.length; i++) {
+                    ctx.lineTo(pts[i].x, pts[i].y);
+                }
+                ctx.stroke();
+            }
+            ctx.restore();
+
+            // Traveling dot at current progress along full curve (wrap).
+            const dotT = progress;
+            const dotSp = curvePoint(dotT);
+            const dot = mapToCanvas(dotSp.x, dotSp.y);
+
+            ctx.save();
+            const dotRadius = 5;
+            // glowing dot (indigo)
+            ctx.shadowColor = vars.indigo;
+            ctx.shadowBlur = 18;
+            ctx.fillStyle = vars.indigo;
+            ctx.beginPath();
+            ctx.arc(dot.x, dot.y, dotRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // pulsing ring
+            const pulse = 0.5 + 0.5 * Math.sin(progress * Math.PI * 2);
+            const ringR = 11 + pulse * 7;
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = vars.indigo;
+            ctx.globalAlpha = 0.55;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(dot.x, dot.y, ringR, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.restore();
+        }
+
+        function loop(ts) {
+            const speed = 2500; // ms for a full draw; loops infinitely
+            const p = ((ts % speed) / speed);
+            // Draw left->right continuously; also keep dot visible early
+            render(p);
+            rafId = requestAnimationFrame(loop);
+        }
+
+        resize();
+        window.addEventListener('resize', () => {
+            cancelAnimationFrame(rafId);
+            resize();
+            rafId = requestAnimationFrame(loop);
+        }, { passive: true });
+
+        rafId = requestAnimationFrame(loop);
+
+        // Stop SVG path animation (we replaced it with canvas)
+        const linePath = document.querySelector('.chart-line-svg path');
+        if (linePath) {
+            linePath.style.strokeDasharray = '';
+            linePath.style.strokeDashoffset = '';
+            linePath.style.transition = '';
+        }
     }
+
 
     // Scroll Fade-in effects
     const fadeElements = document.querySelectorAll('.glass-card, .service-card, .industry-card, .challenge-card');
