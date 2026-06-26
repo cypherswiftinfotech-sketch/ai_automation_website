@@ -249,14 +249,16 @@
     }
   }
 
-  // Hardcoded intro shown every time the chat is opened.
+  // Intro message used only as a post-submission acknowledgement (e.g. after
+  // a diagnostic form is sent). The default chat-open greeting was removed —
+  // opening the chat no longer auto-sends anything.
   const INTRO_MESSAGE =
     "Hello! I'm Avor, a senior AI consultant here to help you explore how we can support your business. I see you've reached out to us today.\n" +
     "We specialise in driving business growth through AI Agent & AI Consultant Development and delivering high-impact AI Automation for Marketing and Sales.\n" +
     "Before we dive into how these technologies can scale your operations, I'd love to learn a bit more about you — what does your company do, and what brings you here today";
 
-  // Always show the hardcoded intro when the chat is opened.
-  function triggerGreeting() {
+  // Show the intro only when explicitly triggered (e.g. after a form submit).
+  async function triggerGreeting() {
     if (isLoading) return;
     appendMessage("avatar", INTRO_MESSAGE);
   }
@@ -332,7 +334,7 @@
       const next = isOpen ? "none" : "flex";
       chatWindow.dataset.wasVisible = next === "flex" ? "true" : "false";
       chatWindow.style.display = next;
-      if (!isOpen) triggerGreeting();
+      // Default intro disabled — chat opens empty.
     });
 
     document
