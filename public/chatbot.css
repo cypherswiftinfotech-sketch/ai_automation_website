@@ -8,20 +8,31 @@
   right: 20px;
   width: 56px;
   height: 56px;
-  background: #007bff;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
   color: #fff;
   border: none;
   border-radius: 50%;
   padding: 0;
-  font-size: 20px;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 10px 24px rgba(168, 85, 247, 0.45);
   z-index: 9999;
   font-family: inherit;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#liveavatar-chat-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 12px 28px rgba(168, 85, 247, 0.6);
+}
+
+#liveavatar-chat-btn .liveavatar-chat-icon {
+  width: 28px;
+  height: 28px;
+  display: block;
 }
 
 #liveavatar-chat-btn.liveavatar-has-image {
@@ -42,8 +53,8 @@
   position: absolute;
   inset: -10px;
   border-radius: 50%;
-  background: rgba(0, 123, 255, 0.25);
-  box-shadow: 0 0 0 1px rgba(0, 123, 255, 0.25);
+  background: rgba(168, 85, 247, 0.22);
+  box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.28);
   z-index: -1;
   animation: liveavatar-float 2.2s ease-in-out infinite;
 }
