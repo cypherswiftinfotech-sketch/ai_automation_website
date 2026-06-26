@@ -29,11 +29,24 @@
     container.innerHTML = `
       <!-- Floating Button -->
       <button id="liveavatar-chat-btn" aria-label="Chat with us" title="Chat with us">
-        <svg class="liveavatar-chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8z"/>
-          <circle cx="8.5" cy="11.5" r="0.9" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="11.5" r="0.9" fill="currentColor" stroke="none"/>
-          <circle cx="15.5" cy="11.5" r="0.9" fill="currentColor" stroke="none"/>
+        <svg class="liveavatar-chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <!-- Antennae -->
+          <line x1="8" y1="3" x2="8" y2="6"/>
+          <line x1="16" y1="3" x2="16" y2="6"/>
+          <circle cx="8" cy="2.5" r="0.7" fill="currentColor" stroke="none"/>
+          <circle cx="16" cy="2.5" r="0.7" fill="currentColor" stroke="none"/>
+          <!-- Bot head -->
+          <rect x="4" y="6" width="16" height="13" rx="3"/>
+          <!-- Eyes -->
+          <circle cx="9" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="12" r="1.4" fill="currentColor" stroke="none"/>
+          <!-- Mouth / display -->
+          <line x1="9.5" y1="16" x2="14.5" y2="16"/>
+          <!-- Side ears -->
+          <line x1="3" y1="11" x2="4" y2="11"/>
+          <line x1="20" y1="11" x2="21" y2="11"/>
+          <line x1="3" y1="14" x2="4" y2="14"/>
+          <line x1="20" y1="14" x2="21" y2="14"/>
         </svg>
       </button>
 
