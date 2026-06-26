@@ -167,6 +167,46 @@
                             </linearGradient>
 
                             <polygon id="hexagon" points="25,-43.3 50,0 25,43.3 -25,43.3 -50,0 -25,-43.3" />
+
+                            <!-- Icons (Lucide-style, 24x24 viewBox, stroke-based). Used inside each hex. -->
+                            <symbol id="icon-efficiency" viewBox="0 0 24 24">
+                                <!-- gear -->
+                                <circle cx="12" cy="12" r="3" fill="none" stroke="#0052cc" stroke-width="2"/>
+                                <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" fill="none" stroke="#0052cc" stroke-width="2" stroke-linejoin="round"/>
+                            </symbol>
+
+                            <symbol id="icon-decision" viewBox="0 0 24 24">
+                                <!-- lightbulb -->
+                                <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.7.6 1 1.4 1 2.3v1h6v-1c0-.9.3-1.7 1-2.3A7 7 0 0 0 12 2z" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </symbol>
+
+                            <symbol id="icon-shield" viewBox="0 0 24 24">
+                                <!-- shield-check -->
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="none" stroke="#0052cc" stroke-width="2" stroke-linejoin="round"/>
+                                <path d="M9 12l2 2 4-4" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </symbol>
+
+                            <symbol id="icon-adapt" viewBox="0 0 24 24">
+                                <!-- refresh / adaptability -->
+                                <path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </symbol>
+
+                            <symbol id="icon-customer" viewBox="0 0 24 24">
+                                <!-- user-heart -->
+                                <path d="M19 14c1.5-1.4 3-3.2 3-5.5A4.5 4.5 0 0 0 17.5 4 4.8 4.8 0 0 0 14 6 4.8 4.8 0 0 0 10.5 4 4.5 4.5 0 0 0 6 8.5c0 2.3 1.5 4.1 3 5.5l5 4.5z" fill="none" stroke="#0052cc" stroke-width="2" stroke-linejoin="round"/>
+                                <path d="M3 22v-1a6 6 0 0 1 6-6h2" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round"/>
+                            </symbol>
+
+                            <symbol id="icon-cost" viewBox="0 0 24 24">
+                                <!-- trending-down -->
+                                <path d="M22 17l-8.5-8.5-5 5L2 7" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 17h6v-6" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </symbol>
+
+                            <symbol id="icon-scale" viewBox="0 0 24 24">
+                                <!-- maximize / scalability -->
+                                <path d="M3 8l4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4" fill="none" stroke="#0052cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </symbol>
                         </defs>
 
                         <g filter="url(#center-glow)">
@@ -195,81 +235,88 @@
                         <text x="500" y="263" font-size="22" font-weight="bold" fill="#0052cc" text-anchor="middle">of AI Workflow</text>
                         <text x="500" y="291" font-size="22" font-weight="bold" fill="#0052cc" text-anchor="middle">Automation</text>
 
-                        <g transform="translate(500, 110)">
+                        <!-- 01 — Increased Operational Efficiency -->
+                        <g transform="translate(500, 100)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-top)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">01</text>
+                            <use href="#icon-efficiency" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="500,110; 500,104; 500,110" dur="3.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="500,100; 500,94; 500,100" dur="3.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="500" y="32" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Increased Operational</text>
-                        <text x="500" y="50" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Efficiency</text>
+                        <text x="500" y="22" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Increased Operational</text>
+                        <text x="500" y="40" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Efficiency</text>
 
-                        <g transform="translate(376, 184)">
+                        <!-- 02 — Enhanced Decision-Making (upper-right at θ=51.4°) -->
+                        <g transform="translate(625, 160)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-left)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">02</text>
+                            <use href="#icon-decision" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="376,184; 376,178; 376,184" dur="3.9s" begin="-0.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="625,160; 625,154; 625,160" dur="3.9s" begin="-0.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="299" y="180" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Enhanced</text>
-                        <text x="299" y="198" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Decision-Making</text>
+                        <text x="702" y="156" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Enhanced</text>
+                        <text x="702" y="174" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Decision-Making</text>
 
-                        <g transform="translate(340, 308)">
+                        <!-- 03 — Reduced Human Error (lower-right at θ=102.9°) -->
+                        <g transform="translate(656, 296)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-left)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">03</text>
+                            <use href="#icon-shield" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="340,308; 340,302; 340,308" dur="4.2s" begin="-0.9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="656,296; 656,290; 656,296" dur="4.2s" begin="-0.9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="263" y="304" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Reduced</text>
-                        <text x="263" y="322" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Human Error</text>
+                        <text x="733" y="292" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Reduced</text>
+                        <text x="733" y="310" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Human Error</text>
 
-                        <g transform="translate(400, 440)">
+                        <!-- 04 — Real-Time Process Adaptability (bottom-right at θ=154.3°) -->
+                        <g transform="translate(570, 405)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-bottom)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">04</text>
+                            <use href="#icon-adapt" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="400,440; 400,434; 400,440" dur="3.7s" begin="-1.3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="570,405; 570,399; 570,405" dur="3.7s" begin="-1.3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="323" y="436" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Real-Time Process</text>
-                        <text x="323" y="454" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Adaptability</text>
+                        <text x="647" y="401" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Real-Time Process</text>
+                        <text x="647" y="419" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Adaptability</text>
 
-                        <g transform="translate(600, 440)">
+                        <!-- 05 — Better Customer Experience (bottom-left at θ=205.7°) -->
+                        <g transform="translate(430, 405)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-bottom)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">05</text>
+                            <use href="#icon-customer" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="600,440; 600,434; 600,440" dur="4.4s" begin="-1.7s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="430,405; 430,399; 430,405" dur="4.4s" begin="-1.7s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="677" y="436" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Better Customer</text>
-                        <text x="677" y="454" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Experience</text>
+                        <text x="353" y="401" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Better Customer</text>
+                        <text x="353" y="419" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Experience</text>
 
-                        <g transform="translate(660, 308)">
+                        <!-- 06 — Cost Optimization (lower-left at θ=257.1°) -->
+                        <g transform="translate(344, 296)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-right)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">06</text>
+                            <use href="#icon-cost" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="660,308; 660,302; 660,308" dur="3.8s" begin="-2.1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="344,296; 344,290; 344,296" dur="3.8s" begin="-2.1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="737" y="304" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Cost Optimization</text>
+                        <text x="267" y="292" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Cost Optimization</text>
 
-                        <g transform="translate(624, 184)">
+                        <!-- 07 — Scalability and Flexibility (upper-left at θ=308.6°) -->
+                        <g transform="translate(375, 160)">
                             <use href="#hexagon" fill="none" stroke="url(#grad-right)" stroke-width="6.5" transform="scale(1.15)" />
                             <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
                             <use href="#hexagon" fill="#ffffff" />
-                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">07</text>
+                            <use href="#icon-scale" x="-15" y="-15" width="30" height="30"/>
                             <animateTransform attributeName="transform" type="translate"
-                                              values="624,184; 624,178; 624,184" dur="4.1s" begin="-2.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                                              values="375,160; 375,154; 375,160" dur="4.1s" begin="-2.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
                         </g>
-                        <text x="701" y="180" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Scalability and</text>
-                        <text x="701" y="198" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Flexibility</text>
+                        <text x="298" y="156" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Scalability and</text>
+                        <text x="298" y="174" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Flexibility</text>
                     </svg>
                 </div>
             </div>
