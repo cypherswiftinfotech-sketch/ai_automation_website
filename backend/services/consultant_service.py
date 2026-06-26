@@ -125,6 +125,11 @@ async def _build_ui_action(
     timezone_str: str,
     conversation_id: str = "",
 ) -> Optional[dict]:
+    # If the LLM already picked a specific slot this turn, forward the
+    # propose_oral_booking card through — don't make the user pick again.
+    if ui_action_hint and ui_action_hint.get("type") == "propose_oral_booking":
+        return ui_action_hint
+
     if intent != "book_meeting":
         return ui_action_hint
 
