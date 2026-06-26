@@ -92,6 +92,15 @@
   border-bottom: 1px solid #333;
 }
 
+#liveavatar-chat-header strong {
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 8px;
+}
+
 #liveavatar-close-btn {
   background: none;
   border: none;

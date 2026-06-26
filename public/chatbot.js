@@ -141,7 +141,7 @@
       <!-- Chat Window -->
       <div id="liveavatar-chat-window">
         <div id="liveavatar-chat-header">
-          <strong>AI Assistant</strong>
+          <strong>Avor AI Assistant by CypherSwift</strong>
           <button id="liveavatar-close-btn">&times;</button>
         </div>
         <div id="liveavatar-message-list"></div>
