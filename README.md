@@ -147,3 +147,4 @@ export default function LocationPage({ schema }) {
 - Do **not** commit secrets. `.env` is ignored by Git.
 - Branch database: `data/branches.db` (SQLite, gitignored via `*.db`)
 - NAP (Name, Address, Phone) in schema must exactly match your Google Business Profile
+# ai_automation_website
