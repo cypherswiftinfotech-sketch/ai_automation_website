@@ -11,7 +11,6 @@
   let token = ""; // Optional if backend supports anonymous
   let userId = crypto.randomUUID();
   let isLoading = false;
-  let greetingShown = false;
 
   // --- HTML Structure Injection ---
   function injectHTML() {
@@ -176,7 +175,12 @@
     const list = document.getElementById("liveavatar-message-list");
     const msgDiv = document.createElement("div");
     msgDiv.className = `liveavatar-message-bubble ${role === "user" ? "liveavatar-message-user" : "liveavatar-message-avatar"}`;
-    msgDiv.innerText = text;
+    // Split on newlines so multi-paragraph messages render as separate lines.
+    text.split("\n").forEach((line) => {
+      const p = document.createElement("p");
+      p.textContent = line;
+      msgDiv.appendChild(p);
+    });
     list.appendChild(msgDiv);
     list.scrollTop = list.scrollHeight;
   }
@@ -222,24 +226,16 @@
     }
   }
 
-  // Auto-trigger an AI intro the first time the chat is opened in a session.
-  async function triggerGreeting() {
-    if (greetingShown || isLoading) return;
-    greetingShown = true;
-    setLoading(true);
-    try {
-      const result = await askQuery("hello");
-      if (result.conversation_id) conversationId = result.conversation_id;
-      appendMessage("avatar", result.answer);
-    } catch (err) {
-      console.error(err);
-      appendMessage(
-        "avatar",
-        "Hi! I'm Avor, your AI consultant avatar at Cypher Swift InfoTech. How can I help you today?",
-      );
-    } finally {
-      setLoading(false);
-    }
+  // Hardcoded intro shown every time the chat is opened.
+  const INTRO_MESSAGE =
+    "Hello! I'm Avor, a senior AI consultant here to help you explore how we can support your business. I see you've reached out to us today.\n" +
+    "We specialise in driving business growth through AI Agent & AI Consultant Development and delivering high-impact AI Automation for Marketing and Sales.\n" +
+    "Before we dive into how these technologies can scale your operations, I'd love to learn a bit more about you — what does your company do, and what brings you here today";
+
+  // Always show the hardcoded intro when the chat is opened.
+  function triggerGreeting() {
+    if (isLoading) return;
+    appendMessage("avatar", INTRO_MESSAGE);
   }
 
   // --- Modal Helpers ---
@@ -293,7 +289,7 @@
       const next = isOpen ? "none" : "flex";
       chatWindow.dataset.wasVisible = next === "flex" ? "true" : "false";
       chatWindow.style.display = next;
-      if (!isOpen) await triggerGreeting();
+      if (!isOpen) triggerGreeting();
     });
 
     document

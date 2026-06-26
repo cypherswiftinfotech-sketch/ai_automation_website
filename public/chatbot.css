@@ -95,6 +95,14 @@
   word-wrap: break-word;
 }
 
+.liveavatar-message-bubble p {
+  margin: 0;
+}
+
+.liveavatar-message-bubble p + p {
+  margin-top: 8px;
+}
+
 .liveavatar-message-user {
   align-self: flex-end;
   background-color: #007bff;
@@ -103,8 +111,9 @@
 
 .liveavatar-message-avatar {
   align-self: flex-start;
-  background-color: #444;
-  color: #fff;
+  background-color: rgba(92, 103, 242, 0.12);
+  color: #f3f4f6;
+  border: 1px solid rgba(92, 103, 242, 0.35);
 }
 
 #liveavatar-input-area {

@@ -315,6 +315,32 @@ a {
     transform: scaleX(1);
 }
 
+/* Industry hero card as a button */
+.glass-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.glass-card-link-arrow {
+    align-self: flex-end;
+    margin-top: auto;
+    font-weight: 900;
+    font-size: 1.3rem;
+    color: var(--color-accent-cyan);
+    opacity: 0.85;
+    transform: translateX(0);
+    transition: var(--transition-fast);
+}
+
+.glass-card-link:hover .glass-card-link-arrow {
+    transform: translateX(6px);
+    opacity: 1;
+}
+
 /* Navigation Header */
 .header-nav {
     position: fixed;
@@ -535,10 +561,22 @@ a {
     .header-nav {
         padding: 1rem 0;
     }
+
     
     .hamburger {
         display: block;
     }
+
+    /* Responsive industry hero cards */
+    .glass-card-link {
+        width: 100%;
+        display: block;
+    }
+
+    .glass-card-link-arrow {
+        display: none;
+    }
+
     
     .nav-menu {
         position: fixed;
@@ -584,7 +622,9 @@ a {
 .hero {
     position: relative;
     overflow: hidden;
+    padding-bottom: 2rem;
 }
+
 
 .hero-pipeline-canvas {
     position: absolute;

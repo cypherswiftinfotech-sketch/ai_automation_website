@@ -27,6 +27,10 @@
     <link rel="stylesheet" href="custom-components.css">
     <link rel="stylesheet" href="interactions.css">
     <link rel="stylesheet" href="chatbot.css">
+    <link rel="stylesheet" href="hero-workflow-animation.css">
+    <link rel="stylesheet" href="hero-infographic.css">
+
+
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -131,40 +135,142 @@
                 </div>
             </div>
             <div class="hero-visual" style="position: relative; z-index: 2;">
-                <div class="dashboard-preview" style="opacity: 0; visibility: hidden;"> 
+                <div class="diagram-container hero-infographic-container" style="width: 100%; max-width: 520px; aspect-ratio: 16 / 9;">
+                    <svg viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Advantages of AI Workflow Automation infographic">
+                        <defs>
+                            <filter id="hexagon-shadow" x="-30%" y="-30%" width="160%" height="160%">
+                                <feDropShadow dx="3" dy="5" stdDeviation="5" flood-color="#000000" flood-opacity="0.16" />
+                            </filter>
 
+                            <filter id="center-glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#0052cc" flood-opacity="0.08" />
+                            </filter>
 
-                    <div class="dashboard-header">
-                        <span class="dot dot-red"></span>
-                        <span class="dot dot-yellow"></span>
-                        <span class="dot dot-green"></span>
-                        <span style="color: var(--color-text-muted); font-size: 0.75rem; margin-left: auto;">cypherswift.revenue-engine.ai</span>
-                    </div>
-                    <div class="dashboard-screen">
-                        <div class="chart-placeholder" style="position: relative; z-index: 1;">
-                            <svg class="chart-line-svg" preserveAspectRatio="none" viewBox="0 0 100 100" style="opacity: 0.0; pointer-events: none;" aria-hidden="true">
-                                <defs>
-                                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="var(--color-accent-indigo)" stop-opacity="0.3"></stop>
-                                        <stop offset="100%" stop-color="var(--color-accent-purple)" stop-opacity="0.0"></stop>
-                                    </linearGradient>
-                                </defs>
-                        <path d="M 0 80 Q 20 60 40 70 T 80 30 T 100 10 L 100 100 L 0 100 Z" fill="url(#chartGrad)"></path>
-                                <path d="M 0 80 Q 20 60 40 70 T 80 30 T 100 10" fill="none" stroke="var(--color-accent-indigo)" stroke-width="2"></path>
-                            </svg>
-                            <span style="z-index: 1; font-weight: 700; font-size: 1.1rem; color: #fff; background: rgba(0,0,0,0.4); padding: 0.5rem 1rem; border-radius: var(--radius-sm);">+157% Pipeline Growth</span>
-                        </div>
-                        <div class="dashboard-grid">
-                            <div class="stat-box">
-                                <span class="stat-label">Qualified Leads (MQL)</span>
-                                <div class="stat-val" style="color: var(--color-accent-cyan);">2,842 <span style="font-size: 0.8rem; color: var(--color-accent-emerald);">+40%</span></div>
-                            </div>
-                            <div class="stat-box">
-                                <span class="stat-label">Automation Efficiency</span>
-                                <div class="stat-val" style="color: var(--color-accent-purple);">72% <span style="font-size: 0.8rem; color: var(--color-accent-emerald);">Optimal</span></div>
-                            </div>
-                        </div>
-                    </div>
+                            <linearGradient id="grad-top" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3a7bd5" />
+                                <stop offset="100%" stop-color="#f80759" />
+                            </linearGradient>
+
+                            <linearGradient id="grad-left" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#0072ff" />
+                                <stop offset="100%" stop-color="#f80759" />
+                            </linearGradient>
+
+                            <linearGradient id="grad-right" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f80759" />
+                                <stop offset="100%" stop-color="#0072ff" />
+                            </linearGradient>
+
+                            <linearGradient id="grad-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#3a7bd5" />
+                                <stop offset="100%" stop-color="#f80759" />
+                            </linearGradient>
+
+                            <polygon id="hexagon" points="25,-43.3 50,0 25,43.3 -25,43.3 -50,0 -25,-43.3" />
+                        </defs>
+
+                        <g filter="url(#center-glow)">
+                            <circle cx="500" cy="260" r="92" fill="#ffffff" stroke="#0052cc" stroke-width="2" />
+
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(-90 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(-38.5 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(13 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(64.5 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(116 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(167.5 500 260)" />
+                            <circle cx="500" cy="260" r="104" fill="none" stroke="#0052cc" stroke-width="1.5" stroke-dasharray="10 355" transform="rotate(219 500 260)" />
+
+                            <polygon points="500,149 496,155 504,155" fill="#0052cc" />
+                            <polygon points="582,178 577,183 584,187" fill="#0052cc" />
+                            <polygon points="631,246 624,247 628,253" fill="#0052cc" />
+                            <polygon points="606,316 599,314 601,321" fill="#0052cc" />
+                            <polygon points="534,357 531,351 538,353" fill="#0052cc" />
+                            <polygon points="466,357 462,353 469,351" fill="#0052cc" />
+                            <polygon points="394,316 399,321 401,314" fill="#0052cc" />
+                            <polygon points="369,246 372,253 376,247" fill="#0052cc" />
+                            <polygon points="418,178 416,187 423,183" fill="#0052cc" />
+                        </g>
+
+                        <text x="500" y="235" font-size="22" font-weight="bold" fill="#0052cc" text-anchor="middle">Advantages</text>
+                        <text x="500" y="263" font-size="22" font-weight="bold" fill="#0052cc" text-anchor="middle">of AI Workflow</text>
+                        <text x="500" y="291" font-size="22" font-weight="bold" fill="#0052cc" text-anchor="middle">Automation</text>
+
+                        <g transform="translate(500, 110)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-top)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">01</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="500,110; 500,104; 500,110" dur="3.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="500" y="32" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Increased Operational</text>
+                        <text x="500" y="50" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="middle">Efficiency</text>
+
+                        <g transform="translate(376, 184)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-left)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">02</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="376,184; 376,178; 376,184" dur="3.9s" begin="-0.4s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="299" y="180" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Enhanced</text>
+                        <text x="299" y="198" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Decision-Making</text>
+
+                        <g transform="translate(340, 308)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-left)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">03</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="340,308; 340,302; 340,308" dur="4.2s" begin="-0.9s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="263" y="304" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Reduced</text>
+                        <text x="263" y="322" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Human Error</text>
+
+                        <g transform="translate(400, 440)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-bottom)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">04</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="400,440; 400,434; 400,440" dur="3.7s" begin="-1.3s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="323" y="436" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Real-Time Process</text>
+                        <text x="323" y="454" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="end">Adaptability</text>
+
+                        <g transform="translate(600, 440)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-bottom)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">05</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="600,440; 600,434; 600,440" dur="4.4s" begin="-1.7s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="677" y="436" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Better Customer</text>
+                        <text x="677" y="454" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Experience</text>
+
+                        <g transform="translate(660, 308)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-right)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">06</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="660,308; 660,302; 660,308" dur="3.8s" begin="-2.1s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="737" y="304" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Cost Optimization</text>
+
+                        <g transform="translate(624, 184)">
+                            <use href="#hexagon" fill="none" stroke="url(#grad-right)" stroke-width="6.5" transform="scale(1.15)" />
+                            <use href="#hexagon" fill="#f4f6f9" filter="url(#hexagon-shadow)" transform="scale(1.02)" />
+                            <use href="#hexagon" fill="#ffffff" />
+                            <text x="0" y="9" font-size="25" font-weight="900" fill="#0052cc" text-anchor="middle">07</text>
+                            <animateTransform attributeName="transform" type="translate"
+                                              values="624,184; 624,178; 624,184" dur="4.1s" begin="-2.6s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.2 1; 0.4 0 0.2 1" keyTimes="0;0.5;1"/>
+                        </g>
+                        <text x="701" y="180" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Scalability and</text>
+                        <text x="701" y="198" font-size="15" font-weight="bold" fill="#ffffff" text-anchor="start">Flexibility</text>
+                    </svg>
                 </div>
             </div>
         </div>
