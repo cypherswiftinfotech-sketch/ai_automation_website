@@ -223,8 +223,12 @@
       const typingMsg = document.createElement("div");
       typingMsg.id = "liveavatar-typing";
       typingMsg.className =
-        "liveavatar-message-bubble liveavatar-message-avatar";
-      typingMsg.innerText = "Typing...";
+        "liveavatar-message-bubble liveavatar-message-avatar liveavatar-typing-bubble";
+      // Three dots wave up/down so it reads as an animated "typing…" indicator.
+      typingMsg.innerHTML =
+        '<span class="liveavatar-typing-dot"></span>' +
+        '<span class="liveavatar-typing-dot"></span>' +
+        '<span class="liveavatar-typing-dot"></span>';
       document.getElementById("liveavatar-message-list").appendChild(typingMsg);
     } else {
       const typingMsg = document.getElementById("liveavatar-typing");
