@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ctx.clearRect(0, 0, w, h);
             const vars = getComputedVars();
 
-            drawBackgroundStatsGrid();
+            // Horizontal grid lines removed per design feedback.
 
             // Determine current draw endpoint.
             const drawT = progress; // 0..1

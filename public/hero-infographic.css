@@ -4,6 +4,8 @@
   position: relative;
   z-index: 2;
   filter: drop-shadow(0 24px 60px rgba(0,0,0,0.35));
+  /* Shift the diagram up so it sits higher in the hero and doesn't crowd the bottom. */
+  transform: translateY(-40px);
   animation: heroInfographicFloat 4.8s ease-in-out infinite;
 }
 
@@ -29,12 +31,13 @@
 
 
 @keyframes heroInfographicFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-14px); }
+  0%, 100% { transform: translateY(-40px); }
+  50%      { transform: translateY(-54px); }
 }
 
 @media (max-width: 768px) {
   .hero-infographic-container {
+    transform: translateY(-20px);
     animation: none;
   }
 }
