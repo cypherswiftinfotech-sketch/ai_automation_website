@@ -181,7 +181,7 @@
 
   async function askQuery(queryText) {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-    return apiFetch("/query/ask", {
+    const res = await apiFetch("/query/ask", {
       method: "POST",
       body: JSON.stringify({
         user_id: userId,
@@ -191,6 +191,14 @@
         timezone,
       }),
     });
+    // Normalise the field name to `ui_action` regardless of whether the
+    // backend returns `ui_action` directly or wrapped under `data`.
+    const payload = (res && res.ui_action !== undefined)
+      ? res
+      : (res && res.data && res.data.ui_action !== undefined)
+        ? res.data
+        : res;
+    return Object.assign({}, payload, { ui_action: payload.ui_action || null });
   }
 
   // --- UI Helpers ---
@@ -236,8 +244,14 @@
 
     try {
       const result = await askQuery(text);
-      if (result.conversation_id) conversationId = result.conversation_id;
-      appendMessage("avatar", result.answer);
+      if (result.conversation_id) {
+        conversationId = result.conversation_id;
+        capturedLead.conversation_id = conversationId;
+      }
+      // Refresh captured info (name/email/etc.) before rendering so the
+      // booking card has the freshest data the LLM has extracted.
+      refreshCapturedLead();
+      renderAssistantTurn(result);
     } catch (err) {
       console.error(err);
       appendMessage(
@@ -249,18 +263,331 @@
     }
   }
 
-  // Intro message used only as a post-submission acknowledgement (e.g. after
-  // a diagnostic form is sent). The default chat-open greeting was removed —
-  // opening the chat no longer auto-sends anything.
-  const INTRO_MESSAGE =
-    "Hello! I'm Avor, a senior AI consultant here to help you explore how we can support your business. I see you've reached out to us today.\n" +
-    "We specialise in driving business growth through AI Agent & AI Consultant Development and delivering high-impact AI Automation for Marketing and Sales.\n" +
-    "Before we dive into how these technologies can scale your operations, I'd love to learn a bit more about you — what does your company do, and what brings you here today";
+  // Inspect a backend reply and render the right combination of
+  // plain-text answer + structured UI component.
+  function renderAssistantTurn(result) {
+    if (result.answer) appendMessage("avatar", result.answer);
+    const action = result && result.ui_action;
+    if (!action) return;
 
-  // Show the intro only when explicitly triggered (e.g. after a form submit).
-  async function triggerGreeting() {
+    if (action.type === "show_slots" && Array.isArray(action.slots) && action.slots.length) {
+      appendSlotPicker(action.slots);
+      return;
+    }
+
+    if (action.type === "propose_oral_booking" && action.slot) {
+      appendBookingConfirmationCard(action.slot, action.message || result.answer);
+      return;
+    }
+
+    if (action.type === "escalation_pending") {
+      appendMessage(
+        "avatar",
+        action.message ||
+          "Thanks — I've notified the CypherSwift team. They'll reach out to you shortly."
+      );
+      return;
+    }
+  }
+
+  // Render the slot picker as a vertical list of clickable cards.
+  function appendSlotPicker(slots) {
+    const list = document.getElementById("liveavatar-message-list");
+    const wrapper = document.createElement("div");
+    wrapper.className = "liveavatar-message-bubble liveavatar-message-avatar";
+    wrapper.style.maxWidth = "92%";
+
+    const intro = document.createElement("p");
+    intro.textContent = "Pick a time that works for you:";
+    intro.style.margin = "0 0 8px 0";
+    wrapper.appendChild(intro);
+
+    const slotList = document.createElement("div");
+    slotList.className = "liveavatar-slot-list";
+
+    slots.forEach((slot) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "liveavatar-slot-card";
+      const label = document.createElement("strong");
+      label.textContent = slot.label || slot.start || "Available slot";
+      const sub = document.createElement("span");
+      sub.textContent = slot.timezone || "";
+      btn.appendChild(label);
+      btn.appendChild(sub);
+      btn.addEventListener("click", () => {
+        // Lock all slot cards so the user can't double-pick.
+        slotList.querySelectorAll("button").forEach((b) => {
+          b.disabled = true;
+          b.style.opacity = "0.5";
+          b.style.cursor = "default";
+        });
+        btn.style.opacity = "1";
+        btn.style.borderColor = "rgba(168, 85, 247, 0.9)";
+        const input = document.getElementById("liveavatar-chat-input");
+        if (input) {
+          input.value = `I'd like to book the ${slot.label || slot.start} slot.`;
+          handleSend();
+        }
+      });
+      slotList.appendChild(btn);
+    });
+
+    wrapper.appendChild(slotList);
+    list.appendChild(wrapper);
+    list.scrollTop = list.scrollHeight;
+  }
+
+  // Render the booking confirmation summary card showing slot details +
+  // captured user info, with Confirm / Pick another time buttons.
+  function appendBookingConfirmationCard(slot, introText) {
+    const list = document.getElementById("liveavatar-message-list");
+    const wrapper = document.createElement("div");
+    wrapper.className = "liveavatar-message-bubble liveavatar-message-avatar";
+    wrapper.style.maxWidth = "92%";
+    wrapper.style.padding = "0";
+    wrapper.style.background = "transparent";
+    wrapper.style.border = "none";
+
+    const card = document.createElement("div");
+    card.className = "liveavatar-booking-card";
+
+    const title = document.createElement("h4");
+    title.textContent = "Confirm your booking";
+    card.appendChild(title);
+
+    if (introText) {
+      const intro = document.createElement("p");
+      intro.style.margin = "0 0 8px 0";
+      intro.style.color = "#cbd5e1";
+      intro.textContent = introText;
+      card.appendChild(intro);
+    }
+
+    // ── Slot section ──
+    const slotTitle = document.createElement("div");
+    slotTitle.className = "section-title";
+    slotTitle.textContent = "Meeting";
+    card.appendChild(slotTitle);
+
+    const slotRows = [
+      ["When", slot.label || slot.start],
+      ["Timezone", slot.timezone || ""],
+    ];
+    slotRows.forEach(([k, v]) => card.appendChild(buildFieldRow(k, v || "—")));
+
+    // ── Captured info section ──
+    const infoTitle = document.createElement("div");
+    infoTitle.className = "section-title";
+    infoTitle.textContent = "Your details";
+    card.appendChild(infoTitle);
+
+    const f = capturedLead.fields || {};
+    const infoRows = [
+      ["Name", f.name],
+      ["Email", f.email],
+      ["Phone", f.phone],
+      ["Company", f.company_name],
+      ["Role", f.role],
+      ["Industry", f.industry_type],
+      ["Budget", f.budget_range],
+      ["Timeline", f.expected_timeline],
+    ];
+    infoRows.forEach(([k, v]) => card.appendChild(buildFieldRow(k, v)));
+
+    // ── Action buttons ──
+    const actions = document.createElement("div");
+    actions.className = "booking-actions";
+
+    const confirmBtn = document.createElement("button");
+    confirmBtn.type = "button";
+    confirmBtn.className = "btn-confirm";
+    confirmBtn.textContent = "Confirm booking";
+    confirmBtn.addEventListener("click", () => confirmBooking(slot, confirmBtn, cancelBtn, statusEl));
+
+    const cancelBtn = document.createElement("button");
+    cancelBtn.type = "button";
+    cancelBtn.className = "btn-cancel";
+    cancelBtn.textContent = "Pick a different time";
+    cancelBtn.addEventListener("click", () => {
+      const input = document.getElementById("liveavatar-chat-input");
+      if (input) {
+        input.value = "Show me different times please.";
+        handleSend();
+      }
+    });
+
+    actions.appendChild(confirmBtn);
+    actions.appendChild(cancelBtn);
+    card.appendChild(actions);
+
+    const statusEl = document.createElement("div");
+    statusEl.className = "booking-status";
+    card.appendChild(statusEl);
+
+    wrapper.appendChild(card);
+    list.appendChild(wrapper);
+    list.scrollTop = list.scrollHeight;
+  }
+
+  function buildFieldRow(label, value) {
+    const row = document.createElement("div");
+    row.className = "field-row";
+    const l = document.createElement("span");
+    l.className = "label";
+    l.textContent = label;
+    const v = document.createElement("span");
+    v.className = "value";
+    if (value && String(value).trim()) {
+      v.textContent = value;
+    } else {
+      v.classList.add("missing");
+      v.textContent = "Not captured yet";
+    }
+    row.appendChild(l);
+    row.appendChild(v);
+    return row;
+  }
+
+  async function confirmBooking(slot, confirmBtn, cancelBtn, statusEl) {
+    if (!conversationId) {
+      showBookingStatus(statusEl, "error", "Conversation not initialised yet. Please try again.");
+      return;
+    }
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    const originalLabel = confirmBtn.textContent;
+    confirmBtn.textContent = "Confirming…";
+
+    try {
+      const result = await apiFetch("/query/book-meeting", {
+        method: "POST",
+        body: JSON.stringify({
+          conversation_id: conversationId,
+          slot_id: slot.id,
+          slot_start: slot.start,
+          slot_end: slot.end,
+          timezone: slot.timezone || "UTC",
+        }),
+      });
+
+      const email = (capturedLead.fields && capturedLead.fields.email) || "your registered email";
+      const label = slot.label || slot.start;
+      showBookingStatus(
+        statusEl,
+        "success",
+        `Booking confirmed for ${label}. A calendar invite will be emailed to ${email}.`
+      );
+      // Remove the action buttons — they're done.
+      const actions = statusEl.previousElementSibling;
+      if (actions && actions.classList.contains("booking-actions")) actions.remove();
+    } catch (err) {
+      console.error("Booking failed:", err);
+      showBookingStatus(
+        statusEl,
+        "error",
+        err.message || "Booking failed. Please try a different time."
+      );
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+      confirmBtn.textContent = originalLabel;
+    }
+  }
+
+  function showBookingStatus(statusEl, kind, message) {
+    statusEl.classList.remove("success", "error");
+    statusEl.classList.add(kind);
+    statusEl.textContent = message;
+  }
+
+  // Intro greeting — fired when the chat first opens (and as a soft
+  // acknowledgement after the diagnostic form is submitted).
+  const INTRO_MESSAGE =
+    "Hi, I am Avor, an AI Service Consultant from Cypher Swift InfoTech. I am here to assist you with our AI Automation and SaaS Solutions for Marketing and Sales, as well as AI Agent and AI Consultant Development Services.\n" +
+    "Which service would you like to explore today?";
+
+  // The six services the user can pick from, plus an "Other" escape hatch.
+  const SERVICE_OPTIONS = [
+    "AI Automation & SaaS for Marketing and Sales",
+    "SaaS Marketing Services",
+    "SaaS Sales Services",
+    "AI Agent Development",
+    "AI Consultant Development",
+    "AI Live Avatar Solutions",
+    "Other Requirements",
+  ];
+
+  // Local cache of the lead's qualified_fields (name/email/etc.) so the
+  // booking summary card has something to show. Refreshed after every
+  // backend reply and on /query/lead fetches.
+  const capturedLead = { conversation_id: "", fields: {} };
+
+  async function refreshCapturedLead() {
+    if (!capturedLead.conversation_id) return;
+    try {
+      const res = await apiFetch(`/query/lead/${encodeURIComponent(capturedLead.conversation_id)}`);
+      if (res && res.qualified_fields) {
+        capturedLead.fields = res.qualified_fields;
+      }
+    } catch (err) {
+      // Non-fatal — the booking card will just show "not captured" rows.
+      console.warn("Could not refresh lead info:", err.message);
+    }
+  }
+
+  // Append the structured greeting + the row of service chips.
+  function showIntro() {
     if (isLoading) return;
     appendMessage("avatar", INTRO_MESSAGE);
+    appendServiceChips();
+  }
+
+  async function triggerGreeting() {
+    showIntro();
+  }
+
+  // Render the service chips directly under the intro message.
+  function appendServiceChips() {
+    const list = document.getElementById("liveavatar-message-list");
+    const wrapper = document.createElement("div");
+    wrapper.className = "liveavatar-message-bubble liveavatar-message-avatar";
+    wrapper.style.maxWidth = "92%";
+
+    const row = document.createElement("div");
+    row.className = "liveavatar-chip-row";
+
+    SERVICE_OPTIONS.forEach((label) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "liveavatar-chip";
+      btn.textContent = label;
+      btn.addEventListener("click", () => onServiceChosen(wrapper, label), { once: true });
+      row.appendChild(btn);
+    });
+
+    wrapper.appendChild(row);
+    list.appendChild(wrapper);
+    list.scrollTop = list.scrollHeight;
+  }
+
+  // When a chip is clicked: lock the row, mark the chosen chip, and dispatch
+  // a synthetic user message that the LLM will see as the first turn.
+  function onServiceChosen(wrapper, label) {
+    const chips = wrapper.querySelectorAll(".liveavatar-chip");
+    chips.forEach((c) => {
+      c.disabled = true;
+      if (c.textContent !== label) {
+        c.style.opacity = "0.45";
+      } else {
+        c.classList.add("selected");
+      }
+    });
+
+    const input = document.getElementById("liveavatar-chat-input");
+    if (input) {
+      input.value = `I'd like to learn about: ${label}`;
+      handleSend();
+    }
   }
 
   // Replace the floating chat button's emoji with the HeyGen avatar's
@@ -334,7 +661,29 @@
       const next = isOpen ? "none" : "flex";
       chatWindow.dataset.wasVisible = next === "flex" ? "true" : "false";
       chatWindow.style.display = next;
-      // Default intro disabled — chat opens empty.
+      // On first open: ensure a server-side conversation exists, then show
+      // the Avor intro + service chips.
+      if (!isOpen) {
+        try {
+          if (!conversationId) {
+            const initRes = await apiFetch("/query/init", {
+              method: "POST",
+              body: JSON.stringify({
+                user_id: userId,
+                language: "en",
+                pre_chat_data: {},
+              }),
+            });
+            if (initRes && initRes.conversation_id) {
+              conversationId = initRes.conversation_id;
+              capturedLead.conversation_id = conversationId;
+            }
+          }
+        } catch (err) {
+          console.warn("Could not init session before greeting:", err.message);
+        }
+        await triggerGreeting();
+      }
     });
 
     document
@@ -408,7 +757,22 @@
               pre_chat_data: preChatData,
             }),
           });
-          if (res.conversation_id) conversationId = res.conversation_id;
+          if (res.conversation_id) {
+            conversationId = res.conversation_id;
+            capturedLead.conversation_id = conversationId;
+          }
+          // Seed the local cache from the form so the booking summary card
+          // has data ready before the first server refresh completes.
+          capturedLead.fields = {
+            name: preChatData.name,
+            email: preChatData.email,
+            phone: preChatData.phone,
+            company_name: preChatData.company_name,
+            role: preChatData.role,
+            industry_type: preChatData.industry_type,
+            budget_range: preChatData.budget_range,
+            expected_timeline: preChatData.expected_timeline,
+          };
 
           // Close form and open chat
           contactForm.reset();
