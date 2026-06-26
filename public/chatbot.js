@@ -6,6 +6,9 @@
 (function () {
   const API_URL = "http://127.0.0.1:8000"; // <-- UPDATE THIS TO YOUR BACKEND URL IF NEEDED
 
+  // HeyGen avatar used for the floating chat button icon.
+  const DEFAULT_AVATAR_ID = "dd73ea75-1218-4ef3-92ce-606d5f7fbc0a";
+
   // State
   let conversationId = "";
   let token = ""; // Optional if backend supports anonymous
@@ -238,6 +241,23 @@
     appendMessage("avatar", INTRO_MESSAGE);
   }
 
+  // Replace the floating chat button's emoji with the HeyGen avatar's
+  // preview image. Falls back to the existing emoji if the API key isn't
+  // configured or the request fails — the chat must keep working either way.
+  async function loadChatButtonAvatar() {
+    const btn = document.getElementById("liveavatar-chat-btn");
+    if (!btn) return;
+    try {
+      const res = await apiFetch(`/avatar-preview?avatar_id=${encodeURIComponent(DEFAULT_AVATAR_ID)}`);
+      const previewUrl = res && res.data && res.data.preview_url;
+      if (!previewUrl) return;
+      btn.classList.add("liveavatar-has-image");
+      btn.innerHTML = `<img src="${previewUrl}" alt="Chat with Avor" />`;
+    } catch (err) {
+      console.warn("Avatar preview unavailable, using fallback icon:", err.message);
+    }
+  }
+
   // --- Modal Helpers ---
   function setModalOpen(open) {
     const modal = document.getElementById("liveavatar-form-modal");
@@ -283,6 +303,9 @@
 
     const chatBtn = document.getElementById("liveavatar-chat-btn");
     const chatWindow = document.getElementById("liveavatar-chat-window");
+
+    // Load the HeyGen avatar image as the chat button icon.
+    loadChatButtonAvatar();
 
     chatBtn.addEventListener("click", async () => {
       const isOpen = chatWindow.style.display === "flex";

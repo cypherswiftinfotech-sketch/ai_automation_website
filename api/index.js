@@ -6,6 +6,7 @@
 
 const nodemailer = require('nodemailer');
 const { createClient } = require('@supabase/supabase-js');
+const https = require('https');
 const {
     defaultSeoPages,
     getSeoForSlug,
@@ -13,6 +14,9 @@ const {
 } = require('../lib/seo-utils');
 const { getBranchBySlug, getSlimBranches, seedBranchesIfEmpty } = require('../lib/branch-db');
 const { buildLocalBusinessSchemaObject } = require('../lib/build-schema');
+
+const HEYGEN_API_KEY = process.env.HEYGEN_API_KEY || '';
+const DEFAULT_AVATAR_ID = 'dd73ea75-1218-4ef3-92ce-606d5f7fbc0a';
 
 // Initialize Supabase Backend Client (lazy)
 let supabase = null;
@@ -96,6 +100,38 @@ function getTransporter() {
     return transporter;
 }
 
+// ── Helper: Fetch HeyGen avatar metadata (server-side) ───────
+function fetchHeygenAvatar(avatarId) {
+    return new Promise((resolve, reject) => {
+        const options = {
+            hostname: 'api.liveavatar.com',
+            path: `/v1/avatars/${encodeURIComponent(avatarId)}`,
+            method: 'GET',
+            headers: { 'X-API-KEY': HEYGEN_API_KEY },
+            timeout: 10000,
+        };
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', (chunk) => { body += chunk; });
+            res.on('end', () => {
+                if (res.statusCode < 200 || res.statusCode >= 300) {
+                    return reject(new Error(`HeyGen returned ${res.statusCode}: ${body}`));
+                }
+                try {
+                    const parsed = JSON.parse(body);
+                    const avatar = parsed && parsed.data ? parsed.data : parsed;
+                    resolve(avatar);
+                } catch (err) {
+                    reject(new Error(`Invalid JSON from HeyGen: ${err.message}`));
+                }
+            });
+        });
+        req.on('error', reject);
+        req.on('timeout', () => { req.destroy(new Error('HeyGen request timed out')); });
+        req.end();
+    });
+}
+
 // ── Helper: Authenticate Admin via Bearer Token ───────────────
 async function authenticateAdmin(req) {
     const authHeader = req.headers.authorization;
@@ -167,6 +203,27 @@ module.exports = async function handler(req, res) {
         // GET /api/health
         if (path === '/health' && req.method === 'GET') {
             return res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+        }
+
+        // GET /api/avatar-preview?avatar_id=...
+        // Proxies HeyGen's /v1/avatars/{id} endpoint server-side and returns
+        // the preview_url so the frontend chat button can show the avatar image
+        // without exposing the HEYGEN_API_KEY.
+        if (path === '/avatar-preview' && req.method === 'GET') {
+            const avatarId = url.searchParams.get('avatar_id') || DEFAULT_AVATAR_ID;
+            if (!HEYGEN_API_KEY) {
+                return res.status(500).json({ success: false, message: 'HEYGEN_API_KEY is not configured on the server.' });
+            }
+            try {
+                const avatar = await fetchHeygenAvatar(avatarId);
+                return res.status(200).json({
+                    success: true,
+                    data: { id: avatar.id, name: avatar.name, preview_url: avatar.preview_url },
+                });
+            } catch (err) {
+                console.error('avatar-preview error:', err);
+                return res.status(502).json({ success: false, message: `HeyGen avatar fetch failed: ${err.message}` });
+            }
         }
 
         // GET /api/schema?location=slug

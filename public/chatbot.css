@@ -21,6 +21,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+}
+
+#liveavatar-chat-btn.liveavatar-has-image {
+  background: transparent;
+}
+
+#liveavatar-chat-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 /* Floating circle behind the icon */

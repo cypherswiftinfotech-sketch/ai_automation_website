@@ -308,6 +308,30 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Avatar preview (proxies HeyGen server-side so the API key stays hidden).
+app.get('/api/avatar-preview', async (req, res) => {
+    const avatarId = req.query.avatar_id || 'dd73ea75-1218-4ef3-92ce-606d5f7fbc0a';
+    const apiKey = process.env.HEYGEN_API_KEY;
+    if (!apiKey) {
+        return res.status(500).json({ success: false, message: 'HEYGEN_API_KEY is not configured on the server.' });
+    }
+    try {
+        const upstream = await fetch(`https://api.liveavatar.com/v1/avatars/${encodeURIComponent(avatarId)}`, {
+            headers: { 'X-API-KEY': apiKey },
+            signal: AbortSignal.timeout(10000),
+        });
+        if (!upstream.ok) {
+            const text = await upstream.text().catch(() => '');
+            return res.status(upstream.status).json({ success: false, message: `HeyGen returned ${upstream.status}: ${text}` });
+        }
+        const json = await upstream.json();
+        const avatar = (json && json.data) ? json.data : json;
+        res.json({ success: true, data: { id: avatar.id, name: avatar.name, preview_url: avatar.preview_url } });
+    } catch (err) {
+        res.status(502).json({ success: false, message: `HeyGen avatar fetch failed: ${err.message}` });
+    }
+});
+
 // Local SEO Schema API — returns raw JSON-LD object for a branch
 app.get('/api/schema', (req, res) => {
     const slug = req.query.location;
