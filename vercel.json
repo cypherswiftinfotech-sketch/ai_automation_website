@@ -1,57 +1,12 @@
 {
-    "version": 2,
-    "routes": [
-        {
-            "src": "/api/page",
-            "dest": "/api/page.js"
-        },
-        {
-            "src": "/api/location",
-            "dest": "/api/location.js"
-        },
-        {
-            "src": "/sitemap.xml",
-            "dest": "/api/sitemap.js"
-        },
-        {
-            "src": "/robots.txt",
-            "dest": "/public/robots.txt"
-        },
-        {
-            "src": "/locations/(.*)",
-            "dest": "/api/location?slug=$1"
-        },
-        {
-            "src": "/location\\.html",
-            "dest": "/api/location"
-        },
-        {
-            "src": "/api/(.*)",
-            "dest": "/api/index.js"
-        },
-        {
-            "src": "/index\\.html",
-            "dest": "/api/page?slug=index"
-        },
-        {
-            "src": "/",
-            "dest": "/api/page?slug=index"
-        },
-        {
-            "src": "/(services|industries|case-studies|pricing|contact|about)\\.html",
-            "dest": "/api/page?slug=$1"
-        },
-        {
-            "src": "/(services|industries|case-studies|pricing|contact|about)",
-            "dest": "/api/page?slug=$1"
-        },
-        {
-            "src": "/(.*\\.css|.*\\.js|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.jpeg|.*\\.ico|.*\\.woff2?|.*\\.ttf|.*\\.gif|.*\\.webp)",
-            "dest": "/public/$1"
-        },
-        {
-            "src": "/(admin|admin-login)\\.html",
-            "dest": "/public/$1.html"
-        }
-    ]
+  "experimentalServices": {
+    "frontend": {
+      "entrypoint": ".",
+      "routePrefix": "/"
+    },
+    "backend": {
+      "entrypoint": "backend/index.js",
+      "routePrefix": "/_/backend"
+    }
+  }
 }
