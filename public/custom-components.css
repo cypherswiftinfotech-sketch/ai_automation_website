@@ -828,13 +828,158 @@ select.form-control option {
     .hero-visual {
         order: -1;
     }
+    .why-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .arch-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    .arch-arrow {
+        display: none;
+    }
+    .arch-connector {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
-    .architecture-container {
-        padding: 2rem 1.5rem;
+    /* Hero */
+    .hero {
+        padding: 8rem 0 4rem;
     }
+    .hero-content h1 {
+        font-size: clamp(1.9rem, 6vw, 2.8rem);
+    }
+    .hero-content .subtitle {
+        font-size: 1.1rem;
+    }
+    .hero-badges {
+        gap: 1rem;
+    }
+    .hero-badge-item {
+        font-size: 0.82rem;
+    }
+
+    /* Trust banner */
+    .trust-flex {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .trust-metrics {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    /* Challenge */
     .challenge-cards {
         grid-template-columns: 1fr;
     }
+    .challenge-meta {
+        padding-left: 0;
+        border-left: none;
+        border-top: 2px solid var(--glass-border-glow);
+        padding-top: 1.5rem;
+    }
+
+    /* Architecture */
+    .architecture-container {
+        padding: 2rem 1rem;
+    }
+
+    /* Services */
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    /* Diagnostic banner */
+    .diagnostic-banner {
+        padding: 2.5rem 1.5rem;
+    }
+    .diagnostic-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    .diagnostic-price {
+        font-size: 2rem;
+        margin: 1rem 0;
+    }
+    .diagnostic-cta-card {
+        padding: 2rem 1.25rem;
+    }
+
+    /* Guarantee */
+    .guarantee-section {
+        padding: 2.5rem 1.5rem;
+    }
+    .guarantee-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+
+    /* Industries */
+    .industries-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    /* Location */
+    .location-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Contact */
+    .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    /* Case studies */
+    .case-study-list {
+        grid-template-columns: 1fr;
+    }
 }
+
+@media (max-width: 480px) {
+    /* Container padding tighter on phones */
+    .container {
+        padding: 0 1rem;
+    }
+
+    /* Hero full-width buttons */
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn-group .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Industries — single column on very small screens */
+    .industries-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Locations — single column */
+    .location-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Section padding reduce */
+    .section-padding {
+        padding: 3.5rem 0;
+    }
+
+    /* Footer grid single col */
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+}
+

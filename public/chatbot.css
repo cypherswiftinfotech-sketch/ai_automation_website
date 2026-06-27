@@ -66,30 +66,31 @@
 
 #liveavatar-chat-window {
   position: fixed;
-  bottom: 80px;
+  bottom: 88px;
   right: 20px;
-  width: 350px;
-  height: 500px;
-  background-color: #1e1e1e;
-  border-radius: 12px;
+  width: 380px;
+  height: 560px;
+  max-height: calc(100vh - 110px);
+  background-color: #1a1a2e;
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.15);
   z-index: 9999;
   overflow: hidden;
-  border: 1px solid #333;
-  display: none;
+  border: 1px solid rgba(168,85,247,0.2);
   font-family: inherit;
 }
 
 #liveavatar-chat-header {
-  padding: 15px;
-  background-color: #2a2a2a;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(92,103,242,0.15) 0%, rgba(168,85,247,0.1) 100%);
   color: #fff;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(168,85,247,0.2);
+  flex-shrink: 0;
 }
 
 #liveavatar-chat-header strong {
@@ -112,11 +113,24 @@
 
 #liveavatar-message-list {
   flex: 1;
-  padding: 15px;
+  padding: 12px 14px;
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  scroll-behavior: smooth;
+}
+
+#liveavatar-message-list::-webkit-scrollbar {
+  width: 4px;
+}
+#liveavatar-message-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+#liveavatar-message-list::-webkit-scrollbar-thumb {
+  background: rgba(168,85,247,0.35);
+  border-radius: 99px;
 }
 
 .liveavatar-message-bubble {
@@ -386,13 +400,16 @@
 
 /* Booking confirmation summary card. */
 .liveavatar-booking-card {
-  background: rgba(20, 22, 38, 0.6);
-  border: 1px solid rgba(168, 85, 247, 0.4);
-  border-radius: 12px;
-  padding: 14px;
+  background: rgba(20, 22, 38, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  border-radius: 14px;
+  padding: 16px;
   color: #f3f4f6;
   font-size: 0.85rem;
   max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 .liveavatar-booking-card h4 {
@@ -412,9 +429,10 @@
 .liveavatar-booking-card .field-row {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 4px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
   font-size: 0.82rem;
 }
 
@@ -424,18 +442,25 @@
 
 .liveavatar-booking-card .field-row .label {
   color: #94a3b8;
-  flex: 0 0 auto;
+  flex: 0 0 80px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding-top: 1px;
 }
 
 .liveavatar-booking-card .field-row .value {
   color: #f3f4f6;
   text-align: right;
   word-break: break-word;
+  flex: 1;
+  font-weight: 500;
 }
 
 .liveavatar-booking-card .field-row .value.missing {
-  color: #f87171;
+  color: #6b7280;
   font-style: italic;
+  font-weight: 400;
 }
 
 .liveavatar-booking-card .booking-actions {
@@ -504,13 +529,78 @@
   color: #fca5a5;
 }
 
-@media (max-width: 600px) {
-  .liveavatar-chip {
-    font-size: 0.74rem;
-    padding: 6px 10px;
+/* =========================================
+   Mobile Responsive — Chat Widget
+   ========================================= */
+@media (max-width: 480px) {
+  #liveavatar-chat-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
   }
+
+  #liveavatar-chat-window {
+    /* Full-screen takeover on small phones */
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  #liveavatar-form-modal {
+    align-items: flex-end;
+  }
+
+  #liveavatar-form-content {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    padding: 20px 16px;
+  }
+
+  .liveavatar-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .liveavatar-chip {
+    font-size: 0.72rem;
+    padding: 5px 9px;
+  }
+
   .liveavatar-booking-card {
-    font-size: 0.82rem;
+    font-size: 0.80rem;
+    padding: 12px;
+  }
+
+  .liveavatar-booking-card .field-row .label {
+    flex: 0 0 70px;
+  }
+
+  .liveavatar-booking-card .booking-actions {
+    flex-direction: column;
+  }
+
+  .liveavatar-booking-card .booking-actions button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 600px) {
+  #liveavatar-chat-window {
+    width: calc(100vw - 24px);
+    right: 12px;
+    bottom: 80px;
+  }
+
+  .liveavatar-form-grid {
+    grid-template-columns: 1fr;
   }
 }
 
