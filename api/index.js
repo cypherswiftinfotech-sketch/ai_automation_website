@@ -197,6 +197,11 @@ module.exports = async function handler(req, res) {
     const url = new URL(req.url, `https://${req.headers.host}`);
     const path = url.pathname.replace(/^\/api/, '').replace(/\/$/, '') || '/';
 
+    // Also parse the /query/* chat routes so the same handler can serve
+    // the embedded chatbot (frontend calls /query/init, /query/ask,
+    // /query/book-meeting, /query/lead/{id}). Strips /query prefix.
+    const queryPath = url.pathname.replace(/^\/query/, '').replace(/\/$/, '') || '/';
+
     try {
         // ── Public Routes ─────────────────────────────────────
 
@@ -750,6 +755,212 @@ module.exports = async function handler(req, res) {
             } catch (err) {
                 console.warn('Seed studies database connection warning (seeded in memory):', err.message);
                 return res.status(200).json({ success: true, message: 'Sample case studies seeded successfully (memory fallback)' });
+            }
+        }
+
+        // ── Chatbot / Query Routes ────────────────────────────
+        // The embedded chatbot (public/chatbot.js) calls these to drive
+        // conversation: init session, run a turn, fetch captured lead
+        // info, and finalise a booking. Mounted under /query/* (no /api
+        // prefix) to match what the frontend sends.
+
+        // POST /query/init
+        if (queryPath === '/init' && req.method === 'POST') {
+            try {
+                const body = await parseBody(req);
+                const userId = body.user_id || ('anon-' + Date.now());
+                const language = body.language || 'en';
+                const preChatData = body.pre_chat_data || {};
+
+                const convMod = require('./chat/conversation');
+                const leadMod = require('./chat/lead');
+                const conv = await convMod.getOrCreateConversation(userId, language);
+                await leadMod.getOrCreateLead(userId, conv.id);
+
+                if (preChatData && Object.keys(preChatData).length) {
+                    // Pull canonical names so the LLM sees them on the
+                    // very next ask turn. Map the form's `name`/`email`
+                    // keys alongside the LLM's preferred `full_name` etc.
+                    const qf = { ...preChatData };
+                    if (qf.name && !qf.full_name) qf.full_name = qf.name;
+                    if (qf.email && !qf.business_mail) qf.business_mail = qf.email;
+                    if (qf.phone && !qf.calling_whatsapp_number) qf.calling_whatsapp_number = qf.phone;
+                    if (qf.company && !qf.company_name) qf.company_name = qf.company;
+                    await leadMod.updateLead(conv.id, { qualified_fields: qf });
+
+                    // Also insert the pre-chat form into login_form_info
+                    // (mirrors backend/routers/query.py behaviour).
+                    try {
+                        const row = { ...preChatData, conversation_id: conv.id };
+                        const { error: formErr } = await getSupabase()
+                            .from('login_form_info')
+                            .insert(row);
+                        if (formErr) console.warn('[query/init] login_form_info insert warning:', formErr.message);
+                    } catch (formErr) {
+                        console.warn('[query/init] login_form_info insert exception:', formErr.message);
+                    }
+                }
+
+                return res.status(200).json({ conversation_id: conv.id });
+            } catch (err) {
+                console.error('[query/init] error:', err);
+                return res.status(500).json({ success: false, message: err.message || 'init failed' });
+            }
+        }
+
+        // POST /query/ask
+        if (queryPath === '/ask' && req.method === 'POST') {
+            try {
+                const body = await parseBody(req);
+                const userId = body.user_id || ('anon-' + Date.now());
+                const language = body.language || 'en';
+                const timezone = body.timezone || 'UTC';
+                const query = String(body.query || '').trim();
+                if (!query) {
+                    return res.status(400).json({ success: false, message: 'query is required' });
+                }
+
+                const convMod = require('./chat/conversation');
+                const { processTurn } = require('./chat/process-turn');
+
+                let convId = body.conversation_id;
+                if (!convId) {
+                    const conv = await convMod.getOrCreateConversation(userId, language);
+                    convId = conv.id;
+                }
+
+                const result = await processTurn(userId, convId, query, language, timezone);
+                return res.status(200).json({
+                    answer: result.answer,
+                    user_id: userId,
+                    conversation_id: convId,
+                    intent: result.intent,
+                    lead_score: result.lead_score,
+                    stage: result.stage,
+                    status: result.status,
+                    score_delta: result.score_delta,
+                    ui_action: result.ui_action || null,
+                });
+            } catch (err) {
+                console.error('[query/ask] error:', err);
+                return res.status(500).json({ success: false, message: err.message || 'ask failed' });
+            }
+        }
+
+        // GET /query/lead/{conversation_id}
+        if (queryPath.startsWith('/lead/') && req.method === 'GET') {
+            try {
+                const conversationId = queryPath.slice('/lead/'.length);
+                if (!conversationId) {
+                    return res.status(400).json({ success: false, message: 'conversation_id is required' });
+                }
+                const leadMod = require('./chat/lead');
+                const lead = await leadMod.getLeadByConversation(conversationId);
+                if (!lead) {
+                    return res.status(404).json({ success: false, message: 'Conversation not found.' });
+                }
+                const q = lead.qualified_fields || {};
+                return res.status(200).json({
+                    conversation_id: conversationId,
+                    qualified_fields: {
+                        name: q.name || q.full_name || q.contact_name || null,
+                        email: q.email || q.business_mail || null,
+                        phone: q.phone || q.calling_whatsapp_number || null,
+                        company_name: q.company_name || q.company || null,
+                        role: q.role || q.role_designation || null,
+                        industry_type: q.industry_type || q.industry || null,
+                        budget_range: q.budget_range || q.budget || null,
+                        expected_timeline: q.expected_timeline || q.timeline || null,
+                    },
+                });
+            } catch (err) {
+                console.error('[query/lead] error:', err);
+                return res.status(500).json({ success: false, message: err.message || 'lead fetch failed' });
+            }
+        }
+
+        // POST /query/book-meeting
+        if (queryPath === '/book-meeting' && req.method === 'POST') {
+            try {
+                const body = await parseBody(req);
+                const { conversation_id, slot_id, slot_start, slot_end, timezone = 'UTC' } = body || {};
+                if (!conversation_id || !slot_id || !slot_start || !slot_end) {
+                    return res.status(400).json({ success: false, message: 'conversation_id, slot_id, slot_start, slot_end are required' });
+                }
+
+                const leadMod = require('./chat/lead');
+                const calMod = require('./chat/calendar');
+                const bookMod = require('./chat/booking');
+
+                const lead = await leadMod.getLeadByConversation(conversation_id);
+                if (!lead) return res.status(404).json({ success: false, message: 'Conversation not found.' });
+
+                const qualified = lead.qualified_fields || {};
+                const name = qualified.name || qualified.full_name || qualified.contact_name;
+                const email = qualified.email || qualified.business_mail;
+                if (!name || !email) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Cannot book yet — name and email haven't been captured in this conversation. Please share them with the assistant first.",
+                    });
+                }
+
+                let start, end;
+                try {
+                    start = new Date(slot_start);
+                    end = new Date(slot_end);
+                    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) throw new Error('invalid date');
+                } catch (e) {
+                    return res.status(400).json({ success: false, message: `Invalid slot datetime: ${e.message}` });
+                }
+
+                const calResult = await calMod.bookSlot(slot_id, {
+                    start,
+                    end,
+                    attendeeName: name,
+                    attendeeEmail: email,
+                    timezoneStr: timezone,
+                });
+
+                const booking = await bookMod.saveBooking({
+                    userId: lead.user_id || 'anon',
+                    conversationId: conversation_id,
+                    leadId: lead.id || null,
+                    slotStart: calResult.slot_start,
+                    slotEnd: calResult.slot_end,
+                    timezoneStr: calResult.timezone,
+                    attendeeEmail: email,
+                    attendeeName: name,
+                    externalBookingId: calResult.external_booking_id,
+                });
+                await bookMod.markLeadBooked(conversation_id);
+
+                let localLabel;
+                try {
+                    localLabel = new Intl.DateTimeFormat('en-US', {
+                        timeZone: calResult.timezone,
+                        weekday: 'short',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                    }).format(start);
+                    // Convert e.g. "Mon Jan 1, 10:00 AM" to "Mon Jan 1 at 10:00 AM"
+                    localLabel = localLabel.replace(',', ' at');
+                } catch (_) {
+                    localLabel = start.toUTCString();
+                }
+
+                return res.status(200).json({
+                    booking,
+                    message: bookMod.formatConfirmationMessage(localLabel, name),
+                    stage: 'closed',
+                    status: 'booked',
+                });
+            } catch (err) {
+                console.error('[query/book-meeting] error:', err);
+                return res.status(500).json({ success: false, message: err.message || 'booking failed' });
             }
         }
 

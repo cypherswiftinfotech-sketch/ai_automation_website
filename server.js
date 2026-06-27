@@ -827,6 +827,164 @@ app.post('/api/admin/case-studies/seed', authenticateAdmin, async (req, res) => 
     }
 });
 
+// ── Chatbot / Query Routes ──────────────────────────────────
+// Mirror of api/index.js's /query/* handlers so the embedded chatbot
+// works under `npm start` (server.js) as well as on Vercel (api/index.js).
+// ─────────────────────────────────────────────────────────────
+const chatConv = require('./api/chat/conversation');
+const chatLead = require('./api/chat/lead');
+const chatProcessTurn = require('./api/chat/process-turn');
+const chatCalendar = require('./api/chat/calendar');
+const chatBooking = require('./api/chat/booking');
+
+app.post('/query/init', async (req, res) => {
+    try {
+        const userId = (req.body && req.body.user_id) || ('anon-' + Date.now());
+        const language = (req.body && req.body.language) || 'en';
+        const preChatData = (req.body && req.body.pre_chat_data) || {};
+        const conv = await chatConv.getOrCreateConversation(userId, language);
+        await chatLead.getOrCreateLead(userId, conv.id);
+        if (preChatData && Object.keys(preChatData).length) {
+            const qf = { ...preChatData };
+            if (qf.name && !qf.full_name) qf.full_name = qf.name;
+            if (qf.email && !qf.business_mail) qf.business_mail = qf.email;
+            if (qf.phone && !qf.calling_whatsapp_number) qf.calling_whatsapp_number = qf.phone;
+            if (qf.company && !qf.company_name) qf.company_name = qf.company;
+            await chatLead.updateLead(conv.id, { qualified_fields: qf });
+            try {
+                const { error: formErr } = await supabase
+                    .from('login_form_info')
+                    .insert({ ...preChatData, conversation_id: conv.id });
+                if (formErr) console.warn('[query/init] login_form_info insert warning:', formErr.message);
+            } catch (formErr) {
+                console.warn('[query/init] login_form_info insert exception:', formErr.message);
+            }
+        }
+        res.json({ conversation_id: conv.id });
+    } catch (err) {
+        console.error('[query/init] error:', err);
+        res.status(500).json({ success: false, message: err.message || 'init failed' });
+    }
+});
+
+app.post('/query/ask', async (req, res) => {
+    try {
+        const userId = (req.body && req.body.user_id) || ('anon-' + Date.now());
+        const language = (req.body && req.body.language) || 'en';
+        const timezone = (req.body && req.body.timezone) || 'UTC';
+        const query = String((req.body && req.body.query) || '').trim();
+        if (!query) return res.status(400).json({ success: false, message: 'query is required' });
+
+        let convId = req.body && req.body.conversation_id;
+        if (!convId) {
+            const conv = await chatConv.getOrCreateConversation(userId, language);
+            convId = conv.id;
+        }
+        const result = await chatProcessTurn.processTurn(userId, convId, query, language, timezone);
+        res.json({
+            answer: result.answer,
+            user_id: userId,
+            conversation_id: convId,
+            intent: result.intent,
+            lead_score: result.lead_score,
+            stage: result.stage,
+            status: result.status,
+            score_delta: result.score_delta,
+            ui_action: result.ui_action || null,
+        });
+    } catch (err) {
+        console.error('[query/ask] error:', err);
+        res.status(500).json({ success: false, message: err.message || 'ask failed' });
+    }
+});
+
+app.get('/query/lead/:conversation_id', async (req, res) => {
+    try {
+        const conversationId = req.params.conversation_id;
+        const lead = await chatLead.getLeadByConversation(conversationId);
+        if (!lead) return res.status(404).json({ success: false, message: 'Conversation not found.' });
+        const q = lead.qualified_fields || {};
+        res.json({
+            conversation_id: conversationId,
+            qualified_fields: {
+                name: q.name || q.full_name || q.contact_name || null,
+                email: q.email || q.business_mail || null,
+                phone: q.phone || q.calling_whatsapp_number || null,
+                company_name: q.company_name || q.company || null,
+                role: q.role || q.role_designation || null,
+                industry_type: q.industry_type || q.industry || null,
+                budget_range: q.budget_range || q.budget || null,
+                expected_timeline: q.expected_timeline || q.timeline || null,
+            },
+        });
+    } catch (err) {
+        console.error('[query/lead] error:', err);
+        res.status(500).json({ success: false, message: err.message || 'lead fetch failed' });
+    }
+});
+
+app.post('/query/book-meeting', async (req, res) => {
+    try {
+        const { conversation_id, slot_id, slot_start, slot_end, timezone = 'UTC' } = req.body || {};
+        if (!conversation_id || !slot_id || !slot_start || !slot_end) {
+            return res.status(400).json({ success: false, message: 'conversation_id, slot_id, slot_start, slot_end are required' });
+        }
+        const lead = await chatLead.getLeadByConversation(conversation_id);
+        if (!lead) return res.status(404).json({ success: false, message: 'Conversation not found.' });
+        const qualified = lead.qualified_fields || {};
+        const name = qualified.name || qualified.full_name || qualified.contact_name;
+        const email = qualified.email || qualified.business_mail;
+        if (!name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Cannot book yet — name and email haven't been captured in this conversation. Please share them with the assistant first.",
+            });
+        }
+        let start, end;
+        try {
+            start = new Date(slot_start);
+            end = new Date(slot_end);
+            if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) throw new Error('invalid date');
+        } catch (e) {
+            return res.status(400).json({ success: false, message: `Invalid slot datetime: ${e.message}` });
+        }
+        const calResult = await chatCalendar.bookSlot(slot_id, {
+            start, end, attendeeName: name, attendeeEmail: email, timezoneStr: timezone,
+        });
+        const booking = await chatBooking.saveBooking({
+            userId: lead.user_id || 'anon',
+            conversationId: conversation_id,
+            leadId: lead.id || null,
+            slotStart: calResult.slot_start,
+            slotEnd: calResult.slot_end,
+            timezoneStr: calResult.timezone,
+            attendeeEmail: email,
+            attendeeName: name,
+            externalBookingId: calResult.external_booking_id,
+        });
+        await chatBooking.markLeadBooked(conversation_id);
+        let localLabel;
+        try {
+            localLabel = new Intl.DateTimeFormat('en-US', {
+                timeZone: calResult.timezone,
+                weekday: 'short', month: 'short', day: '2-digit',
+                hour: 'numeric', minute: '2-digit', hour12: true,
+            }).format(start).replace(',', ' at');
+        } catch (_) {
+            localLabel = start.toUTCString();
+        }
+        res.json({
+            booking,
+            message: chatBooking.formatConfirmationMessage(localLabel, name),
+            stage: 'closed',
+            status: 'booked',
+        });
+    } catch (err) {
+        console.error('[query/book-meeting] error:', err);
+        res.status(500).json({ success: false, message: err.message || 'booking failed' });
+    }
+});
+
 // ── Start Server (local only) / Export for Vercel ─────────────
 if (require.main === module) {
     seedBranchesIfEmpty();

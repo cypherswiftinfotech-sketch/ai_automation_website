@@ -1,10 +1,21 @@
 /**
  * Standalone Chatbot Integration (Without Pre-Chat Form)
  */
-// chatbot.js v2 — updated API_URL to http://127.0.0.1:8000 and improved error reporting.
+// chatbot.js v3 — same-origin API base (works on any host) with localhost
+// fallback for local development. Set window.CHATBOT_API_URL to override.
 
 (function () {
-  const API_URL = "http://127.0.0.1:8000"; // <-- UPDATE THIS TO YOUR BACKEND URL IF NEEDED
+  // Resolve the backend API base URL:
+  //  1. Use window.CHATBOT_API_URL if explicitly set (highest priority).
+  //  2. Fall back to localhost:8000 only when running on localhost/127.0.0.1.
+  //  3. Otherwise use the page's own origin so production calls go to the
+  //     correct host automatically without any hardcoded URL.
+  const API_URL =
+    (typeof window !== "undefined" && window.CHATBOT_API_URL)
+      ? window.CHATBOT_API_URL
+      : (typeof window !== "undefined" && /^localhost$|^127\.0\.0\.1$/.test(window.location.hostname))
+        ? "http://127.0.0.1:8000"
+        : (typeof window !== "undefined" ? window.location.origin : "");
 
   // HeyGen avatar used for the floating chat button icon.
   const DEFAULT_AVATAR_ID = "dd73ea75-1218-4ef3-92ce-606d5f7fbc0a";
@@ -601,7 +612,7 @@
     const btn = document.getElementById("liveavatar-chat-btn");
     if (!btn) return;
     try {
-      const res = await apiFetch(`/avatar-preview?avatar_id=${encodeURIComponent(DEFAULT_AVATAR_ID)}`);
+      const res = await apiFetch(`/api/avatar-preview?avatar_id=${encodeURIComponent(DEFAULT_AVATAR_ID)}`);
       const previewUrl = res && res.data && res.data.preview_url;
       if (!previewUrl) return;
       btn.classList.add("liveavatar-has-image");
