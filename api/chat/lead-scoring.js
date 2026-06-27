@@ -22,7 +22,7 @@ const INTENT_STRENGTH_BONUS = {
 };
 
 const STAGE_ORDER = ['discover', 'qualify', 'anchor', 'book', 'closed'];
-const QUALIFY_FIELDS = ['company_size', 'role', 'budget', 'timeline'];
+const QUALIFY_FIELDS = ['name', 'company_name', 'role', 'budget_range', 'expected_timeline'];
 
 function computeScoreDelta(signals, llmDelta) {
     let delta = Math.max(0, Math.min(25, Number(llmDelta || 0)));

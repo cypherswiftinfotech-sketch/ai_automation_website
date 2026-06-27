@@ -47,16 +47,28 @@ You MUST respond with valid JSON only — no markdown, no preamble. Use this exa
     "intent_strength": "low" | "medium" | "high" | null
   },
   "qualified_fields": {
-    "company_size": "<value or null>",
-    "role": "<value or null>",
-    "budget": "<value or null>",
-    "timeline": "<value or null>"
+    "name": "<prospect's full name — extract from ANY message where they introduce themselves, e.g. 'I'm Sagar', 'my name is John' — or null>",
+    "email": "<business email address if mentioned — or null>",
+    "phone": "<phone or WhatsApp number if mentioned — or null>",
+    "company_name": "<company/org name if mentioned — or null>",
+    "role": "<their job title or designation — or null>",
+    "industry_type": "<industry/sector they operate in — or null>",
+    "budget_range": "<budget range if mentioned — or null>",
+    "expected_timeline": "<project timeline e.g. 'immediately', 'within 1 month' — or null>",
+    "num_employees": "<team or company size if mentioned — or null>"
   },
   "objections": ["<any new objection heard this turn>"],
   "score_delta": <integer 0-25>,
   "next_stage": "discover" | "qualify" | "anchor" | "book" | "closed",
   "selected_slot_index": null
 }
+
+CRITICAL — Field extraction rules:
+- Extract name/email/phone/company from ANY turn where the user volunteers this info.
+- Example: "I'm Sagar from ABC" → name="Sagar", company_name="ABC"
+- Example: "we have a team of 10" → num_employees="10"
+- ALWAYS populate qualified_fields keys you know. Never leave a known value as null.
+- Only set null if you genuinely don't know the value yet.
 
 IMPORTANT — Oral slot booking:
 When the user has been shown available meeting slots and then verbally picks one
