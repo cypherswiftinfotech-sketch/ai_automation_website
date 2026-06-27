@@ -27,7 +27,7 @@ const BOOK_KEYWORDS = [
 ];
 
 async function routeIntent(llmIntent, opts) {
-    const { leadScore = 0, stage = 'discover', userQuery = '', meetingBooked = false } = opts || {};
+    const { leadScore = 0, stage = 'discover', userQuery = '', meetingBooked = false, qualifiedFields = {} } = opts || {};
 
     if (meetingBooked) return { intent: 'rag_answer', uiAction: null };
 
@@ -45,7 +45,10 @@ async function routeIntent(llmIntent, opts) {
     }
 
     if (wantsBook || intent === 'book_meeting') {
-        if (leadScore >= bookThreshold - 15 || stage === 'anchor' || stage === 'book') {
+        const hasName = qualifiedFields && qualifiedFields.name;
+        const hasEmail = qualifiedFields && qualifiedFields.email;
+        
+        if ((leadScore >= bookThreshold - 15 || stage === 'anchor' || stage === 'book') && hasName && hasEmail) {
             return { intent: 'book_meeting', uiAction: { type: 'show_slots_pending' } };
         }
         return { intent: 'qualify', uiAction: null };

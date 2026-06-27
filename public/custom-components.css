@@ -62,15 +62,15 @@
 .dashboard-preview {
     border-radius: var(--radius-lg);
     border: 1px solid var(--glass-border);
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 40px rgba(92, 103, 242, 0.15);
-    background: #0d0f17;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.1), 0 0 40px rgba(92, 103, 242, 0.05);
+    background: #ffffff;
     overflow: hidden;
     position: relative;
 }
 
 .dashboard-header {
     height: 40px;
-    background: #141724;
+    background: #f1f5f9;
     border-bottom: 1px solid var(--glass-border);
     display: flex;
     align-items: center;
@@ -135,7 +135,7 @@
 .stat-val {
     font-size: 1.25rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text-primary);
     margin-top: 0.25rem;
 }
 
@@ -143,7 +143,7 @@
 .trust-banner {
     border-top: 1px solid var(--glass-border);
     border-bottom: 1px solid var(--glass-border);
-    background: rgba(15, 17, 26, 0.5);
+    background: rgba(255, 255, 255, 0.8);
     padding: 2rem 0;
     backdrop-filter: blur(10px);
 }
@@ -176,7 +176,7 @@
 }
 
 .trust-metric-item strong {
-    color: #fff;
+    color: var(--color-text-primary);
     font-size: 1.15rem;
 }
 
@@ -243,7 +243,7 @@
 
 /* --- REVENUE SYSTEM ARCHITECTURE (HOW IT WORKS) --- */
 .architecture-container {
-    background: rgba(15, 17, 26, 0.4);
+    background: rgba(255, 255, 255, 0.8);
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: 4rem;
@@ -281,7 +281,7 @@
 .arch-node h4 {
     font-size: 1.15rem;
     margin-bottom: 0.25rem;
-    color: #fff;
+    color: var(--color-text-primary);
 }
 
 .arch-node p {
@@ -364,7 +364,7 @@
 
 /* --- DIAGNOSTIC BANNER (OUR SOLUTION) --- */
 .diagnostic-banner {
-    background: linear-gradient(135deg, rgba(15, 17, 26, 0.9) 0%, rgba(20, 23, 36, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(241, 245, 249, 0.9) 100%);
     border: 1px solid var(--glass-border-glow);
     border-radius: var(--radius-xl);
     padding: 4rem;
@@ -413,7 +413,7 @@
 .diagnostic-price {
     font-size: 3rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text-primary);
     margin: 1.5rem 0;
 }
 
@@ -425,7 +425,7 @@
 
 /* --- GUARANTEE SECTION --- */
 .guarantee-section {
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.03) 0%, rgba(15, 17, 26, 0.8) 100%);
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(255, 255, 255, 0.9) 100%);
     border: 1px solid rgba(16, 185, 129, 0.15);
     border-radius: var(--radius-xl);
     padding: 4rem;
@@ -501,7 +501,7 @@
 }
 
 .outcome-card h4 {
-    color: #fff;
+    color: var(--color-text-primary);
     margin-bottom: 0.6rem;
     font-size: 1.2rem;
 }
@@ -534,7 +534,7 @@
 }
 
 .industry-card h4 {
-    color: #fff;
+    color: var(--color-text-primary);
 }
 
 /* Legacy bare-emoji icon, now rendered as a contained badge */
@@ -569,7 +569,7 @@
 
 .location-card h4 {
     margin: 0.25rem 0;
-    color: #fff;
+    color: var(--color-text-primary);
 }
 
 .location-card p {
@@ -709,7 +709,7 @@
     font-family: var(--font-heading);
     font-weight: 600;
     font-size: 1.02rem;
-    color: #fff;
+    color: var(--color-text-primary);
     transition: color var(--transition-fast);
 }
 

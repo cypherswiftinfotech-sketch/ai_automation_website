@@ -111,20 +111,10 @@ async function processTurn(userId, conversationId, query, language = 'en', timez
     const convState = await getOrCreateState(conversationId);
     const meetingBooked = (lead.status === 'booked');
 
-    // Short-circuit: already booked.
-    if (meetingBooked || (lead.stage || 'discover') === 'closed') {
-        const result = {
-            answer: 'Thank you, the meeting is already booked. Our team will reach out to you soon. Have a great day!',
-            intent: 'rag_answer',
-            lead_score: Number(lead.score || 0),
-            stage: 'closed',
-            status: lead.status || 'booked',
-            score_delta: 0,
-            ui_action: null,
-        };
-        return finalize(conversationId, startTime, result, lead, { intent: 'rag_answer', scoreDelta: 0 });
-    }
-
+    // We removed the hard-coded short-circuit here.
+    // The user can continue the discussion after booking.
+    // intent.js will automatically force intent to 'rag_answer' if meetingBooked is true, 
+    // ensuring the LLM doesn't try to book again.
     const currentScore = Number(lead.score || 0);
     const currentStage = lead.stage || 'discover';
     const currentStatus = lead.status || 'cold';
@@ -237,6 +227,7 @@ async function processTurn(userId, conversationId, query, language = 'en', timez
         stage: nextStage,
         userQuery: query,
         meetingBooked,
+        qualifiedFields: mergedQualified,
     });
     const newStatus = resolveStatus(newScore, intent, currentStatus);
 
