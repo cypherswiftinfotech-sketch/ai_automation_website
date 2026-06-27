@@ -38,17 +38,17 @@
         /* Dropdown styles for header nav */
         .dropdown { position: relative; display: inline-block; }
         .dropdown-content {
-            display: none; position: absolute; background: rgba(15, 17, 26, 0.95);
-            min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100;
+            display: none; position: absolute; background: rgba(255, 255, 255, 0.95);
+            min-width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); z-index: 100;
             border: 1px solid var(--glass-border); border-radius: var(--radius-md);
             backdrop-filter: blur(10px); top: 100%; left: 0; padding: 0.5rem 0;
         }
         .dropdown:hover .dropdown-content { display: block; }
         .dropdown-content a {
-            color: #fff; padding: 12px 16px; text-decoration: none; display: block;
+            color: var(--color-text-primary); padding: 12px 16px; text-decoration: none; display: block;
             font-size: 0.9rem; transition: background 0.2s;
         }
-        .dropdown-content a:hover { background: rgba(255,255,255,0.05); color: var(--color-accent-indigo); }
+        .dropdown-content a:hover { background: rgba(0,0,0,0.05); color: var(--color-accent-indigo); }
     </style>
 </head>
 <body>
@@ -369,7 +369,7 @@
                 </div>
                 <div class="challenge-meta">
                     <span class="highlight-text" style="font-weight: 700; font-size: 0.95rem; text-transform: uppercase;">The Reality</span>
-                    <h3 style="margin-top: 0.5rem; color: #fff;">Growth doesn't break at sales. It breaks where systems stop working together.</h3>
+                    <h3 style="margin-top: 0.5rem; color: var(--color-text-primary);">Growth doesn't break at sales. It breaks where systems stop working together.</h3>
                     <p style="margin: 1.5rem 0;">When systems don't communicate, manual tasks multiply, leads slip through the cracks, and sales velocity plummets. We resolve these leaks by building unified workflows.</p>
                     <a href="services.html" class="btn-text">
                         <span>Explore Our Services</span>
@@ -511,7 +511,7 @@
     </section>
 
     <!-- AI Workflow Architecture (Diagram Section) -->
-    <section class="section-padding" style="background: rgba(15, 17, 26, 0.4); border-top: 1px solid var(--glass-border);">
+    <section class="section-padding" style="background: rgba(255, 255, 255, 0.8); border-top: 1px solid var(--glass-border);">
         <div class="container">
             <div class="section-header">
                 <span class="section-tag">How It Works</span>
@@ -569,7 +569,7 @@
                 <div class="diagnostic-grid">
                     <div>
                         <span class="diagnostic-badge-large">Strategic Acceleration Program</span>
-                        <h2 style="text-align: left; -webkit-text-fill-color: initial; color: #fff;">Get Your 5-Day Sales & AI Growth Diagnostic</h2>
+                        <h2 style="text-align: left; -webkit-text-fill-color: initial; color: var(--color-text-primary);">Get Your 5-Day Sales & AI Growth Diagnostic</h2>
                         <p style="margin: 1.5rem 0; color: var(--color-text-secondary);">We analyze your existing workflows, identify leakages, and sketch out a customized B2B Revenue System blueprint for your business.</p>
                         <ul class="footer-contact-info" style="margin-bottom: 2rem;">
                             <li>
@@ -752,7 +752,7 @@
                         </div>
                     </div>
                     <div>
-                        <h3 style="color: #fff; font-size: 1.75rem; margin-bottom: 1rem;">Performance-Backed Growth Partnership</h3>
+                        <h3 style="color: var(--color-text-primary); font-size: 1.75rem; margin-bottom: 1rem;">Performance-Backed Growth Partnership</h3>
                         <p style="margin-bottom: 1.5rem; color: var(--color-text-secondary);">We believe in system designs that deliver outcomes. For qualified B2B projects, we back our implementation with a structured money-back guarantee framework.</p>
                         <p style="font-size: 0.95rem; color: var(--color-accent-emerald); font-weight: 600;">If we fail to build your system according to agreed technical benchmarks, you get a full refund.</p>
                     </div>
@@ -774,13 +774,13 @@
                 <div class="challenge-grid">
                     <div>
                         <span class="section-tag" style="background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: var(--color-accent-cyan);">Enterprise SaaS</span>
-                        <h3 style="color: #fff; font-size: 2rem; margin: 1rem 0;">2.5x Qualified Leads & 35% Process Efficiency Boost</h3>
+                        <h3 style="color: var(--color-text-primary); font-size: 2rem; margin: 1rem 0;">2.5x Qualified Leads & 35% Process Efficiency Boost</h3>
                         <p style="margin-bottom: 1.5rem;"><strong>The Challenge:</strong> Disconnected HubSpot settings, duplicate lead lists, and slow manual follow-ups led to low booking rates and high acquisition costs.</p>
                         <p style="margin-bottom: 1.5rem;"><strong>The Solution:</strong> Implemented a unified AI-powered lead qualification filter, automated booking triggers, and real-time dashboard analytics.</p>
                         <a href="case-studies.html" class="btn btn-secondary">Request Full Case Study</a>
                     </div>
-                    <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: var(--radius-lg);">
-                        <h4 style="color: #fff; margin-bottom: 1.5rem;">Outcome Metrics</h4>
+                    <div style="background: rgba(255,255,255,0.8); border: 1px solid var(--glass-border); padding: 2.5rem; border-radius: var(--radius-lg);">
+                        <h4 style="color: var(--color-text-primary); margin-bottom: 1.5rem;">Outcome Metrics</h4>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
                             <div>
                                 <span style="font-size: 0.85rem; color: var(--color-text-muted);">Lead Multiplier</span>
@@ -796,7 +796,7 @@
                             </div>
                             <div>
                                 <span style="font-size: 0.85rem; color: var(--color-text-muted);">Pipeline Visibility</span>
-                                <div style="font-size: 2rem; font-weight: 700; color: #fff;">100%</div>
+                                <div style="font-size: 2rem; font-weight: 700; color: var(--color-text-primary);">100%</div>
                             </div>
                         </div>
                     </div>
