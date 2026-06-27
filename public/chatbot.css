@@ -73,7 +73,7 @@
   max-height: calc(100vh - 110px);
   background-color: #1a1a2e;
   border-radius: 16px;
-  display: flex;
+  display: none; /* hidden by default — JS sets display:flex on button click */
   flex-direction: column;
   box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(168,85,247,0.15);
   z-index: 9999;
