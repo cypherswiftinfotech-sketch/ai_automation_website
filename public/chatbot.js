@@ -359,7 +359,8 @@
     const list = document.getElementById("liveavatar-message-list");
     const wrapper = document.createElement("div");
     wrapper.className = "liveavatar-message-bubble liveavatar-message-avatar";
-    wrapper.style.maxWidth = "92%";
+    wrapper.style.maxWidth = "100%";
+    wrapper.style.width = "100%";
     wrapper.style.padding = "0";
     wrapper.style.background = "transparent";
     wrapper.style.border = "none";
@@ -398,15 +399,19 @@
     card.appendChild(infoTitle);
 
     const f = capturedLead.fields || {};
+    // Resolve values — handle both form keys (name/email) and backend
+    // qualified_field keys (full_name/business_mail) so the card always
+    // shows data whichever source populated capturedLead.fields.
+    const pick = (...keys) => { for (const k of keys) { if (f[k]) return f[k]; } return null; };
     const infoRows = [
-      ["Name", f.name],
-      ["Email", f.email],
-      ["Phone", f.phone],
-      ["Company", f.company_name],
-      ["Role", f.role],
-      ["Industry", f.industry_type],
-      ["Budget", f.budget_range],
-      ["Timeline", f.expected_timeline],
+      ["Name",     pick("name", "full_name")],
+      ["Email",    pick("email", "business_mail")],
+      ["Phone",    pick("phone", "calling_whatsapp_number")],
+      ["Company",  pick("company_name", "company")],
+      ["Role",     pick("role")],
+      ["Industry", pick("industry_type")],
+      ["Budget",   pick("budget_range")],
+      ["Timeline", pick("expected_timeline")],
     ];
     infoRows.forEach(([k, v]) => card.appendChild(buildFieldRow(k, v)));
 
@@ -542,7 +547,20 @@
     try {
       const res = await apiFetch(`/query/lead/${encodeURIComponent(capturedLead.conversation_id)}`);
       if (res && res.qualified_fields) {
-        capturedLead.fields = res.qualified_fields;
+        const qf = res.qualified_fields;
+        // Normalise — always write under the canonical form keys so
+        // appendBookingConfirmationCard's pick() helper finds them.
+        capturedLead.fields = {
+          ...qf,
+          name:              qf.name        || qf.full_name                  || capturedLead.fields.name,
+          email:             qf.email       || qf.business_mail              || capturedLead.fields.email,
+          phone:             qf.phone       || qf.calling_whatsapp_number    || capturedLead.fields.phone,
+          company_name:      qf.company_name|| qf.company                    || capturedLead.fields.company_name,
+          role:              qf.role                                          || capturedLead.fields.role,
+          industry_type:     qf.industry_type                                 || capturedLead.fields.industry_type,
+          budget_range:      qf.budget_range                                  || capturedLead.fields.budget_range,
+          expected_timeline: qf.expected_timeline                             || capturedLead.fields.expected_timeline,
+        };
       }
     } catch (err) {
       // Non-fatal — the booking card will just show "not captured" rows.
