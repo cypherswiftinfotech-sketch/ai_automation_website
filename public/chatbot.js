@@ -263,9 +263,11 @@
         conversationId = result.conversation_id;
         capturedLead.conversation_id = conversationId;
       }
-      // Refresh captured info (name/email/etc.) before rendering so the
+      // Refresh captured info (name/email/etc.) BEFORE rendering so the
       // booking card has the freshest data the LLM has extracted.
-      refreshCapturedLead();
+      // Must be awaited — otherwise the card renders before the fetch
+      // completes and every field shows "Not captured yet".
+      await refreshCapturedLead();
       renderAssistantTurn(result);
     } catch (err) {
       console.error(err);
@@ -280,7 +282,7 @@
 
   // Inspect a backend reply and render the right combination of
   // plain-text answer + structured UI component.
-  function renderAssistantTurn(result) {
+  async function renderAssistantTurn(result) {
     if (result.answer) appendMessage("avatar", result.answer);
     const action = result && result.ui_action;
     if (!action) return;
@@ -291,6 +293,9 @@
     }
 
     if (action.type === "propose_oral_booking" && action.slot) {
+      // Ensure the lead cache is fully refreshed before building the
+      // confirmation card so user details are never "Not captured yet".
+      await refreshCapturedLead();
       appendBookingConfirmationCard(action.slot, action.message || result.answer);
       return;
     }
